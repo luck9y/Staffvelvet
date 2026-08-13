@@ -24,7 +24,6 @@
         justify-content: center;
         align-items: center;
         z-index: 10;
-        animation: fadeIn 1s ease;
     }
 
     #titleScreen h1 {
@@ -47,30 +46,13 @@
         animation: pulse 2s infinite;
     }
 
-    #playBtn:hover {
-        background: #222;
-        border-color: #fff;
-        transform: scale(1.08);
-        box-shadow: 0 0 25px #666;
-    }
-
     @keyframes pulse {
         0% { box-shadow: 0 0 10px #333; }
         50% { box-shadow: 0 0 25px #666; }
         100% { box-shadow: 0 0 10px #333; }
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-
-    /* GAME AREA */
+    /* GAME WORLD */
     #gameCanvas {
         width: 100vw;
         height: 100vh;
@@ -78,41 +60,85 @@
         background-size: 200px;
         display: none;
         position: relative;
-        animation: fadeIn 1s ease;
     }
 
+    /* SHADOW CHARACTER */
     #player {
+        width: 50px;
+        height: 80px;
+        background: rgba(20,20,20,0.9);
+        border-radius: 10px;
+        position: absolute;
+        bottom: 50px;
+        left: 200px;
+        box-shadow: 0 0 20px #333;
+        transition: background 0.1s;
+    }
+
+    /* WALK ANIMATION */
+    .walk {
+        animation: walkAnim 0.3s infinite alternate;
+    }
+
+    @keyframes walkAnim {
+        from { transform: translateY(0); }
+        to { transform: translateY(-4px); }
+    }
+
+    /* HOUSE */
+    #house {
+        position: absolute;
+        bottom: 50px;
+        left: 1500px;
+        width: 600px;
+        height: 300px;
+        background: #111;
+        border: 4px solid #333;
+        box-shadow: 0 0 30px #000;
+    }
+
+    /* DOORS */
+    .door {
+        width: 80px;
+        height: 150px;
+        background: #222;
+        border: 3px solid #555;
+        position: absolute;
+        bottom: 0;
+    }
+
+    #door1 { left: 50px; }
+    #door2 { left: 250px; }
+    #door3 { left: 450px; }
+
+    /* ORB */
+    #orb {
         width: 40px;
         height: 40px;
-        background: #3a3a3a;
-        border-radius: 50%;
-        position: absolute;
-        top: 70%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 15px #555;
-    }
-
-    #orb {
-        width: 35px;
-        height: 35px;
         background: #00aaff;
         border-radius: 50%;
         position: absolute;
-        top: 20%;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 0 20px #00aaff;
+        bottom: 200px;
+        left: 1700px;
+        box-shadow: 0 0 25px #00aaff;
+        animation: float 2s infinite ease-in-out;
     }
 
-    #arrow {
+    @keyframes float {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+
+    /* PROMPT */
+    #prompt {
         position: absolute;
-        top: 40%;
+        bottom: 150px;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 45px;
-        opacity: 0.8;
-        text-shadow: 0 0 10px #00aaff;
+        font-size: 22px;
+        opacity: 0;
+        transition: opacity 0.2s;
     }
 </style>
 </head>
@@ -126,8 +152,13 @@
 
 <div id="gameCanvas">
     <div id="player"></div>
+    <div id="house">
+        <div class="door" id="door1"></div>
+        <div class="door" id="door2"></div>
+        <div class="door" id="door3"></div>
+    </div>
     <div id="orb"></div>
-    <div id="arrow">⬆</div>
+    <div id="prompt">Press F to open door</div>
 </div>
 
 <script>
@@ -135,57 +166,57 @@
     const titleScreen = document.getElementById("titleScreen");
     const gameCanvas = document.getElementById("gameCanvas");
     const player = document.getElementById("player");
-    const orb = document.getElementById("orb");
+    const prompt = document.getElementById("prompt");
 
-    let px = window.innerWidth / 2;
-    let py = window.innerHeight * 0.7;
-
+    let px = 200;
+    let speed = 5;
     let keys = {};
 
     playBtn.onclick = () => {
-        titleScreen.style.animation = "fadeOut 0.8s ease";
-        setTimeout(() => {
-            titleScreen.style.display = "none";
-            gameCanvas.style.display = "block";
-        }, 800);
+        titleScreen.style.display = "none";
+        gameCanvas.style.display = "block";
     };
 
     document.addEventListener("keydown", e => keys[e.key] = true);
     document.addEventListener("keyup", e => keys[e.key] = false);
 
     function gameLoop() {
-        let speed = 4;
+        let walking = false;
 
-        if (keys["ArrowUp"] || keys["w"]) py -= speed;
-        if (keys["ArrowDown"] || keys["s"]) py += speed;
-        if (keys["ArrowLeft"] || keys["a"]) px -= speed;
-        if (keys["ArrowRight"] || keys["d"]) px += speed;
+        if (keys["ArrowRight"] || keys["d"]) {
+            px += speed;
+            walking = true;
+        }
+        if (keys["ArrowLeft"] || keys["a"]) {
+            px -= speed;
+            walking = true;
+        }
 
         player.style.left = px + "px";
-        player.style.top = py + "px";
 
-        // FORWARD → stafflogin.html
-        if (py < window.innerHeight * 0.25) {
-            window.location.href = "stafflogin.html";
-        }
+        // WALK ANIMATION
+        if (walking) player.classList.add("walk");
+        else player.classList.remove("walk");
 
-        // BACKWARDS → taco.html
-        if (py > window.innerHeight * 0.85) {
-            window.location.href = "taco.html";
-        }
+        // DOOR INTERACTION
+        let nearDoor = false;
 
-        // ORB COLLECTION
-        let orbRect = orb.getBoundingClientRect();
-        let playerRect = player.getBoundingClientRect();
+        document.querySelectorAll(".door").forEach(door => {
+            let rect = door.getBoundingClientRect();
+            let pRect = player.getBoundingClientRect();
 
-        if (
-            playerRect.left < orbRect.right &&
-            playerRect.right > orbRect.left &&
-            playerRect.top < orbRect.bottom &&
-            playerRect.bottom > orbRect.top
-        ) {
-            orb.style.display = "none";
-        }
+            if (pRect.right > rect.left - 20 && pRect.left < rect.right + 20) {
+                nearDoor = true;
+
+                if (keys["f"]) {
+                    if (door.id === "door1") window.location.href = "stafflogin.html";
+                    if (door.id === "door2") window.location.href = "taco.html";
+                    if (door.id === "door3") window.location.href = "secret.html";
+                }
+            }
+        });
+
+        prompt.style.opacity = nearDoor ? 1 : 0;
 
         requestAnimationFrame(gameLoop);
     }
