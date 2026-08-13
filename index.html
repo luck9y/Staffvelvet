@@ -102,8 +102,7 @@
         border-radius: 10px;
         position: absolute;
         bottom: 140px;
-        left: 50%; /* stays centered */
-        transform: translateX(-50%);
+        left: 200px; /* spawn point */
         box-shadow: 0 0 25px #333;
     }
 
@@ -235,9 +234,14 @@
     const player = document.getElementById("player");
     const prompt = document.getElementById("prompt");
 
-    let px = 200;
+    let px = 200; /* spawn */
     let speed = 6;
     let keys = {};
+
+    /* CAMERA LIMITS */
+    const minCamera = -50; /* 50 studs behind spawn */
+    const maxCamera = 3500 + 50; /* house + 50 studs */
+
     let cameraX = 0;
 
     playBtn.onclick = () => {
@@ -260,12 +264,12 @@
             walking = true;
         }
 
-        /* CAMERA FOLLOW LOGIC */
-        const screenMid = window.innerWidth / 2;
+        /* CAMERA ALWAYS FOLLOWS PLAYER */
+        cameraX = px - window.innerWidth / 2;
 
-        if (px > screenMid) {
-            cameraX = px - screenMid;
-        }
+        /* APPLY CAMERA LIMITS */
+        if (cameraX < minCamera) cameraX = minCamera;
+        if (cameraX > maxCamera) cameraX = maxCamera;
 
         world.style.transform = `translateX(${-cameraX}px)`;
 
