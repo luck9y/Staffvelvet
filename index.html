@@ -2,128 +2,106 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>BL STAFF HQ</title>
+<title>Black Velvet HQ</title>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
 <style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background: #0d0d0d;
-  }
-  canvas {
-    display: block;
-    background: #111;
-  }
+  body { margin: 0; background: #000; }
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// Player
-let player = {
-  x: 100,
-  y: 100,
-  w: 40,
-  h: 40,
-  speed: 4
+const config = {
+    type: Phaser.AUTO,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: "#0d0d0d",
+    physics: {
+        default: "arcade",
+        arcade: { debug: false }
+    },
+    scene: { preload, create, update }
 };
 
-// Controls
-let keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
+let player;
+let cursors;
+let interactKey;
+let doors = [];
 
-// Doors
-const doors = [
-  {x: 600, y: 200, w: 60, h: 60, label: "Continue..?", target: "Continued.html"},
-  {x: 1200, y: 400, w: 60, h: 60, label: "Continue..?", target: "Continue.html"},
-  {x: 1800, y: 300, w: 80, h: 80, label: "STAFF ONLY", target: "stafflogin.html"}
-];
+new Phaser.Game(config);
 
-// Map tiles
-const tiles = [];
-for (let i = 0; i < 2000; i += 80) {
-  for (let j = 0; j < 800; j += 80) {
-    tiles.push({x: i, y: j});
-  }
+function preload() {
+    // Simple placeholder tiles (you can replace with your own)
+    this.textures.generate("tile", { data: ["2222","2332","2222"], pixelWidth: 20 });
+    this.textures.generate("player", { data: ["444","474","444"], pixelWidth: 20 });
+    this.textures.generate("door", { data: ["999","9F9","999"], pixelWidth: 20 });
 }
 
-// Camera
-let cameraX = 0;
-let cameraY = 0;
+function create() {
+    const mapWidth = 2000;
+    const mapHeight = 1200;
+
+    // Tile background
+    for (let x = 0; x < mapWidth; x += 40) {
+        for (let y = 0; y < mapHeight; y += 40) {
+            this.add.image(x, y, "tile").setOrigin(0);
+        }
+    }
+
+    // Player
+    player = this.physics.add.sprite(200, 200, "player");
+    player.setCollideWorldBounds(true);
+
+    // Controls
+    cursors = this.input.keyboard.addKeys({
+        up: "w",
+        down: "s",
+        left: "a",
+        right: "d"
+    });
+    interactKey = this.input.keyboard.addKey("e");
+
+    // Doors (matching the map layout)
+    doors.push(makeDoor(this, 950, 150, "Continued.html", "Continue..?"));
+    doors.push(makeDoor(this, 1500, 500, "Continue.html", "Continue..?"));
+    doors.push(makeDoor(this, 1800, 300, "stafflogin.html", "STAFF ONLY"));
+
+    // Camera
+    this.cameras.main.startFollow(player);
+    this.cameras.main.setZoom(1.2);
+}
+
+function makeDoor(scene, x, y, target, label) {
+    let d = scene.physics.add.sprite(x, y, "door");
+    d.target = target;
+    d.label = label;
+
+    scene.add.text(x - 40, y - 40, label, {
+        fontSize: "20px",
+        color: "#ffffff"
+    });
+
+    return d;
+}
 
 function update() {
-  // Movement SDAW
-  if (keys["d"]) player.x += player.speed;
-  if (keys["a"]) player.x -= player.speed;
-  if (keys["s"]) player.y += player.speed;
-  if (keys["w"]) player.y -= player.speed;
+    player.setVelocity(0);
 
-  // Camera follows player
-  cameraX = player.x - canvas.width / 2 + player.w / 2;
-  cameraY = player.y - canvas.height / 2 + player.h / 2;
+    if (cursors.left.isDown) player.setVelocityX(-200);
+    if (cursors.right.isDown) player.setVelocityX(200);
+    if (cursors.up.isDown) player.setVelocityY(-200);
+    if (cursors.down.isDown) player.setVelocityY(200);
 
-  // Door interaction
-  doors.forEach(d => {
-    if (
-      player.x < d.x + d.w &&
-      player.x + player.w > d.x &&
-      player.y < d.y + d.h &&
-      player.y + player.h > d.y
-    ) {
-      if (keys["e"]) window.location.href = d.target;
-    }
-  });
-
-  draw();
-  requestAnimationFrame(update);
+    // Door interaction
+    doors.forEach(d => {
+        if (Phaser.Math.Distance.Between(player.x, player.y, d.x, d.y) < 60) {
+            if (interactKey.isDown) {
+                window.location.href = d.target;
+            }
+        }
+    });
 }
-
-function drawTile(x, y) {
-  ctx.fillStyle = "#1a1a1a";
-  ctx.fillRect(x, y, 80, 80);
-  ctx.strokeStyle = "#222";
-  ctx.strokeRect(x, y, 80, 80);
-  ctx.fillStyle = "#ffffff08";
-  ctx.fillRect(x + 10, y + 10, 60, 60);
-}
-
-function drawDoor(d) {
-  ctx.fillStyle = "#222";
-  ctx.fillRect(d.x, d.y, d.w, d.h);
-  ctx.strokeStyle = "#fff";
-  ctx.strokeRect(d.x, d.y, d.w, d.h);
-  ctx.fillStyle = "white";
-  ctx.font = "18px Arial";
-  ctx.fillText(d.label, d.x - 10, d.y - 10);
-  ctx.font = "14px Arial";
-  ctx.fillText("Press E", d.x + 5, d.y + d.h + 20);
-}
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
-  ctx.translate(-cameraX, -cameraY);
-
-  // Tiles
-  tiles.forEach(t => drawTile(t.x, t.y));
-
-  // Doors
-  doors.forEach(d => drawDoor(d));
-
-  // Player
-  ctx.fillStyle = "#444";
-  ctx.fillRect(player.x, player.y, player.w, player.h);
-
-  ctx.restore();
-}
-
-update();
 </script>
+
 </body>
 </html>
