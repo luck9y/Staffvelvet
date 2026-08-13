@@ -8,7 +8,7 @@
     body {
         margin: 0;
         overflow: hidden;
-        background: #1a1a1a; /* greish background */
+        background: #1c1c1c; /* greyish */
         font-family: Arial, sans-serif;
         color: white;
     }
@@ -43,58 +43,55 @@
         cursor: pointer;
         transition: 0.25s;
         box-shadow: 0 0 20px #222;
-        animation: pulse 2s infinite;
     }
 
-    @keyframes pulse {
-        0% { box-shadow: 0 0 10px #333; }
-        50% { box-shadow: 0 0 25px #666; }
-        100% { box-shadow: 0 0 10px #333; }
+    #playBtn:hover {
+        background: #222;
+        border-color: #fff;
+        transform: scale(1.08);
     }
 
     /* GAME WORLD */
-    #gameCanvas {
-        width: 3000px; /* long world */
-        height: 100vh;
+    #world {
         position: absolute;
+        width: 5000px; /* long sandbox */
+        height: 100vh;
         display: none;
-        background: linear-gradient(#1a1a1a, #111);
     }
 
     /* FLOOR */
     #floor {
         position: absolute;
         bottom: 0;
-        width: 3000px;
-        height: 120px;
+        width: 5000px;
+        height: 140px;
         background: #0f0f0f;
         box-shadow: 0 0 20px #444 inset;
     }
 
-    /* GRASS + FLOWERS */
+    /* FLOWERS */
     .flower {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
         background: #000;
         border-radius: 50%;
         position: absolute;
-        bottom: 100px;
-        box-shadow: 0 0 10px #555;
+        bottom: 140px;
+        box-shadow: 0 0 15px #666;
     }
 
-    /* SHADOW CHARACTER */
+    /* CHARACTER */
     #player {
         width: 60px;
         height: 120px;
         background: #111;
         border-radius: 10px;
         position: absolute;
-        bottom: 120px;
+        bottom: 140px;
         left: 200px;
         box-shadow: 0 0 25px #333;
     }
 
-    /* HEAD */
     #playerHead {
         width: 60px;
         height: 60px;
@@ -119,31 +116,30 @@
     /* HOUSE */
     #house {
         position: absolute;
-        bottom: 120px;
-        left: 1600px;
-        width: 700px;
-        height: 350px;
+        bottom: 140px;
+        left: 3500px; /* far to the right */
+        width: 900px;
+        height: 400px;
         background: #141414;
         border: 5px solid #333;
         box-shadow: 0 0 40px #000;
     }
 
-    /* HOUSE ROOF */
     #roof {
         position: absolute;
-        top: -80px;
-        left: -20px;
-        width: 740px;
-        height: 80px;
+        top: -100px;
+        left: -30px;
+        width: 960px;
+        height: 100px;
         background: #0d0d0d;
         transform: skewX(-10deg);
         box-shadow: 0 0 20px #222;
     }
 
-    /* DOORS */
+    /* HOUSE INTERIOR DOORS */
     .door {
-        width: 100px;
-        height: 180px;
+        width: 120px;
+        height: 200px;
         background: #222;
         border: 4px solid #555;
         position: absolute;
@@ -151,43 +147,23 @@
         box-shadow: 0 0 20px #000 inset;
     }
 
-    #door1 { left: 80px; }
-    #door2 { left: 300px; }
-    #door3 { left: 520px; }
+    #door1 { left: 120px; }
+    #door2 { left: 360px; }
+    #door3 { left: 600px; }
 
-    /* STAFF ONLY SIGN */
-    #staffOnly {
+    #staffLoginLabel {
         position: absolute;
-        bottom: 200px;
-        left: 520px;
-        font-size: 22px;
+        bottom: 220px;
+        left: 600px;
+        font-size: 26px;
         color: #ccc;
         text-shadow: 0 0 10px #555;
-    }
-
-    /* ORB */
-    #orb {
-        width: 45px;
-        height: 45px;
-        background: #00aaff;
-        border-radius: 50%;
-        position: absolute;
-        bottom: 250px;
-        left: 1750px;
-        box-shadow: 0 0 30px #00aaff;
-        animation: float 2s infinite ease-in-out;
-    }
-
-    @keyframes float {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(-12px); }
-        100% { transform: translateY(0); }
     }
 
     /* PROMPT */
     #prompt {
         position: absolute;
-        bottom: 200px;
+        bottom: 250px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 22px;
@@ -204,16 +180,18 @@
     <button id="playBtn">PLAY</button>
 </div>
 
-<div id="gameCanvas">
+<div id="world">
     <div id="floor"></div>
 
     <!-- Flowers -->
     <div class="flower" style="left:200px;"></div>
-    <div class="flower" style="left:350px;"></div>
-    <div class="flower" style="left:500px;"></div>
-    <div class="flower" style="left:650px;"></div>
-    <div class="flower" style="left:900px;"></div>
-    <div class="flower" style="left:1200px;"></div>
+    <div class="flower" style="left:450px;"></div>
+    <div class="flower" style="left:700px;"></div>
+    <div class="flower" style="left:1000px;"></div>
+    <div class="flower" style="left:1300px;"></div>
+    <div class="flower" style="left:1600px;"></div>
+    <div class="flower" style="left:1900px;"></div>
+    <div class="flower" style="left:2200px;"></div>
 
     <!-- Player -->
     <div id="player">
@@ -223,14 +201,13 @@
     <!-- House -->
     <div id="house">
         <div id="roof"></div>
+
         <div class="door" id="door1"></div>
         <div class="door" id="door2"></div>
         <div class="door" id="door3"></div>
-        <div id="staffOnly">STAFF ONLY</div>
-    </div>
 
-    <!-- Orb -->
-    <div id="orb"></div>
+        <div id="staffLoginLabel">STAFF LOGIN</div>
+    </div>
 
     <!-- Prompt -->
     <div id="prompt">Press F to open door</div>
@@ -239,7 +216,7 @@
 <script>
     const playBtn = document.getElementById("playBtn");
     const titleScreen = document.getElementById("titleScreen");
-    const gameCanvas = document.getElementById("gameCanvas");
+    const world = document.getElementById("world");
     const player = document.getElementById("player");
     const prompt = document.getElementById("prompt");
 
@@ -249,7 +226,7 @@
 
     playBtn.onclick = () => {
         titleScreen.style.display = "none";
-        gameCanvas.style.display = "block";
+        world.style.display = "block";
     };
 
     document.addEventListener("keydown", e => keys[e.key] = true);
@@ -269,11 +246,9 @@
 
         player.style.left = px + "px";
 
-        // WALK ANIMATION
         if (walking) player.classList.add("walk");
         else player.classList.remove("walk");
 
-        // DOOR INTERACTION
         let nearDoor = false;
 
         document.querySelectorAll(".door").forEach(door => {
