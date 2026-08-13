@@ -8,7 +8,7 @@
     body {
         margin: 0;
         overflow: hidden;
-        background: #1c1c1c; /* greyish */
+        background: #1c1c1c;
         font-family: Arial, sans-serif;
         color: white;
     }
@@ -42,7 +42,6 @@
         color: white;
         cursor: pointer;
         transition: 0.25s;
-        box-shadow: 0 0 20px #222;
     }
 
     #playBtn:hover {
@@ -51,12 +50,13 @@
         transform: scale(1.08);
     }
 
-    /* GAME WORLD */
+    /* WORLD */
     #world {
         position: absolute;
-        width: 5000px; /* long sandbox */
+        width: 5000px;
         height: 100vh;
         display: none;
+        transition: transform 0.1s linear;
     }
 
     /* FLOOR */
@@ -69,18 +69,32 @@
         box-shadow: 0 0 20px #444 inset;
     }
 
-    /* FLOWERS */
+    /* TINY FLOWERS */
     .flower {
-        width: 45px;
-        height: 45px;
+        width: 18px;
+        height: 18px;
         background: #000;
         border-radius: 50%;
         position: absolute;
         bottom: 140px;
-        box-shadow: 0 0 15px #666;
+        box-shadow: 0 0 6px #777;
     }
 
-    /* CHARACTER */
+    .flower::before,
+    .flower::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: #000;
+        border-radius: 50%;
+        box-shadow: 0 0 6px #777;
+    }
+
+    .flower::before { top: -8px; left: 3px; }
+    .flower::after { top: 8px; left: 3px; }
+
+    /* PLAYER */
     #player {
         width: 60px;
         height: 120px;
@@ -88,7 +102,8 @@
         border-radius: 10px;
         position: absolute;
         bottom: 140px;
-        left: 200px;
+        left: 50%; /* stays centered */
+        transform: translateX(-50%);
         box-shadow: 0 0 25px #333;
     }
 
@@ -117,7 +132,7 @@
     #house {
         position: absolute;
         bottom: 140px;
-        left: 3500px; /* far to the right */
+        left: 3500px;
         width: 900px;
         height: 400px;
         background: #141414;
@@ -136,7 +151,7 @@
         box-shadow: 0 0 20px #222;
     }
 
-    /* HOUSE INTERIOR DOORS */
+    /* DOORS */
     .door {
         width: 120px;
         height: 200px;
@@ -223,6 +238,7 @@
     let px = 200;
     let speed = 6;
     let keys = {};
+    let cameraX = 0;
 
     playBtn.onclick = () => {
         titleScreen.style.display = "none";
@@ -244,7 +260,14 @@
             walking = true;
         }
 
-        player.style.left = px + "px";
+        /* CAMERA FOLLOW LOGIC */
+        const screenMid = window.innerWidth / 2;
+
+        if (px > screenMid) {
+            cameraX = px - screenMid;
+        }
+
+        world.style.transform = `translateX(${-cameraX}px)`;
 
         if (walking) player.classList.add("walk");
         else player.classList.remove("walk");
