@@ -2,64 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>BL STAFF</title>
+<title>BL STAFF HQ</title>
 <style>
     body {
         margin: 0;
         overflow: hidden;
-        background: #1a1a1a;
+        background: #0d0d0d;
         font-family: Arial, sans-serif;
     }
 
-    #titleScreen {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(#000, #111);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 10;
-        color: white;
-    }
-
-    #titleScreen h1 {
-        font-size: 50px;
-        letter-spacing: 4px;
-        margin-bottom: 20px;
-        text-shadow: 0 0 15px #444;
-    }
-
-    #playBtn {
-        padding: 15px 40px;
-        font-size: 22px;
-        background: #111;
-        border: 2px solid #555;
-        border-radius: 10px;
-        color: white;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    #playBtn:hover {
-        background: #222;
-        border-color: white;
-        transform: scale(1.05);
-    }
-
     canvas {
-        display: none;
-        background: #2a2a2a;
+        display: block;
+        background: #0d0d0d;
     }
 </style>
 </head>
 <body>
-
-<div id="titleScreen">
-    <h1>BL STAFF</h1>
-    <button id="playBtn">PLAY</button>
-</div>
 
 <canvas id="game"></canvas>
 
@@ -70,16 +28,13 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// WORLD SETTINGS
-const flowers = [];
-for (let i = 0; i < 200; i++) {
-    flowers.push({
-        x: i * 80,
-        y: canvas.height - 40,
-        size: 10,
-        glow: "#555"
-    });
-}
+// WORLD LENGTHS (Medium Fortress)
+const hall1Length = 1200;
+const hall2Length = 1500;
+const hall3Length = 1000;
+const baseLength = 300;
+
+const totalLength = hall1Length + hall2Length + hall3Length + baseLength;
 
 // PLAYER
 let player = {
@@ -104,22 +59,29 @@ document.addEventListener("keyup", e => keys[e.key] = false);
 // CAMERA
 let cameraX = 0;
 
-// STAFF BASE + DOOR
-const baseX = 5000;
-const baseY = canvas.height - 200;
-
-const door = {
-    x: baseX + 150,
-    y: baseY - 120,
+// DOORS
+const door1 = {
+    x: hall1Length + 200,
+    y: canvas.height - 200,
     w: 80,
-    h: 120,
-    open: false
+    h: 140,
+    target: "Continued.html"
 };
 
-// PLAY BUTTON
-document.getElementById("playBtn").onclick = () => {
-    document.getElementById("titleScreen").style.display = "none";
-    canvas.style.display = "block";
+const door2 = {
+    x: hall1Length + hall2Length + 200,
+    y: canvas.height - 200,
+    w: 80,
+    h: 140,
+    target: "Continue.html"
+};
+
+const staffDoor = {
+    x: hall1Length + hall2Length + hall3Length + 150,
+    y: canvas.height - 200,
+    w: 100,
+    h: 160,
+    target: "stafflogin.html"
 };
 
 // GAME LOOP
@@ -149,14 +111,21 @@ function update() {
         player.jumping = false;
     }
 
-    // CAMERA ALWAYS FOLLOWS
+    // CAMERA FOLLOW
     cameraX = player.x - canvas.width / 2;
-
-    // CAMERA LIMITS
     if (cameraX < 0) cameraX = 0;
-    if (cameraX > baseX + 300 - canvas.width) cameraX = baseX + 300 - canvas.width;
+    if (cameraX > totalLength - canvas.width) cameraX = totalLength - canvas.width;
 
     // DOOR INTERACTION
+    checkDoor(door1);
+    checkDoor(door2);
+    checkDoor(staffDoor);
+
+    draw();
+    requestAnimationFrame(update);
+}
+
+function checkDoor(door) {
     if (
         player.x + player.w > door.x &&
         player.x < door.x + door.w &&
@@ -164,12 +133,43 @@ function update() {
         player.y < door.y + door.h
     ) {
         if (keys["e"]) {
-            window.location.href = "stafflogin.html";
+            window.location.href = door.target;
         }
     }
+}
 
-    draw();
-    requestAnimationFrame(update);
+function drawHall(xStart, length) {
+    ctx.fillStyle = "#111";
+    ctx.fillRect(xStart, canvas.height - 40, length, 40);
+
+    // LED floor strips
+    ctx.fillStyle = "#ffffff22";
+    ctx.fillRect(xStart, canvas.height - 42, length, 4);
+
+    // Clean wall panels
+    for (let i = 0; i < length; i += 200) {
+        ctx.fillStyle = "#1a1a1a";
+        ctx.fillRect(xStart + i, canvas.height - 300, 180, 260);
+
+        ctx.fillStyle = "#ffffff11";
+        ctx.fillRect(xStart + i + 10, canvas.height - 290, 160, 4);
+    }
+}
+
+function drawDoor(door, label) {
+    // Sliding sci-fi door
+    ctx.fillStyle = "#222";
+    ctx.fillRect(door.x, door.y, door.w, door.h);
+
+    ctx.fillStyle = "#ffffff33";
+    ctx.fillRect(door.x, door.y, door.w, 6);
+
+    ctx.fillStyle = "white";
+    ctx.font = "22px Arial";
+    ctx.fillText(label, door.x - 10, door.y - 10);
+
+    ctx.font = "16px Arial";
+    ctx.fillText("Press E", door.x + 5, door.y + door.h + 20);
 }
 
 function draw() {
@@ -178,43 +178,31 @@ function draw() {
     ctx.save();
     ctx.translate(-cameraX, 0);
 
-    // Ground
-    ctx.fillStyle = "#1a1a1a";
-    ctx.fillRect(0, canvas.height - 40, 6000, 40);
+    // HALL 1
+    drawHall(0, hall1Length);
 
-    // Velvet flowers
-    flowers.forEach(f => {
-        ctx.fillStyle = "#000";
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-        ctx.fill();
+    // HALL 2
+    drawHall(hall1Length, hall2Length);
 
-        ctx.fillStyle = f.glow;
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.size / 2, 0, Math.PI * 2);
-        ctx.fill();
-    });
-
-    // Player (shadow figure)
-    ctx.fillStyle = "#333";
-    ctx.fillRect(player.x, player.y, player.w, player.h);
+    // HALL 3
+    drawHall(hall1Length + hall2Length, hall3Length);
 
     // STAFF BASE
-    ctx.fillStyle = "#222";
-    ctx.fillRect(baseX, baseY, 400, 200);
+    ctx.fillStyle = "#1a1a1a";
+    ctx.fillRect(hall1Length + hall2Length + hall3Length, canvas.height - 300, baseLength, 260);
 
-    // STAFF ONLY TEXT
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
-    ctx.fillText("STAFF ONLY", baseX + 120, baseY - 20);
+    ctx.fillText("STAFF ONLY", staffDoor.x - 10, staffDoor.y - 20);
 
-    // DOOR
-    ctx.fillStyle = "#444";
-    ctx.fillRect(door.x, door.y, door.w, door.h);
+    // DOORS
+    drawDoor(door1, "Continue..?");
+    drawDoor(door2, "Continue..?");
+    drawDoor(staffDoor, "STAFF ONLY");
 
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Press E", door.x + 5, door.y - 10);
+    // PLAYER
+    ctx.fillStyle = "#333";
+    ctx.fillRect(player.x, player.y, player.w, player.h);
 
     ctx.restore();
 }
