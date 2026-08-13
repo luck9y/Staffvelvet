@@ -4,211 +4,126 @@
 <meta charset="UTF-8">
 <title>BL STAFF HQ</title>
 <style>
-    body {
-        margin: 0;
-        overflow: hidden;
-        background: #0d0d0d;
-        font-family: Arial, sans-serif;
-    }
-
-    canvas {
-        display: block;
-        background: #0d0d0d;
-    }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #0d0d0d;
+  }
+  canvas {
+    display: block;
+    background: #111;
+  }
 </style>
 </head>
 <body>
-
 <canvas id="game"></canvas>
 
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// WORLD LENGTHS (Medium Fortress)
-const hall1Length = 1200;
-const hall2Length = 1500;
-const hall3Length = 1000;
-const baseLength = 300;
-
-const totalLength = hall1Length + hall2Length + hall3Length + baseLength;
-
-// PLAYER
+// Player
 let player = {
-    x: 100,
-    y: canvas.height - 200,
-    w: 40,
-    h: 60,
-    velX: 0,
-    velY: 0,
-    speed: 4,
-    jumping: false
+  x: 100,
+  y: 100,
+  w: 40,
+  h: 40,
+  speed: 4
 };
 
-const gravity = 0.5;
-const friction = 0.8;
-
-// CONTROLS
+// Controls
 let keys = {};
 document.addEventListener("keydown", e => keys[e.key] = true);
 document.addEventListener("keyup", e => keys[e.key] = false);
 
-// CAMERA
+// Doors
+const doors = [
+  {x: 600, y: 200, w: 60, h: 60, label: "Continue..?", target: "Continued.html"},
+  {x: 1200, y: 400, w: 60, h: 60, label: "Continue..?", target: "Continue.html"},
+  {x: 1800, y: 300, w: 80, h: 80, label: "STAFF ONLY", target: "stafflogin.html"}
+];
+
+// Map tiles
+const tiles = [];
+for (let i = 0; i < 2000; i += 80) {
+  for (let j = 0; j < 800; j += 80) {
+    tiles.push({x: i, y: j});
+  }
+}
+
+// Camera
 let cameraX = 0;
+let cameraY = 0;
 
-// DOORS
-const door1 = {
-    x: hall1Length + 200,
-    y: canvas.height - 200,
-    w: 80,
-    h: 140,
-    target: "Continued.html"
-};
-
-const door2 = {
-    x: hall1Length + hall2Length + 200,
-    y: canvas.height - 200,
-    w: 80,
-    h: 140,
-    target: "Continue.html"
-};
-
-const staffDoor = {
-    x: hall1Length + hall2Length + hall3Length + 150,
-    y: canvas.height - 200,
-    w: 100,
-    h: 160,
-    target: "stafflogin.html"
-};
-
-// GAME LOOP
 function update() {
-    // Movement SDAW
-    if (keys["d"]) player.velX = player.speed;
-    else if (keys["a"]) player.velX = -player.speed;
-    else player.velX *= friction;
+  // Movement SDAW
+  if (keys["d"]) player.x += player.speed;
+  if (keys["a"]) player.x -= player.speed;
+  if (keys["s"]) player.y += player.speed;
+  if (keys["w"]) player.y -= player.speed;
 
-    // Jump
-    if (keys["w"] && !player.jumping) {
-        player.velY = -12;
-        player.jumping = true;
-    }
+  // Camera follows player
+  cameraX = player.x - canvas.width / 2 + player.w / 2;
+  cameraY = player.y - canvas.height / 2 + player.h / 2;
 
-    // Gravity
-    player.velY += gravity;
-
-    // Update position
-    player.x += player.velX;
-    player.y += player.velY;
-
-    // Floor collision
-    if (player.y + player.h > canvas.height - 40) {
-        player.y = canvas.height - 40 - player.h;
-        player.velY = 0;
-        player.jumping = false;
-    }
-
-    // CAMERA FOLLOW
-    cameraX = player.x - canvas.width / 2;
-    if (cameraX < 0) cameraX = 0;
-    if (cameraX > totalLength - canvas.width) cameraX = totalLength - canvas.width;
-
-    // DOOR INTERACTION
-    checkDoor(door1);
-    checkDoor(door2);
-    checkDoor(staffDoor);
-
-    draw();
-    requestAnimationFrame(update);
-}
-
-function checkDoor(door) {
+  // Door interaction
+  doors.forEach(d => {
     if (
-        player.x + player.w > door.x &&
-        player.x < door.x + door.w &&
-        player.y + player.h > door.y &&
-        player.y < door.y + door.h
+      player.x < d.x + d.w &&
+      player.x + player.w > d.x &&
+      player.y < d.y + d.h &&
+      player.y + player.h > d.y
     ) {
-        if (keys["e"]) {
-            window.location.href = door.target;
-        }
+      if (keys["e"]) window.location.href = d.target;
     }
+  });
+
+  draw();
+  requestAnimationFrame(update);
 }
 
-function drawHall(xStart, length) {
-    ctx.fillStyle = "#111";
-    ctx.fillRect(xStart, canvas.height - 40, length, 40);
-
-    // LED floor strips
-    ctx.fillStyle = "#ffffff22";
-    ctx.fillRect(xStart, canvas.height - 42, length, 4);
-
-    // Clean wall panels
-    for (let i = 0; i < length; i += 200) {
-        ctx.fillStyle = "#1a1a1a";
-        ctx.fillRect(xStart + i, canvas.height - 300, 180, 260);
-
-        ctx.fillStyle = "#ffffff11";
-        ctx.fillRect(xStart + i + 10, canvas.height - 290, 160, 4);
-    }
+function drawTile(x, y) {
+  ctx.fillStyle = "#1a1a1a";
+  ctx.fillRect(x, y, 80, 80);
+  ctx.strokeStyle = "#222";
+  ctx.strokeRect(x, y, 80, 80);
+  ctx.fillStyle = "#ffffff08";
+  ctx.fillRect(x + 10, y + 10, 60, 60);
 }
 
-function drawDoor(door, label) {
-    // Sliding sci-fi door
-    ctx.fillStyle = "#222";
-    ctx.fillRect(door.x, door.y, door.w, door.h);
-
-    ctx.fillStyle = "#ffffff33";
-    ctx.fillRect(door.x, door.y, door.w, 6);
-
-    ctx.fillStyle = "white";
-    ctx.font = "22px Arial";
-    ctx.fillText(label, door.x - 10, door.y - 10);
-
-    ctx.font = "16px Arial";
-    ctx.fillText("Press E", door.x + 5, door.y + door.h + 20);
+function drawDoor(d) {
+  ctx.fillStyle = "#222";
+  ctx.fillRect(d.x, d.y, d.w, d.h);
+  ctx.strokeStyle = "#fff";
+  ctx.strokeRect(d.x, d.y, d.w, d.h);
+  ctx.fillStyle = "white";
+  ctx.font = "18px Arial";
+  ctx.fillText(d.label, d.x - 10, d.y - 10);
+  ctx.font = "14px Arial";
+  ctx.fillText("Press E", d.x + 5, d.y + d.h + 20);
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(-cameraX, -cameraY);
 
-    ctx.save();
-    ctx.translate(-cameraX, 0);
+  // Tiles
+  tiles.forEach(t => drawTile(t.x, t.y));
 
-    // HALL 1
-    drawHall(0, hall1Length);
+  // Doors
+  doors.forEach(d => drawDoor(d));
 
-    // HALL 2
-    drawHall(hall1Length, hall2Length);
+  // Player
+  ctx.fillStyle = "#444";
+  ctx.fillRect(player.x, player.y, player.w, player.h);
 
-    // HALL 3
-    drawHall(hall1Length + hall2Length, hall3Length);
-
-    // STAFF BASE
-    ctx.fillStyle = "#1a1a1a";
-    ctx.fillRect(hall1Length + hall2Length + hall3Length, canvas.height - 300, baseLength, 260);
-
-    ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
-    ctx.fillText("STAFF ONLY", staffDoor.x - 10, staffDoor.y - 20);
-
-    // DOORS
-    drawDoor(door1, "Continue..?");
-    drawDoor(door2, "Continue..?");
-    drawDoor(staffDoor, "STAFF ONLY");
-
-    // PLAYER
-    ctx.fillStyle = "#333";
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-
-    ctx.restore();
+  ctx.restore();
 }
 
 update();
 </script>
-
 </body>
 </html>
