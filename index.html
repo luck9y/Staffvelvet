@@ -2,195 +2,87 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Black Velvet Clan Intro</title>
+<title>Black Velvet Clan Intro — Varied Exits</title>
 
-<!-- Gamer font -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --azul: #4da6ff;
-    --abyss: #ff3b3b;
-    --bg: #000;
+    --azul:#4da6ff;
+    --abyss:#ff3b3b;
+    --bg:#000;
   }
 
-  html,body{
-    height:100%;
-    margin:0;
-    background:var(--bg);
-    overflow:hidden;
-    font-family: 'Orbitron', sans-serif;
-    color:#fff;
-  }
+  html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;font-family:'Orbitron',sans-serif;color:#fff;}
 
-  /* Petals (black velvet flowers) */
-  .petal{
-    position:fixed;
-    top:-60px;
-    width:28px;
-    height:28px;
-    background: radial-gradient(circle at 30% 30%, #0b0b0b 30%, #000 100%);
-    border-radius:50% 50% 40% 60%;
-    box-shadow: 0 0 12px rgba(0,0,0,0.6), inset 0 -6px 10px rgba(20,20,20,0.6);
-    opacity:0.85;
-    transform-origin:center;
-    z-index:10;
-    pointer-events:none;
-  }
+  /* Petals */
+  .petal{position:fixed;top:-60px;width:28px;height:28px;background:radial-gradient(circle at 30% 30%, #0b0b0b 30%, #000 100%);border-radius:50% 50% 40% 60%;box-shadow:0 0 12px rgba(0,0,0,0.6), inset 0 -6px 10px rgba(20,20,20,0.6);opacity:0.85;transform-origin:center;z-index:10;pointer-events:none;}
+  @keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:0.9;}100%{transform:translateY(120vh) rotate(720deg);opacity:0.2;}}
 
-  @keyframes fall {
-    0% { transform: translateY(0) rotate(0deg); opacity:0.9; }
-    100% { transform: translateY(120vh) rotate(720deg); opacity:0.2; }
-  }
-
-  /* Start screen */
-  #start-screen{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:1000;
-    background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.9));
-  }
-  #start-btn{
-    padding:18px 48px;
-    border-radius:10px;
-    background:#0f0f0f;
-    border:2px solid #222;
-    color:#ddd;
-    font-size:28px;
-    letter-spacing:3px;
-    cursor:pointer;
-    transition: transform .18s ease, box-shadow .18s ease;
-    box-shadow: 0 6px 30px rgba(0,0,0,0.6), 0 0 18px rgba(77,166,255,0.02);
-  }
-  #start-btn:hover{ transform:scale(1.04); box-shadow:0 10px 40px rgba(0,0,0,0.7); color:#fff; }
+  /* Start */
+  #start-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.9));}
+  #start-btn{padding:18px 48px;border-radius:10px;background:#0f0f0f;border:2px solid #222;color:#ddd;font-size:28px;letter-spacing:3px;cursor:pointer;transition:transform .18s,box-shadow .18s;box-shadow:0 6px 30px rgba(0,0,0,0.6);}
+  #start-btn:hover{transform:scale(1.04);color:#fff;}
 
   /* Skip */
-  #skip-btn{
-    position:fixed;
-    top:18px;
-    right:18px;
-    z-index:1001;
-    display:none;
-    background:#111;
-    color:#cfcfcf;
-    padding:8px 14px;
-    border-radius:8px;
-    border:1px solid #2a2a2a;
-    cursor:pointer;
-    font-size:14px;
-  }
-  #skip-btn:hover{ background:#222; color:#fff; }
+  #skip-btn{position:fixed;top:18px;right:18px;z-index:1001;display:none;background:#111;color:#cfcfcf;padding:8px 14px;border-radius:8px;border:1px solid #2a2a2a;cursor:pointer;font-size:14px;}
+  #skip-btn:hover{background:#222;color:#fff;}
 
   /* Intro text base */
-  .intro-text{
-    position:fixed;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%) scale(0.6);
-    opacity:0;
-    text-align:center;
-    letter-spacing:2px;
-    z-index:50;
-    pointer-events:auto;
-    transition: transform .2s ease, text-shadow .2s ease;
-    will-change: transform, opacity, text-shadow;
+  .intro-text{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.6);opacity:0;text-align:center;letter-spacing:2px;z-index:50;pointer-events:auto;transition:transform .2s,text-shadow .2s;will-change:transform,opacity,text-shadow;}
+  .intro-text.gamer{font-size:44px;text-shadow:0 0 18px rgba(255,255,255,0.08),0 0 30px rgba(0,0,0,0.6);color:#e6e6e6;}
+  .intro-text .small{display:block;margin-top:10px;font-size:18px;color:#cfcfcf;text-shadow:0 0 12px rgba(0,0,0,0.6);}
+
+  .azul{color:var(--azul);text-shadow:0 0 28px rgba(77,166,255,0.9),0 0 6px rgba(77,166,255,0.25);}
+  .abyss{color:var(--abyss);text-shadow:0 0 32px rgba(255,59,59,0.9),0 0 8px rgba(102,0,0,0.25);}
+
+  /* varied zoom-through animations */
+  @keyframes zoomLeft {
+    0%   { transform: translate(-50%,-50%) scale(0.6) rotate(-4deg); opacity:0; filter:blur(2px); }
+    20%  { transform: translate(-50%,-50%) scale(1.0) rotate(0deg); opacity:1; filter:blur(0); }
+    60%  { transform: translate(-60%,-50%) scale(1.6) rotate(-2deg); opacity:1; filter:blur(0); }
+    100% { transform: translate(-120%,-50%) scale(2.8) rotate(-6deg); opacity:0; filter:blur(8px); }
   }
 
-  .intro-text.gamer{
-    font-size:44px;
-    text-shadow: 0 0 18px rgba(255,255,255,0.08), 0 0 30px rgba(0,0,0,0.6);
-    color:#e6e6e6;
+  @keyframes zoomUp {
+    0%   { transform: translate(-50%,-50%) scale(0.6) rotate(3deg); opacity:0; filter:blur(2px); }
+    20%  { transform: translate(-50%,-50%) scale(1.0) rotate(0deg); opacity:1; filter:blur(0); }
+    60%  { transform: translate(-50%,-80%) scale(1.6) rotate(6deg); opacity:1; filter:blur(0); }
+    100% { transform: translate(-50%,-220%) scale(2.6) rotate(12deg); opacity:0; filter:blur(8px); }
   }
 
-  .intro-text .small{
-    display:block;
-    margin-top:10px;
-    font-size:18px;
-    color:#cfcfcf;
-    text-shadow:0 0 12px rgba(0,0,0,0.6);
+  @keyframes zoomRight {
+    0%   { transform: translate(-50%,-50%) scale(0.6) rotate(-2deg); opacity:0; filter:blur(2px); }
+    20%  { transform: translate(-50%,-50%) scale(1.0) rotate(0deg); opacity:1; filter:blur(0); }
+    60%  { transform: translate(-40%,-50%) scale(1.6) rotate(2deg); opacity:1; filter:blur(0); }
+    100% { transform: translate(160%,-50%) scale(2.8) rotate(8deg); opacity:0; filter:blur(8px); }
   }
 
-  .azul{
-    color:var(--azul);
-    text-shadow: 0 0 28px rgba(77,166,255,0.9), 0 0 6px rgba(77,166,255,0.25);
-  }
-
-  .abyss{
-    color:var(--abyss);
-    text-shadow: 0 0 32px rgba(255,59,59,0.9), 0 0 8px rgba(102,0,0,0.25);
-  }
-
-  /* cinematic zoom-through (labels) */
-  @keyframes cinematicZoom {
-    0%   { transform: translate(-50%,-50%) scale(0.6) rotate(-3deg); opacity:0; filter:blur(2px); }
-    20%  { transform: translate(-50%,-50%) scale(1.0) rotate(0deg); opacity:1; filter:blur(0px); }
-    60%  { transform: translate(-48%,-50%) scale(1.7) rotate(2deg); opacity:1; filter:blur(0px); }
-    100% { transform: translate(-40%,-50%) scale(2.6) rotate(3deg); opacity:0; filter:blur(6px); }
-  }
-
-  /* stronger final zoom-through */
-  @keyframes cinematicZoomStrong {
+  /* depth/through camera with slight spin for variety */
+  @keyframes zoomDepth {
     0%   { transform: translate(-50%,-50%) scale(0.4) rotate(-6deg); opacity:0; filter:blur(3px); }
-    30%  { transform: translate(-50%,-50%) scale(1.3) rotate(0deg); opacity:1; filter:blur(0px); }
-    70%  { transform: translate(-45%,-50%) scale(2.0) rotate(3deg); opacity:1; filter:blur(0px); }
-    100% { transform: translate(150%,-50%) scale(3.0) rotate(3deg); opacity:0; filter:blur(8px); }
+    25%  { transform: translate(-50%,-50%) scale(1.2) rotate(0deg); opacity:1; filter:blur(0); }
+    60%  { transform: translate(-45%,-50%) scale(2.2) rotate(10deg); opacity:1; filter:blur(0); }
+    100% { transform: translate(220%,-50%) scale(3.6) rotate(18deg); opacity:0; filter:blur(10px); }
   }
 
-  /* final title style */
-  #bvc{
-    font-size:78px;
-    letter-spacing:8px;
-    text-shadow: 0 0 60px rgba(255,255,255,0.9), 0 0 30px rgba(0,0,0,0.6);
-    color:#fff;
-    z-index:60;
-  }
+  /* final title */
+  #bvc{font-size:78px;letter-spacing:8px;text-shadow:0 0 60px rgba(255,255,255,0.9),0 0 30px rgba(0,0,0,0.6);color:#fff;z-index:60;opacity:0;transform:translate(-50%,-50%) scale(0.6);}
 
-  #bvc .small{
-    font-size:20px;
-    margin-top:12px;
-    color:#dcdcdc;
-    text-shadow:0 0 18px rgba(0,0,0,0.6);
-  }
+  /* main site */
+  #main-site{display:none;padding:40px;z-index:1;color:#ddd;position:relative;}
 
-  /* main site placeholder */
-  #main-site{
-    display:none;
-    padding:40px;
-    z-index:1;
-    position:relative;
-    color:#ddd;
-  }
-
-  /* subtle vignette */
-  .vignette{
-    pointer-events:none;
-    position:fixed;
-    inset:0;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
-    z-index:900;
-  }
+  .vignette{pointer-events:none;position:fixed;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);z-index:900;}
 </style>
 </head>
 <body>
 
-<!-- Audio -->
 <audio id="intro-audio" src="sounds/intro.mp3" preload="auto"></audio>
 
-<!-- Start screen -->
-<div id="start-screen">
-  <div id="start-btn">START</div>
-</div>
-
-<!-- Skip -->
+<div id="start-screen"><div id="start-btn">START</div></div>
 <div id="skip-btn">Skip Intro</div>
-
-<!-- Vignette -->
 <div class="vignette"></div>
 
-<!-- Intro texts -->
 <div id="text1" class="intro-text gamer">By the founders of <span class="azul">AZUL CLAN</span></div>
 <div id="textNew" class="intro-text gamer">Back stronger.</div>
 <div id="text2" class="intro-text gamer abyss">Reborn in the flames of the abyss</div>
@@ -199,14 +91,10 @@
   <span class="small">Founders by Luckyy and Suoaz</span>
 </div>
 
-<!-- Main site -->
-<div id="main-site">
-  <h1>Welcome to Black Velvet Clan</h1>
-  <p>Your main site content goes here.</p>
-</div>
+<div id="main-site"><h1>Welcome to Black Velvet Clan</h1><p>Main site content goes here.</p></div>
 
 <script>
-/* ---------- Utility and state ---------- */
+/* Elements */
 const audio = document.getElementById('intro-audio');
 const startBtn = document.getElementById('start-btn');
 const skipBtn = document.getElementById('skip-btn');
@@ -215,190 +103,131 @@ const textNew = document.getElementById('textNew');
 const text2 = document.getElementById('text2');
 const bvc = document.getElementById('bvc');
 const mainSite = document.getElementById('main-site');
-let audioStartedAt = null; // timestamp when audio actually begins
 
-/* ---------- Petal spawn ---------- */
-function spawnPetals(count = 28) {
-  for (let i=0;i<count;i++){
-    const p = document.createElement('div');
-    p.className = 'petal';
-    // random horizontal start
-    p.style.left = (Math.random()*100) + 'vw';
-    // random size
-    const s = 14 + Math.random()*28;
-    p.style.width = s + 'px';
-    p.style.height = (s*0.9) + 'px';
-    // random delay and duration
-    const dur = 4 + Math.random()*7;
-    p.style.animationDuration = dur + 's';
-    p.style.animationDelay = (Math.random()*2) + 's';
-    // random opacity
-    p.style.opacity = 0.6 + Math.random()*0.4;
-    // slight horizontal drift via transform
-    p.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+/* Petals */
+function spawnPetals(count=30){
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='petal';
+    p.style.left=(Math.random()*100)+'vw';
+    const s=12+Math.random()*36;
+    p.style.width=s+'px'; p.style.height=(s*0.9)+'px';
+    const dur=4+Math.random()*7;
+    p.style.animationDuration=dur+'s';
+    p.style.animationDelay=(Math.random()*2)+'s';
+    p.style.opacity=0.5+Math.random()*0.5;
     document.body.appendChild(p);
-    // apply animation
-    p.style.animationName = 'fall';
-    p.style.animationTimingFunction = 'linear';
-    p.style.animationIterationCount = 'infinite';
+    p.style.animationName='fall';
+    p.style.animationTimingFunction='linear';
+    p.style.animationIterationCount='infinite';
   }
 }
 
-/* ---------- Audio play robustly ---------- */
-function playAudioDelayed(delayMs = 4000) {
-  // schedule play after delayMs from now
-  setTimeout(() => {
-    // set volume before play
-    audio.volume = 0.75;
-    // try to play
-    audio.play().then(() => {
-      audioStartedAt = performance.now();
-    }).catch(() => {
-      // if blocked, attach one-time user gesture to resume
-      const resume = () => {
-        audio.play().then(()=> {
-          audioStartedAt = performance.now();
-        }).catch(()=>{});
-        window.removeEventListener('pointerdown', resume);
-        window.removeEventListener('touchstart', resume);
+/* Robust audio start (4s after click) */
+function playAudioDelayed(delayMs=4000){
+  setTimeout(()=>{
+    audio.volume=0.75;
+    audio.play().then(()=>{}).catch(()=>{
+      const resume=()=>{
+        audio.play().catch(()=>{});
+        window.removeEventListener('pointerdown',resume);
+        window.removeEventListener('touchstart',resume);
       };
-      window.addEventListener('pointerdown', resume, { once: true });
-      window.addEventListener('touchstart', resume, { once: true });
+      window.addEventListener('pointerdown',resume,{once:true});
+      window.addEventListener('touchstart',resume,{once:true});
     });
-  }, delayMs);
+  },delayMs);
 }
 
-/* ---------- Mouse proximity glow ---------- */
-const introEls = [text1, textNew, text2, bvc];
-
-function updateGlowOnPointer(e){
-  // for each visible intro element, compute distance from pointer to element center
-  introEls.forEach(el => {
-    if (!el || el.style.display === 'none') return;
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width/2;
-    const cy = rect.top + rect.height/2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    // map distance to glow intensity (closer => stronger)
-    const max = Math.max(window.innerWidth, window.innerHeight);
-    const t = Math.max(0, 1 - (dist / (max*0.6))); // 0..1
-    const glow = 12 + Math.round(40 * t); // px
-    const spread = 6 + Math.round(30 * t);
-    const color = el.classList.contains('azul') ? 'rgba(77,166,255,' + (0.6 + 0.4*t) + ')' :
-                  el.classList.contains('abyss') ? 'rgba(255,59,59,' + (0.6 + 0.4*t) + ')' :
-                  'rgba(255,255,255,' + (0.6 + 0.4*t) + ')';
-    el.style.textShadow = `0 0 ${glow}px ${color}, 0 0 ${spread}px rgba(0,0,0,0.45)`;
-    // slight scale boost when pointer is near
-    const scale = 0.98 + 0.12 * t;
-    el.style.transform = `translate(-50%,-50%) scale(${scale})`;
+/* Mouse proximity glow */
+const introEls=[text1,textNew,text2,bvc];
+function updateGlow(e){
+  introEls.forEach(el=>{
+    if(!el || el.style.display==='none') return;
+    const r=el.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const dx=e.clientX-cx, dy=e.clientY-cy;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const max=Math.max(window.innerWidth,window.innerHeight);
+    const t=Math.max(0,1-(dist/(max*0.6)));
+    const glow=10+Math.round(50*t);
+    const spread=6+Math.round(40*t);
+    let color='rgba(255,255,255,'+(0.6+0.4*t)+')';
+    if(el.querySelector('.azul') || el.classList.contains('azul')) color='rgba(77,166,255,'+(0.6+0.4*t)+')';
+    if(el.classList.contains('abyss')) color='rgba(255,59,59,'+(0.6+0.4*t)+')';
+    el.style.textShadow=`0 0 ${glow}px ${color}, 0 0 ${spread}px rgba(0,0,0,0.45)`;
+    const scale=0.98+0.14*t;
+    el.style.transform=`translate(-50%,-50%) scale(${scale})`;
   });
 }
+window.addEventListener('pointermove', updateGlow);
 
-window.addEventListener('pointermove', updateGlowOnPointer);
-
-/* ---------- Sequence scheduling synced to audio start ---------- */
-/*
-  Behavior:
-  - User clicks Start (t=0)
-  - Audio scheduled to start at t=4000ms
-  - All timings below are relative to Start click (ms)
-  - But the 25s countdown for BLACK VELVET is relative to audio start:
-      BVC_time_from_click = 4000 + 25000 = 29000ms
-  - Intro end is 44000ms after audio start => 4000 + 44000 = 48000ms after click
+/* Sequence synced to audio start:
+   - click Start (t=0)
+   - audio starts at t=4000ms
+   - text1 at 5000ms (1s after audio)
+   - textNew at 10000ms
+   - text2 at 15000ms
+   - black screen at 20000ms (hide texts)
+   - BVC at 29000ms (25s after audio start)
+   - end at 48000ms (44s after audio start)
 */
-
-function startSequence() {
-  // spawn petals
+function startSequence(){
   spawnPetals(30);
-
-  // schedule audio to start at 4s
   playAudioDelayed(4000);
 
-  // label durations: each label animation lasts 5s and zooms past viewer
-  // text1 starts at 5s (1s after audio start)
-  setTimeout(() => {
-    text1.style.display = 'block';
-    text1.style.animation = 'cinematicZoom 5s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 5000);
+  // text1: zoomLeft (5s)
+  setTimeout(()=>{
+    text1.style.display='block';
+    text1.style.animation='zoomLeft 5s cubic-bezier(.2,.8,.2,1) forwards';
+  },5000);
 
-  // textNew starts at 10s
-  setTimeout(() => {
-    textNew.style.display = 'block';
-    textNew.style.animation = 'cinematicZoom 5s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 10000);
+  // textNew: zoomUp
+  setTimeout(()=>{
+    textNew.style.display='block';
+    textNew.style.animation='zoomUp 5s cubic-bezier(.2,.8,.2,1) forwards';
+  },10000);
 
-  // text2 starts at 15s
-  setTimeout(() => {
-    text2.style.display = 'block';
-    text2.style.animation = 'cinematicZoom 5s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 15000);
+  // text2: zoomRight
+  setTimeout(()=>{
+    text2.style.display='block';
+    text2.style.animation='zoomRight 5s cubic-bezier(.2,.8,.2,1) forwards';
+  },15000);
 
-  // black screen from 20s to 24s (relative to audio start: 16s..20s after audio start)
-  // we hide the texts at 20s
-  setTimeout(() => {
-    text1.style.display = 'none';
-    textNew.style.display = 'none';
-    text2.style.display = 'none';
-    // ensure background is black (it already is) but we can briefly clear petals
-    // fade out petals gently
-    document.querySelectorAll('.petal').forEach(p => {
-      p.style.transition = 'opacity 1s linear';
-      p.style.opacity = '0';
-    });
-  }, 20000);
+  // black screen: hide texts and fade petals
+  setTimeout(()=>{
+    [text1,textNew,text2].forEach(t=>{ if(t) t.style.display='none'; });
+    document.querySelectorAll('.petal').forEach(p=>{ p.style.transition='opacity 1s linear'; p.style.opacity='0'; });
+  },20000);
 
-  // BLACK VELVET CLAN appears 25s after audio start => 29s after click
-  setTimeout(() => {
-    bvc.style.display = 'block';
-    bvc.style.animation = 'cinematicZoomStrong 8s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 29000);
+  // BVC: dramatic depth pass (25s after audio => 29s after click)
+  setTimeout(()=>{
+    bvc.style.display='block';
+    bvc.style.animation='zoomDepth 8s cubic-bezier(.2,.8,.2,1) forwards';
+  },29000);
 
-  // End intro at 44s after audio start => 48s after click
-  setTimeout(() => {
-    endIntro();
-  }, 48000);
+  // End intro at 48s after click (44s after audio)
+  setTimeout(()=> endIntro(),48000);
 }
 
-/* ---------- End intro ---------- */
 function endIntro(){
-  // remove any remaining petals
-  document.querySelectorAll('.petal').forEach(p => p.remove());
-  // hide intro elements
-  [text1, textNew, text2, bvc].forEach(el => { if(el) el.style.display = 'none'; });
-  // hide skip
-  skipBtn.style.display = 'none';
-  // show main site
-  mainSite.style.display = 'block';
-  // stop audio if still playing
-  try { audio.pause(); audio.currentTime = 0; } catch(e){}
+  document.querySelectorAll('.petal').forEach(p=>p.remove());
+  [text1,textNew,text2,bvc].forEach(el=>{ if(el) el.style.display='none'; });
+  skipBtn.style.display='none';
+  mainSite.style.display='block';
+  try{ audio.pause(); audio.currentTime=0; }catch(e){}
 }
 
-/* ---------- Start / Skip handlers ---------- */
-startBtn.addEventListener('click', () => {
-  // hide start screen
-  document.getElementById('start-screen').style.display = 'none';
-  // show skip
-  skipBtn.style.display = 'block';
-  // start sequence
+/* Handlers */
+startBtn.addEventListener('click', ()=>{
+  document.getElementById('start-screen').style.display='none';
+  skipBtn.style.display='block';
   startSequence();
 });
-
 skipBtn.addEventListener('click', endIntro);
+startBtn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); startBtn.click(); } });
 
-/* ---------- Accessibility: allow keyboard start ---------- */
-startBtn.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    startBtn.click();
-  }
-});
-
-/* ---------- Clean up on unload ---------- */
-window.addEventListener('beforeunload', () => {
-  try { audio.pause(); } catch(e){}
-});
+window.addEventListener('beforeunload', ()=>{ try{ audio.pause(); }catch(e){} });
 </script>
 </body>
 </html>
