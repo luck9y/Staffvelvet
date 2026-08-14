@@ -1,196 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Black Velvet Azul Clan Intro</title>
-
 <style>
-    body {
-        margin: 0;
-        overflow: hidden;
-        background: black;
-        font-family: 'Orbitron', sans-serif;
-        color: white;
-        perspective: 1400px; /* depth */
-    }
+  :root{
+    --bg:#000;
+    --glow:#6f00ff;
+    --white:#fff;
+  }
 
-    /* FIXED START SCREEN */
-    #startScreen {
-        position: fixed;
-        inset: 0;
-        background: black;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-    }
+  /* Basic page */
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    color:var(--white);
+    font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    perspective:1400px; /* depth for 3D transforms */
+  }
 
-    #startBtn {
-        padding: 22px 45px;
-        font-size: 28px;
-        cursor: pointer;
-        background: #111;
-        border: 2px solid white;
-        color: white;
-        border-radius: 6px;
-    }
+  /* START SCREEN (centered, fixed) */
+  #startScreen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.85));
+    z-index:1000;
+  }
 
-    #skipBtn {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        font-size: 22px;
-        cursor: pointer;
-        color: white;
-        display: none;
-        z-index: 900;
-    }
+  #startBtn{
+    appearance:none;
+    -webkit-appearance:none;
+    border:2px solid rgba(255,255,255,0.12);
+    background:linear-gradient(180deg,#111,#0b0b0b);
+    color:var(--white);
+    padding:18px 42px;
+    font-size:20px;
+    letter-spacing:2px;
+    cursor:pointer;
+    border-radius:6px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.6), 0 0 30px rgba(111,0,255,0.06) inset;
+    z-index:1001;
+  }
 
-    .label {
-        position: fixed;
-        width: 100%;
-        text-align: center;
-        top: 40%;
-        font-size: 48px;
-        opacity: 0;
-        transform-style: preserve-3d;
-        text-shadow: 0 0 25px #6f00ff;
-        transition: all 5s ease-in-out;
-    }
+  #startBtn:active{ transform:translateY(1px); }
 
-    #flower {
-        position: fixed;
-        top: -200px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 200px;
-        opacity: 0;
-        filter: drop-shadow(0 0 20px #000);
-        transition: all 7s ease-in-out;
-    }
+  /* Skip button (top-right) */
+  #skipBtn{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:1100;
+    display:none;
+    color:var(--white);
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.06);
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    backdrop-filter: blur(4px);
+  }
 
-    #mainTitle {
-        position: fixed;
-        width: 100%;
-        text-align: center;
-        top: 40%;
-        font-size: 85px;
-        opacity: 0;
-        transform-style: preserve-3d;
-        text-shadow: 0 0 50px #ffffff;
-        transition: all 4s ease;
-    }
+  /* Labels (fixed so they don't affect layout) */
+  .label{
+    position:fixed;
+    left:50%;
+    top:45%;
+    transform:translate(-50%,-50%) translateZ(0);
+    width:100%;
+    max-width:1600px;
+    text-align:center;
+    font-weight:600;
+    font-size:36px;
+    color:var(--white);
+    opacity:0;
+    letter-spacing:1.6px;
+    text-shadow:0 0 18px rgba(111,0,255,0.18), 0 2px 12px rgba(0,0,0,0.6);
+    will-change: transform, opacity;
+    backface-visibility:hidden;
+    pointer-events:none;
+  }
+
+  /* Slightly larger on wide screens */
+  @media(min-width:1200px){
+    .label{ font-size:44px; }
+    #mainTitle{ font-size:92px; }
+  }
+
+  /* Main title */
+  #mainTitle{
+    position:fixed;
+    left:50%;
+    top:45%;
+    transform:translate(-50%,-50%) translateZ(0) scale(1);
+    text-align:center;
+    font-size:72px;
+    font-weight:800;
+    letter-spacing:6px;
+    color:var(--white);
+    opacity:0;
+    text-shadow:0 0 60px rgba(255,255,255,0.12), 0 0 30px rgba(111,0,255,0.12);
+    z-index:800;
+    will-change: transform, opacity;
+    pointer-events:none;
+  }
+
+  /* Flower image */
+  #flower{
+    position:fixed;
+    left:50%;
+    top:-220px;
+    transform:translateX(-50%) rotate(0deg);
+    width:220px;
+    opacity:0;
+    z-index:700;
+    will-change: transform, opacity;
+    pointer-events:none;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+  }
+
+  /* Individual animation classes (applied by JS) */
+  /* Each animation lasts 5s and uses 3D transforms + rotation to feel cinematic */
+  .anim-right{
+    animation: rightPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .anim-left{
+    animation: leftPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .anim-down{
+    animation: downPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .anim-up{
+    animation: upPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .anim-forward{
+    animation: forwardPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .anim-diagdr{
+    animation: diagDRPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .anim-diagul{
+    animation: diagULPass 5s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+
+  /* Flower fall animation (triggered at 35s) */
+  .flower-fall{
+    animation: flowerFall 7s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+
+  /* Title reveal */
+  .title-reveal{
+    animation: titleReveal 4s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+
+  /* Keyframes: cinematic credit-like motion */
+  @keyframes rightPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translateX(0) rotateY(0) scale(1); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(120px) translateX(0) rotateY(6deg) scale(1.05); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(-600px) translateX(420px) rotateY(35deg) scale(0.6); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateX(650px) rotateY(45deg) scale(0.45); }
+  }
+
+  @keyframes leftPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translateX(0) rotateY(0) scale(1); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(120px) translateX(0) rotateY(-6deg) scale(1.05); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(-600px) translateX(-420px) rotateY(-35deg) scale(0.6); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateX(-650px) rotateY(-45deg) scale(0.45); }
+  }
+
+  @keyframes downPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translateY(0) rotateX(0) scale(1); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(140px) translateY(0) rotateX(6deg) scale(1.03); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(-600px) translateY(420px) rotateX(30deg) scale(0.6); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateY(650px) rotateX(45deg) scale(0.45); }
+  }
+
+  @keyframes upPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translateY(0) rotateX(0) scale(1); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(140px) translateY(0) rotateX(-6deg) scale(1.03); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(-600px) translateY(-420px) rotateX(-30deg) scale(0.6); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateY(-650px) rotateX(-45deg) scale(0.45); }
+  }
+
+  @keyframes forwardPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(-800px) scale(0.45) rotateY(0); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(-300px) scale(0.8) rotateY(6deg); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(1200px) scale(3.2) rotateY(12deg); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(1600px) scale(4) rotateY(18deg); }
+  }
+
+  @keyframes diagDRPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translate(0,0) rotateY(0) rotateX(0) scale(1); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(120px) translate(0,0) rotateY(6deg) rotateX(6deg) scale(1.04); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(-600px) translate(420px,420px) rotateY(30deg) rotateX(18deg) scale(0.6); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translate(650px,650px) rotateY(40deg) rotateX(25deg) scale(0.45); }
+  }
+
+  @keyframes diagULPass {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translate(0,0) rotateY(0) rotateX(0) scale(1); }
+    10% { opacity:1; transform:translate(-50%,-50%) translateZ(120px) translate(0,0) rotateY(-6deg) rotateX(-6deg) scale(1.04); }
+    60% { opacity:1; transform:translate(-50%,-50%) translateZ(-600px) translate(-420px,-420px) rotateY(-30deg) rotateX(-18deg) scale(0.6); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translate(-650px,-650px) rotateY(-40deg) rotateX(-25deg) scale(0.45); }
+  }
+
+  /* Flower falling like a leaf */
+  @keyframes flowerFall {
+    0% { opacity:0; transform:translateX(-50%) translateY(-220px) rotate(-10deg) translateZ(0) scale(1); }
+    10% { opacity:1; transform:translateX(-50%) translateY(-120px) rotate(-6deg) translateZ(40px) scale(1.02); }
+    40% { transform:translateX(calc(-50% + 40px)) translateY(120px) rotate(8deg) translateZ(80px) scale(0.98); }
+    60% { transform:translateX(calc(-50% - 30px)) translateY(360px) rotate(-18deg) translateZ(40px) scale(0.95); }
+    85% { transform:translateX(calc(-50% + 10px)) translateY(680px) rotate(6deg) translateZ(-40px) scale(0.9); opacity:0.9; }
+    100% { opacity:0; transform:translateX(calc(-50% + 0px)) translateY(980px) rotate(20deg) translateZ(-120px) scale(0.85); }
+  }
+
+  /* Title reveal */
+  @keyframes titleReveal {
+    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) scale(0.9) rotateY(0); filter:blur(6px); }
+    20% { opacity:1; transform:translate(-50%,-50%) translateZ(240px) scale(1.05) rotateY(6deg); filter:blur(2px); }
+    100% { opacity:1; transform:translate(-50%,-50%) translateZ(520px) scale(1.25) rotateY(10deg); filter:blur(0); }
+  }
+
+  /* small helper to hide everything after skip */
+  .hidden{ display:none !important; }
 </style>
 </head>
 <body>
 
-<div id="startScreen">
-    <button id="startBtn">START</button>
-</div>
+  <!-- Start screen -->
+  <div id="startScreen" aria-hidden="false">
+    <button id="startBtn" aria-label="Start intro">START</button>
+  </div>
 
-<div id="skipBtn">Skip</div>
+  <!-- Skip -->
+  <button id="skipBtn" aria-label="Skip intro">Skip</button>
 
-<audio id="introAudio" src="intro2.mp3"></audio>
+  <!-- Audio -->
+  <audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
 
-<img id="flower" src="blackvelvet_flower.png">
+  <!-- Flower (use your high-res PNG with transparent background) -->
+  <img id="flower" src="blackvelvet_flower.png" alt="" aria-hidden="true">
 
-<div id="mainTitle">BLACK VELVET CLAN</div>
+  <!-- Main title -->
+  <div id="mainTitle" aria-hidden="true">BLACK VELVET CLAN</div>
 
-<!-- LABELS -->
-<div class="label" id="l1">By the founders of Azul Clan</div>
-<div class="label" id="l2">Forged stronger in the abyss</div>
-<div class="label" id="l3">Motivated by memories</div>
-<div class="label" id="l4">A legacy carved in darkness</div>
-<div class="label" id="l5">Directed by those who never stopped dreaming</div>
-<div class="label" id="l6">Managed by Gears</div>
-<div class="label" id="l7">Back like we never left</div>
+  <!-- Labels (7) -->
+  <div class="label" id="l1">By the founders of Azul Clan</div>
+  <div class="label" id="l2">Forged stronger in the abyss</div>
+  <div class="label" id="l3">Motivated by memories</div>
+  <div class="label" id="l4">A legacy carved in darkness</div>
+  <div class="label" id="l5">Directed by those who never stopped dreaming</div>
+  <div class="label" id="l6">Managed by Gears</div>
+  <div class="label" id="l7">Back like we never left</div>
 
 <script>
-const audio = document.getElementById("introAudio");
-const skipBtn = document.getElementById("skipBtn");
-const startScreen = document.getElementById("startScreen");
+/*
+  Clean, robust controller:
+  - Audio starts 2s after Start click (to match your spec)
+  - Each label runs for 5s (7 labels = 35s)
+  - Flower falls at 35s
+  - Title appears at 41.13s
+  - Skip button visible immediately after Start click
+  - Start screen removed (display:none) to avoid layout shifts
+*/
 
-const labels = [
-    { id: "l1", anim: "right" },
-    { id: "l2", anim: "left" },
-    { id: "l3", anim: "down" },
-    { id: "l4", anim: "up" },
-    { id: "l5", anim: "forward" },
-    { id: "l6", anim: "diagDR" },
-    { id: "l7", anim: "diagUL" }
-];
+(function(){
+  const startBtn = document.getElementById('startBtn');
+  const startScreen = document.getElementById('startScreen');
+  const skipBtn = document.getElementById('skipBtn');
+  const audio = document.getElementById('introAudio');
+  const flower = document.getElementById('flower');
+  const mainTitle = document.getElementById('mainTitle');
 
-function animateLabel(label, type) {
-    let el = document.getElementById(label);
-    el.style.opacity = 1;
-
-    switch(type) {
-        case "right":
-            el.style.transform = "translateX(650px) rotateY(35deg) translateZ(350px)";
-            break;
-        case "left":
-            el.style.transform = "translateX(-650px) rotateY(-35deg) translateZ(350px)";
-            break;
-        case "down":
-            el.style.transform = "translateY(450px) rotateX(25deg) translateZ(350px)";
-            break;
-        case "up":
-            el.style.transform = "translateY(-450px) rotateX(-25deg) translateZ(350px)";
-            break;
-        case "forward":
-            el.style.transform = "translateZ(1000px) scale(3) rotateY(10deg)";
-            break;
-        case "diagDR":
-            el.style.transform = "translate(450px,450px) rotateY(25deg) rotateX(15deg) translateZ(350px)";
-            break;
-        case "diagUL":
-            el.style.transform = "translate(-450px,-450px) rotateY(-25deg) rotateX(-15deg) translateZ(350px)";
-            break;
-    }
-
-    setTimeout(() => {
-        el.style.opacity = 0;
-    }, 4800);
-}
-
-document.getElementById("startBtn").onclick = () => {
-    startScreen.style.display = "none";
-    skipBtn.style.display = "block";
-
-    // GUARANTEED AUDIO PLAYBACK
-    audio.volume = 1.0;
-    audio.play().catch(() => {
-        document.body.addEventListener("click", () => audio.play(), { once: true });
-    });
-
-    let t = 2000;
-
-    labels.forEach((lbl) => {
-        setTimeout(() => {
-            animateLabel(lbl.id, lbl.anim);
-        }, t);
-        t += 5000;
-    });
-
-    // Velvet flower at 35 seconds
-    setTimeout(() => {
-        let f = document.getElementById("flower");
-        f.style.opacity = 1;
-        f.style.transform = "translate(-50%, 900px) rotate(40deg)";
-    }, 35000);
-
-    // Title at 41.13 seconds
-    setTimeout(() => {
-        let title = document.getElementById("mainTitle");
-        title.style.opacity = 1;
-        title.style.transform = "translateZ(500px) scale(1.4) rotateY(10deg)";
-    }, 41130);
-};
-
-skipBtn.onclick = () => {
-    window.location.href = "main.html";
-};
-</script>
-
-</body>
-</html>
+  // label config: id + animation class
+  const sequence = [
+    { id: 'l1', cls: 'anim-right' },
+    { id: 'l2', cls: 'anim-left' },
+    { id: 'l3', cls: 'anim-down' },
+    { id: 'l4', cls: 'anim-up' },
+    { id: 'l5', cls: 'anim-forward' },
+    { id: 'l6', cls: 'anim-diagdr' },
+    { id: 'l7', cls: 'anim
