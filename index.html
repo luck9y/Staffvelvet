@@ -9,7 +9,6 @@
     --bg:#000;
     --white:#fff;
     --accent:#6f00ff;
-    --label-size:44px;
   }
 
   html,body{
@@ -19,32 +18,29 @@
     color:var(--white);
     font-family: "Inter", "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
     overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    perspective:1600px; /* depth for 3D transforms */
+    perspective:1600px;
   }
 
-  /* START SCREEN centered and stable */
+  /* Start screen */
   #startScreen{
     position:fixed;
     inset:0;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(0,0,0,0.92));
+    background:rgba(0,0,0,0.95);
     z-index:1000;
   }
-
   #startBtn{
     border:0;
-    background:linear-gradient(180deg,#0b0b0b,#111);
+    background:#111;
     color:var(--white);
     padding:18px 44px;
     font-size:20px;
     letter-spacing:2px;
     cursor:pointer;
     border-radius:8px;
-    box-shadow:0 12px 40px rgba(0,0,0,0.6), 0 0 30px rgba(111,0,255,0.06) inset;
+    box-shadow:0 12px 40px rgba(0,0,0,0.6), 0 0 30px rgba(111,0,255,0.2) inset;
   }
 
   #skipBtn{
@@ -69,40 +65,30 @@
     left:50%;
     top:45%;
     transform:translate(-50%,-50%) translateZ(0);
-    width:100%;
-    max-width:1600px;
     text-align:center;
     font-weight:700;
-    font-size:var(--label-size);
+    font-size:44px;
     color:var(--white);
     opacity:0;
-    letter-spacing:1.6px;
-    text-shadow:0 0 18px rgba(111,0,255,0.18), 0 2px 12px rgba(0,0,0,0.6);
+    text-shadow:0 0 18px rgba(111,0,255,0.4), 0 2px 12px rgba(0,0,0,0.6);
     will-change: transform, opacity, filter;
     backface-visibility:hidden;
     pointer-events:none;
-    transform-origin:center center;
-    filter: blur(0px) saturate(1);
   }
 
-  @media(min-width:1200px){
-    :root{ --label-size:52px; }
-    #mainTitle{ font-size:96px; }
-  }
-
-  /* Main title */
+  /* Title */
   #mainTitle{
     position:fixed;
     left:50%;
     top:45%;
     transform:translate(-50%,-50%) translateZ(0) scale(1);
     text-align:center;
-    font-size:72px;
+    font-size:92px;
     font-weight:900;
     letter-spacing:6px;
     color:var(--white);
     opacity:0;
-    text-shadow:0 0 60px rgba(255,255,255,0.12), 0 0 30px rgba(111,0,255,0.12);
+    text-shadow:0 0 60px rgba(255,255,255,0.2), 0 0 30px rgba(111,0,255,0.3);
     z-index:800;
     will-change: transform, opacity, filter;
     pointer-events:none;
@@ -122,243 +108,45 @@
     filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
   }
 
-  /* Animation classes (applied by JS) */
-  .pass-right{ animation: passRight 5s cubic-bezier(.22,.9,.28,1) forwards; }
-  .pass-left { animation: passLeft 5s cubic-bezier(.22,.9,.28,1) forwards; }
-  .pass-down { animation: passDown 5s cubic-bezier(.22,.9,.28,1) forwards; }
-  .pass-up { animation: passUp 5s cubic-bezier(.22,.9,.28,1) forwards; }
-  .pass-forward { animation: passForward 5s cubic-bezier(.22,.9,.28,1) forwards; }
-  .pass-diagdr { animation: passDiagDR 5s cubic-bezier(.22,.9,.28,1) forwards; }
-  .pass-diagul { animation: passDiagUL 5s cubic-bezier(.22,.9,.28,1) forwards; }
+  /* Animations */
+  .pass-right   { animation: passRight 5s ease-in-out forwards; }
+  .pass-left    { animation: passLeft 5s ease-in-out forwards; }
+  .pass-down    { animation: passDown 5s ease-in-out forwards; }
+  .pass-up      { animation: passUp 5s ease-in-out forwards; }
+  .pass-forward { animation: passForward 5s ease-in-out forwards; }
+  .pass-diagdr  { animation: passDiagDR 5s ease-in-out forwards; }
+  .pass-diagul  { animation: passDiagUL 5s ease-in-out forwards; }
 
-  .flower-fall { animation: flowerFall 7s cubic-bezier(.22,.9,.28,1) forwards; }
-  .title-reveal { animation: titleReveal 4s cubic-bezier(.22,.9,.28,1) forwards; }
+  .flower-fall  { animation: flowerFall 7s ease-in-out forwards; }
+  .title-reveal { animation: titleReveal 4s ease-out forwards; }
 
-  /* Cinematic keyframes: start slightly in front, move through camera space, then recede behind */
+  /* Keyframes */
   @keyframes passRight {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(180px) translateX(0) rotateY(0) scale(1); filter:blur(2px) saturate(1.1); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(320px) translateX(0) rotateY(6deg) scale(1.06); filter:blur(0px) saturate(1.1); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateX(160px) rotateY(18deg) scale(1.02); filter:blur(0.6px) saturate(1); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(-520px) translateX(420px) rotateY(36deg) scale(0.6); filter:blur(2.6px) saturate(.9); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateX(650px) rotateY(45deg) scale(0.45); filter:blur(4px) saturate(.8); }
+    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(600px) translateX(0) rotateY(0deg) scale(0.8); filter:blur(6px); }
+    20%  { opacity:1; transform:translate(-50%,-50%) translateZ(300px) translateX(0) rotateY(5deg) scale(1); filter:blur(2px); }
+    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateX(200px) rotateY(15deg) scale(1.1); filter:blur(0px); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-800px) translateX(700px) rotateY(40deg) scale(0.5); filter:blur(6px); }
   }
-
   @keyframes passLeft {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(180px) translateX(0) rotateY(0) scale(1); filter:blur(2px); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(320px) translateX(0) rotateY(-6deg) scale(1.06); filter:blur(0px); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateX(-160px) rotateY(-18deg) scale(1.02); filter:blur(0.6px); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(-520px) translateX(-420px) rotateY(-36deg) scale(0.6); filter:blur(2.6px); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateX(-650px) rotateY(-45deg) scale(0.45); filter:blur(4px); }
+    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(600px) translateX(0) rotateY(0deg) scale(0.8); filter:blur(6px); }
+    20%  { opacity:1; transform:translate(-50%,-50%) translateZ(300px) translateX(0) rotateY(-5deg) scale(1); filter:blur(2px); }
+    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateX(-200px) rotateY(-15deg) scale(1.1); filter:blur(0px); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-800px) translateX(-700px) rotateY(-40deg) scale(0.5); filter:blur(6px); }
   }
-
   @keyframes passDown {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(180px) translateY(0) rotateX(0) scale(1); filter:blur(2px); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(320px) translateY(0) rotateX(6deg) scale(1.04); filter:blur(0px); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateY(160px) rotateX(18deg) scale(1.02); filter:blur(0.6px); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(-520px) translateY(420px) rotateX(36deg) scale(0.6); filter:blur(2.6px); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateY(650px) rotateX(45deg) scale(0.45); filter:blur(4px); }
+    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(600px) translateY(0) rotateX(0deg) scale(0.8); filter:blur(6px); }
+    20%  { opacity:1; transform:translate(-50%,-50%) translateZ(300px) translateY(0) rotateX(5deg) scale(1); filter:blur(2px); }
+    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateY(200px) rotateX(15deg) scale(1.1); filter:blur(0px); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-800px) translateY(700px) rotateX(40deg) scale(0.5); filter:blur(6px); }
   }
-
   @keyframes passUp {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(180px) translateY(0) rotateX(0) scale(1); filter:blur(2px); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(320px) translateY(0) rotateX(-6deg) scale(1.04); filter:blur(0px); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateY(-160px) rotateX(-18deg) scale(1.02); filter:blur(0.6px); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(-520px) translateY(-420px) rotateX(-36deg) scale(0.6); filter:blur(2.6px); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translateY(-650px) rotateX(-45deg) scale(0.45); filter:blur(4px); }
+    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(600px) translateY(0) rotateX(0deg) scale(0.8); filter:blur(6px); }
+    20%  { opacity:1; transform:translate(-50%,-50%) translateZ(300px) translateY(0) rotateX(-5deg) scale(1); filter:blur(2px); }
+    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translateY(-200px) rotateX(-15deg) scale(1.1); filter:blur(0px); }
+    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-800px) translateY(-700px) rotateX(-40deg) scale(0.5); filter:blur(6px); }
   }
-
   @keyframes passForward {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) scale(0.45) rotateY(0); filter:blur(6px); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(-300px) scale(0.9) rotateY(6deg); filter:blur(1.6px); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(900px) scale(2.6) rotateY(10deg); filter:blur(0.4px); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(1200px) scale(3.2) rotateY(12deg); filter:blur(0px); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(1600px) scale(4) rotateY(18deg); filter:blur(0px); }
-  }
-
-  @keyframes passDiagDR {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(180px) translate(0,0) rotateY(0) rotateX(0) scale(1); filter:blur(2px); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(320px) translate(0,0) rotateY(6deg) rotateX(6deg) scale(1.04); filter:blur(0px); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translate(160px,160px) rotateY(18deg) rotateX(12deg) scale(1.02); filter:blur(0.6px); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(-520px) translate(420px,420px) rotateY(36deg) rotateX(24deg) scale(0.6); filter:blur(2.6px); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translate(650px,650px) rotateY(45deg) rotateX(30deg) scale(0.45); filter:blur(4px); }
-  }
-
-  @keyframes passDiagUL {
-    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(180px) translate(0,0) rotateY(0) rotateX(0) scale(1); filter:blur(2px); }
-    12%  { opacity:1; transform:translate(-50%,-50%) translateZ(320px) translate(0,0) rotateY(-6deg) rotateX(-6deg) scale(1.04); filter:blur(0px); }
-    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(0px) translate(-160px,-160px) rotateY(-18deg) rotateX(-12deg) scale(1.02); filter:blur(0.6px); }
-    85%  { opacity:1; transform:translate(-50%,-50%) translateZ(-520px) translate(-420px,-420px) rotateY(-36deg) rotateX(-24deg) scale(0.6); filter:blur(2.6px); }
-    100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translate(-650px,-650px) rotateY(-45deg) rotateX(-30deg) scale(0.45); filter:blur(4px); }
-  }
-
-  /* Flower falling like a leaf with subtle rotation and horizontal drift */
-  @keyframes flowerFall {
-    0%   { opacity:0; transform:translateX(-50%) translateY(-260px) rotate(-12deg) translateZ(0) scale(1); }
-    8%   { opacity:1; transform:translateX(-50%) translateY(-160px) rotate(-6deg) translateZ(40px) scale(1.02); }
-    30%  { transform:translateX(calc(-50% + 48px)) translateY(120px) rotate(8deg) translateZ(80px) scale(0.98); }
-    55%  { transform:translateX(calc(-50% - 36px)) translateY(360px) rotate(-18deg) translateZ(40px) scale(0.95); }
-    80%  { transform:translateX(calc(-50% + 12px)) translateY(680px) rotate(6deg) translateZ(-40px) scale(0.9); opacity:0.9; }
-    100% { opacity:0; transform:translateX(calc(-50% + 0px)) translateY(980px) rotate(20deg) translateZ(-120px) scale(0.85); }
-  }
-
-  /* Title reveal */
-  @keyframes titleReveal {
-    0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) scale(0.9) rotateY(0); filter:blur(6px); }
-    25% { opacity:1; transform:translate(-50%,-50%) translateZ(260px) scale(1.06) rotateY(6deg); filter:blur(2px); }
-    100% { opacity:1; transform:translate(-50%,-50%) translateZ(520px) scale(1.28) rotateY(10deg); filter:blur(0); }
-  }
-
-  .hidden{ display:none !important; }
-</style>
-</head>
-<body>
-
-  <div id="startScreen" aria-hidden="false">
-    <button id="startBtn" aria-label="Start intro">START</button>
-  </div>
-
-  <button id="skipBtn" aria-label="Skip intro">Skip</button>
-
-  <audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
-
-  <img id="flower" src="blackvelvet_flower.png" alt="" aria-hidden="true">
-
-  <div id="mainTitle" aria-hidden="true">BLACK VELVET CLAN</div>
-
-  <div class="label" id="l1">By the founders of Azul Clan</div>
-  <div class="label" id="l2">Forged stronger in the abyss</div>
-  <div class="label" id="l3">Motivated by memories</div>
-  <div class="label" id="l4">A legacy carved in darkness</div>
-  <div class="label" id="l5">Directed by those who never stopped dreaming</div>
-  <div class="label" id="l6">Managed by Gears</div>
-  <div class="label" id="l7">Back like we never left</div>
-
-<script>
-/* Clean controller:
-   - Audio starts 2s after Start click
-   - 7 labels, 5s each (start at 2s)
-   - Flower at 35s
-   - Title at 41.13s
-   - Skip cancels everything
-*/
-
-(function(){
-  const startBtn = document.getElementById('startBtn');
-  const startScreen = document.getElementById('startScreen');
-  const skipBtn = document.getElementById('skipBtn');
-  const audio = document.getElementById('introAudio');
-  const flower = document.getElementById('flower');
-  const mainTitle = document.getElementById('mainTitle');
-
-  const sequence = [
-    { id: 'l1', cls: 'pass-right' },
-    { id: 'l2', cls: 'pass-left' },
-    { id: 'l3', cls: 'pass-down' },
-    { id: 'l4', cls: 'pass-up' },
-    { id: 'l5', cls: 'pass-forward' },
-    { id: 'l6', cls: 'pass-diagdr' },
-    { id: 'l7', cls: 'pass-diagul' }
-  ];
-
-  const timers = [];
-
-  function schedule(fn, ms){
-    const id = setTimeout(fn, ms);
-    timers.push(id);
-    return id;
-  }
-
-  function clearAll(){
-    while(timers.length) clearTimeout(timers.pop());
-    // remove any animation classes immediately
-    sequence.forEach(s => {
-      const el = document.getElementById(s.id);
-      if(el) el.className = 'label';
-    });
-    flower.className = '';
-    mainTitle.className = '';
-  }
-
-  function triggerLabel(id, cls){
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.style.opacity = 1;
-    el.style.transform = 'translate(-50%,-50%) translateZ(0) scale(1)';
-    void el.offsetWidth; // force reflow
-    el.classList.add(cls);
-    // remove class after animation so it can be reused if needed
-    schedule(()=> el.classList.remove(cls), 5200);
-  }
-
-  function startSequence(){
-    // hide start screen
-    startScreen.style.display = 'none';
-    skipBtn.style.display = 'block';
-
-    // prime audio (some browsers require user gesture)
-    try {
-      audio.currentTime = 0;
-      audio.volume = 1.0;
-      audio.play().then(()=> {
-        audio.pause();
-        audio.currentTime = 0;
-      }).catch(()=>{ /* ignore */ });
-    } catch(e){}
-
-    // start audio at 2s
-    schedule(()=> {
-      audio.currentTime = 0;
-      audio.play().catch(()=> {
-        // fallback: attach one-time resume on next user gesture
-        const resume = () => { audio.play().catch(()=>{}); document.body.removeEventListener('click', resume); };
-        document.body.addEventListener('click', resume, { once:true });
-      });
-    }, 2000);
-
-    // schedule labels (start at 2s)
-    const base = 2000;
-    sequence.forEach((item, idx) => {
-      schedule(()=> triggerLabel(item.id, item.cls), base + idx * 5000);
-    });
-
-    // flower at 35s
-    schedule(()=> {
-      flower.style.opacity = 1;
-      flower.classList.add('flower-fall');
-      schedule(()=> flower.classList.remove('flower-fall'), 7600);
-    }, 35000);
-
-    // title at 41.13s
-    schedule(()=> {
-      mainTitle.style.opacity = 1;
-      mainTitle.classList.add('title-reveal');
-    }, 41130);
-  }
-
-  // Start button: ensure single user gesture triggers everything
-  startBtn.addEventListener('click', function onClick(){
-    startBtn.removeEventListener('click', onClick);
-    startSequence();
-  });
-
-  // Skip: stop audio, clear timers, hide intro elements
-  skipBtn.addEventListener('click', function(){
-    try{ audio.pause(); }catch(e){}
-    clearAll();
-    document.querySelectorAll('.label, #flower, #mainTitle, #startScreen').forEach(el=>{
-      if(el) el.classList.add('hidden');
-    });
-    skipBtn.classList.add('hidden');
-    // optionally redirect: window.location.href = 'main.html';
-  });
-
-  // Reset labels initially
-  document.querySelectorAll('.label').forEach(el=>{
-    el.style.opacity = 0;
-    el.style.transform = 'translate(-50%,-50%) translateZ(0) scale(1)';
-  });
-
-})();
-</script>
-</body>
-</html>
+    0%   { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) scale(0.5) rotateY(0deg); filter:blur(6px); }
+    20%  { opacity:1; transform:translate(-50%,-50%) translateZ(-300px) scale(0.9) rotateY(6deg); filter:blur(2px); }
+    50%  { opacity:1; transform:translate(-50%,-50%) translateZ(600px) scale(2.2) rotateY(10deg); filter:blur(0px); }
+    100% { opacity:0; transform:translate(-50%,-50
