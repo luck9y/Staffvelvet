@@ -1,350 +1,190 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Black Velvet Clan — Intro</title>
-
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Major+Mono+Display&family=Orbitron:wght@700&family=Press+Start+2P&display=swap" rel="stylesheet">
-
+<meta charset="UTF-8">
+<title>Black Velvet Azul Clan Intro</title>
 <style>
-  :root{
-    --bg:#070407;
-    --velvet:#0b0b0f;
-    --accent1:#2aa6ff;
-    --accent2:#ff6fb3;
-    --accent3:#ffd166;
-  }
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: black;
+        font-family: 'Orbitron', sans-serif;
+        color: white;
+    }
 
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0b0710);font-family:Orbitron,system-ui;color:#fff;}
-  .intro-wrap{
-    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, transparent 40%);
-    z-index:9999;
-  }
+    #startScreen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 10;
+    }
 
-  /* Start overlay */
-  .overlay{
-    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-    background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.65));
-    -webkit-backdrop-filter: blur(6px);backdrop-filter: blur(6px);
-  }
-  .start-btn{
-    appearance:none;border:2px solid rgba(255,255,255,0.12);padding:18px 36px;border-radius:10px;color:#fff;background:transparent;font-size:20px;cursor:pointer;
-    font-family:Orbitron, sans-serif;letter-spacing:2px;
-  }
-  .start-btn:focus{outline:3px solid rgba(255,255,255,0.06);}
+    #startBtn {
+        padding: 20px 40px;
+        font-size: 24px;
+        cursor: pointer;
+        background: #222;
+        border: 2px solid white;
+        color: white;
+    }
 
-  .skip-btn{
-    position:absolute;top:18px;right:18px;padding:8px 12px;border-radius:6px;background:rgba(0,0,0,0.45);color:#fff;border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-family:Arial, sans-serif;
-    display:none;
-  }
+    #skipBtn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 20px;
+        cursor: pointer;
+        color: white;
+        display: none;
+        z-index: 20;
+    }
 
-  /* Background falling petals/velvet dust */
-  .particle-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-  .dust{position:absolute;width:6px;height:6px;border-radius:50%;background:linear-gradient(90deg,#fff2,#fff0);filter:blur(6px);opacity:0.12;animation:fall 12s linear infinite;}
-  @keyframes fall{0%{transform:translateY(-10vh) translateX(0) scale(0.6);opacity:0}50%{opacity:0.18}100%{transform:translateY(110vh) translateX(40vw) scale(1);opacity:0}}
+    .label {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 40%;
+        font-size: 40px;
+        opacity: 0;
+        text-shadow: 0 0 20px #6f00ff;
+    }
 
-  /* Label base */
-  .label{
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateZ(0);
-    color:#fff;font-weight:700;text-align:center;white-space:nowrap;padding:6px 12px;
-    -webkit-text-stroke:1px rgba(0,0,0,0.6);
-    pointer-events:none;
-  }
-  .label::after{
-    content:attr(data-text);position:absolute;left:0;top:0;width:100%;height:100%;z-index:-1;color:inherit;
-    filter:blur(14px) saturate(120%);opacity:0.85;transform:translate(6px,6px) scale(1.02);
-    mix-blend-mode:screen;transition:filter 300ms, transform 300ms;
-  }
+    #flower {
+        position: absolute;
+        top: -200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        opacity: 0;
+    }
 
-  /* Per-label fonts & sizes (use exact font family names) */
-  .label.l1{font-family:"Orbitron", sans-serif;font-size:48px;letter-spacing:6px;}
-  .label.l2{font-family:"Audiowide", sans-serif;font-size:40px;letter-spacing:2px;}
-  .label.l3{font-family:"Press Start 2P", monospace;font-size:20px;letter-spacing:1px;}
-  .label.final{font-family:"Major Mono Display", monospace;font-size:72px;letter-spacing:8px;}
+    #mainTitle {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 40%;
+        font-size: 70px;
+        opacity: 0;
+        text-shadow: 0 0 40px #ffffff;
+    }
 
-  /* Glow color variants */
-  .l1::after{color:var(--accent1);filter:blur(18px) drop-shadow(0 0 18px rgba(42,166,255,0.6));}
-  .l2::after{color:var(--accent2);filter:blur(16px) drop-shadow(0 0 16px rgba(255,111,179,0.55));}
-  .l3::after{color:var(--accent3);filter:blur(12px) drop-shadow(0 0 12px rgba(255,209,102,0.45));}
-  .final::after{color:#fff;filter:blur(28px) drop-shadow(0 0 28px rgba(0,0,0,0.6));opacity:0.95;}
-
-  /* Motion keyframes (7s passes) */
-  @keyframes passLeft7{0%{transform:translate(-50%,-50%) scale(0.9) translateX(0) translateZ(0);opacity:1}100%{transform:translate(-150%,-60%) scale(2.2) translateZ(0);opacity:0}}
-  @keyframes passUp7{0%{transform:translate(-50%,-50%) scale(0.95) translateY(0)}100%{transform:translate(-40%,-200%) scale(2.6);opacity:0}}
-  @keyframes passRight7{0%{transform:translate(-50%,-50%) scale(0.95) translateX(0)}100%{transform:translate(60%,-40%) scale(3);opacity:0}}
-  @keyframes finalPassLong{0%{transform:translate(-50%,-50%) scale(0.9);opacity:0}10%{opacity:1}100%{transform:translate(-50%,-50%) scale(6);opacity:0}}
-
-  /* Apply animations when active */
-  .active.l1{animation:passLeft7 7s linear forwards;}
-  .active.l2{animation:passUp7 7s cubic-bezier(.22,.9,.3,1) forwards;}
-  .active.l3{animation:passRight7 7s cubic-bezier(.2,.8,.25,1) forwards;}
-  .active.final{animation:finalPassLong 10s ease-in-out forwards;}
-
-  /* Flower container */
-  .flower-wrap{position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-start;justify-content:center;overflow:visible;opacity:0;transition:opacity 400ms;}
-  .flower-wrap.show{opacity:1;}
-
-  /* Simple particle trail style */
-  .trail{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff8,#ff6fb3);filter:blur(6px);opacity:0.9;pointer-events:none;mix-blend-mode:screen;}
-
-  /* Accessibility: hide main content until intro done or skipped */
-  #main-content{display:none;}
 </style>
 </head>
 <body>
 
-<div class="intro-wrap" id="intro">
-  <div class="overlay" id="overlay" role="dialog" aria-label="Intro start overlay" tabindex="0">
-    <button class="start-btn" id="startBtn" aria-label="Start intro">START</button>
-    <div style="color:#ddd;opacity:0.7;font-size:13px">Press Enter or Space to start</div>
-  </div>
-
-  <button class="skip-btn" id="skipBtn" aria-label="Skip intro">Skip Intro</button>
-
-  <div class="particle-bg" id="bgParticles" aria-hidden="true"></div>
-
-  <!-- Labels (hidden until scheduled) -->
-  <div class="label l1" id="label1" data-text="AZUL CLAN" aria-hidden="true">AZUL CLAN</div>
-  <div class="label l2" id="label2" data-text="Back stronger." aria-hidden="true">Back stronger.</div>
-  <div class="label l3" id="label3" data-text="Reborn in the flames of the abyss" aria-hidden="true">Reborn in the flames of the abyss</div>
-  <div class="label final" id="finalTitle" data-text="BLACK VELVET CLAN" aria-hidden="true">BLACK VELVET CLAN</div>
-
-  <!-- Flower SVG (inline, animated via JS) -->
-  <div class="flower-wrap" id="flowerWrap" aria-hidden="true">
-    <svg id="flowerSVG" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;position:fixed;left:-9999px;top:-9999px;transform:translate(-50%,-50%)">
-      <defs>
-        <radialGradient id="g1" cx="50%" cy="40%">
-          <stop offset="0%" stop-color="#fff6" stop-opacity="0.95"/>
-          <stop offset="60%" stop-color="#ff6fb3" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="#2aa6ff" stop-opacity="0.05"/>
-        </radialGradient>
-        <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="6" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-
-      <g transform="translate(110,110)" filter="url(#softGlow)">
-        <!-- layered petals -->
-        <g id="petals">
-          <g id="p1" fill="url(#g1)" opacity="0.95">
-            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(0) scale(0.45)"/>
-            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(30) scale(0.42)"/>
-            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(60) scale(0.39)"/>
-            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(90) scale(0.36)"/>
-          </g>
-        </g>
-
-        <!-- center sheen -->
-        <circle cx="0" cy="0" r="18" fill="rgba(255,255,255,0.9)" opacity="0.12"/>
-        <circle cx="0" cy="0" r="8" fill="#fff" opacity="0.06"/>
-      </g>
-    </svg>
-  </div>
+<div id="startScreen">
+    <button id="startBtn">START</button>
 </div>
 
-<!-- Main site placeholder -->
-<main id="main-content" aria-hidden="true">
-  <h1 style="color:#fff;text-align:center;padding:40px">Main site content</h1>
-</main>
+<div id="skipBtn">Skip</div>
 
-<!-- Audio element (preload metadata) -->
-<audio id="introAudio" preload="metadata">
-  <source src="sounds/intro.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
+<audio id="introAudio" src="intro2.mp3"></audio>
+
+<img id="flower" src="blackvelvet_flower.png">
+
+<div id="mainTitle">BLACK VELVET CLAN</div>
+
+<!-- LABELS -->
+<div class="label" id="l1">By the founders of Azul Clan</div>
+<div class="label" id="l2">Forged stronger in the abyss</div>
+<div class="label" id="l3">Motivated by memories</div>
+<div class="label" id="l4">A legacy carved in darkness</div>
+<div class="label" id="l5">Directed by those who never stopped dreaming</div>
+<div class="label" id="l6">Managed by Gears</div>
+<div class="label" id="l7">Back like we never left</div>
 
 <script>
-(function(){
-  const START_DELAY = 4000; // ms after Start click until audio begins
-  const audio = document.getElementById('introAudio');
-  const startBtn = document.getElementById('startBtn');
-  const overlay = document.getElementById('overlay');
-  const skipBtn = document.getElementById('skipBtn');
-  const intro = document.getElementById('intro');
-  const main = document.getElementById('main-content');
+const audio = document.getElementById("introAudio");
+const skipBtn = document.getElementById("skipBtn");
+const startScreen = document.getElementById("startScreen");
 
-  const label1 = document.getElementById('label1');
-  const label2 = document.getElementById('label2');
-  const label3 = document.getElementById('label3');
-  const finalTitle = document.getElementById('finalTitle');
-  const flowerWrap = document.getElementById('flowerWrap');
-  const bgParticles = document.getElementById('bgParticles');
-  const flowerSVG = document.getElementById('flowerSVG');
+const labels = [
+    { id: "l1", anim: "right" },
+    { id: "l2", anim: "left" },
+    { id: "l3", anim: "down" },
+    { id: "l4", anim: "up" },
+    { id: "l5", anim: "forward" },
+    { id: "l6", anim: "diagDR" },
+    { id: "l7", anim: "diagUL" }
+];
 
-  let timers = [];
-  let startedAt = null;
-  let audioStarted = false;
+function animateLabel(label, type) {
+    let el = document.getElementById(label);
+    el.style.transition = "all 5s linear";
+    el.style.opacity = 1;
 
-  function schedule(fn, ms){
-    const id = setTimeout(fn, ms);
-    timers.push(id);
-    return id;
-  }
-  function clearAllTimers(){
-    timers.forEach(clearTimeout);
-    timers = [];
-  }
+    switch(type) {
+        case "right":
+            el.style.transform = "translateX(400px) scale(2)";
+            break;
+        case "left":
+            el.style.transform = "translateX(-400px) scale(2)";
+            break;
+        case "down":
+            el.style.transform = "translateY(300px) scale(2)";
+            break;
+        case "up":
+            el.style.transform = "translateY(-300px) scale(2)";
+            break;
+        case "forward":
+            el.style.transform = "scale(6)";
+            break;
+        case "diagDR":
+            el.style.transform = "translate(300px,300px) scale(2)";
+            break;
+        case "diagUL":
+            el.style.transform = "translate(-300px,-300px) scale(2)";
+            break;
+    }
 
-  function rampAudioTo(target, duration){
-    const start = audio.volume;
-    const delta = target - start;
-    const steps = Math.max(12, Math.floor(duration/50));
-    let i = 0;
-    const step = () => {
-      i++;
-      const t = i/steps;
-      audio.volume = Math.min(1, Math.max(0, start + delta * t));
-      if(i < steps) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
+    setTimeout(() => {
+        el.style.opacity = 0;
+    }, 4800);
+}
 
-  function tryPlayAudio(){
-    if(audioStarted) return;
-    audioStarted = true;
-    audio.volume = 0.0;
-    audio.play().then(()=> {
-      rampAudioTo(0.7, 3500);
-    }).catch(()=> {
-      const resume = () => {
-        audio.play().then(()=> rampAudioTo(0.7, 3500)).catch(()=>{});
-        window.removeEventListener('pointerdown', resume);
-        window.removeEventListener('touchstart', resume);
-      };
-      window.addEventListener('pointerdown', resume, {once:true});
-      window.addEventListener('touchstart', resume, {once:true});
+document.getElementById("startBtn").onclick = () => {
+    startScreen.style.display = "none";
+    skipBtn.style.display = "block";
+
+    setTimeout(() => {
+        audio.play();
+    }, 2000);
+
+    let t = 2000;
+
+    labels.forEach((lbl, i) => {
+        setTimeout(() => {
+            animateLabel(lbl.id, lbl.anim);
+        }, t);
+        t += 5000;
     });
-  }
 
-  function spawnBackgroundDust(count=28){
-    for(let i=0;i<count;i++){
-      const d = document.createElement('div');
-      d.className = 'dust';
-      d.style.left = Math.random()*100 + 'vw';
-      d.style.top = (-10 - Math.random()*10) + 'vh';
-      const size = (4 + Math.random()*8);
-      d.style.width = size + 'px';
-      d.style.height = size + 'px';
-      d.style.opacity = (0.05 + Math.random()*0.18);
-      d.style.animationDelay = (Math.random()*6) + 's';
-      d.style.transform = `translateX(${(Math.random()*40-20)}vw)`;
-      bgParticles.appendChild(d);
-    }
-  }
+    // Flower at 35 seconds
+    setTimeout(() => {
+        let f = document.getElementById("flower");
+        f.style.opacity = 1;
+        f.style.transition = "all 7s linear";
+        f.style.transform = "translate(-50%, 900px) rotate(25deg)";
+    }, 35000);
 
-  function runFlowerAnimation(){
-    flowerWrap.classList.add('show');
-    const svg = flowerSVG;
-    const startX = -0.2 * window.innerWidth;
-    const endX = 1.2 * window.innerWidth;
-    const startY = 0.05 * window.innerHeight;
-    const endY = 0.6 * window.innerHeight;
-    const duration = 5200; // ms
-    const start = performance.now();
+    // Title at 41.13 seconds
+    setTimeout(() => {
+        let title = document.getElementById("mainTitle");
+        title.style.transition = "all 4s ease";
+        title.style.opacity = 1;
+        title.style.transform = "scale(1.3)";
+    }, 41130);
+};
 
-    function spawnTrail(x,y){
-      const t = document.createElement('div');
-      t.className = 'trail';
-      t.style.left = x + 'px';
-      t.style.top = y + 'px';
-      const size = (6 + Math.random()*10);
-      t.style.width = size + 'px';
-      t.style.height = size + 'px';
-      t.style.opacity = 0.9;
-      document.body.appendChild(t);
-      const life = 800 + Math.random()*600;
-      t.animate([
-        {transform:`translate(-50%,-50%) scale(1)`, opacity:0.9},
-        {transform:`translate(-50%,-50%) scale(0.2)`, opacity:0}
-      ], {duration:life, easing:'ease-out'});
-      setTimeout(()=> t.remove(), life+50);
-    }
-
-    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
-
-    function frame(now){
-      const t = Math.min(1, (now - start)/duration);
-      const eased = easeOutCubic(t);
-      const x = startX + (endX - startX) * eased;
-      const y = startY + (endY - startY) * eased;
-      svg.style.left = x + 'px';
-      svg.style.top = y + 'px';
-      svg.style.transform = `translate(-50%,-50%) scale(${0.9 + eased*0.6}) rotate(${eased*20}deg)`;
-      if(Math.random() < 0.25) spawnTrail(x + 20 - Math.random()*40, y + 10 - Math.random()*20);
-      if(eased < 1) requestAnimationFrame(frame);
-      else {
-        flowerWrap.classList.remove('show');
-      }
-    }
-    requestAnimationFrame(frame);
-  }
-
-  function scheduleSequence(){
-    const audioStart = startedAt + START_DELAY;
-    const now = Date.now();
-    const offset = (t)=> Math.max(0, audioStart + t - now);
-
-    schedule(()=> { label1.classList.add('active'); label1.setAttribute('aria-hidden','false'); }, offset(1000));
-    schedule(()=> { label2.classList.add('active'); label2.setAttribute('aria-hidden','false'); }, offset(8000));
-    schedule(()=> { label3.classList.add('active'); label3.setAttribute('aria-hidden','false'); }, offset(15000));
-    schedule(()=> { runFlowerAnimation(); }, offset(22000));
-    schedule(()=> { finalTitle.classList.add('active'); finalTitle.setAttribute('aria-hidden','false'); }, offset(25000));
-    schedule(()=> { endIntro(); }, offset(44000));
-  }
-
-  function endIntro(){
-    clearAllTimers();
-    try{ audio.pause(); }catch(e){}
-    intro.style.display = 'none';
-    main.style.display = '';
-    main.setAttribute('aria-hidden','false');
-    rampAudioTo(0.6, 800);
-  }
-
-  function skipIntro(){
-    try{ audio.pause(); audio.currentTime = 0; }catch(e){}
-    clearAllTimers();
-    endIntro();
-  }
-
-  function onStart(){
-    if(startedAt) return;
-    startedAt = Date.now();
-    overlay.style.display = 'none';
-    skipBtn.style.display = 'inline-block';
-    schedule(()=> tryPlayAudio(), START_DELAY);
-    scheduleSequence();
-  }
-
-  startBtn.addEventListener('click', onStart);
-  startBtn.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){ e.preventDefault(); onStart(); }
-  });
-
-  overlay.addEventListener('keydown', (e)=> {
-    if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); onStart(); }
-  });
-
-  skipBtn.addEventListener('click', skipIntro);
-
-  window.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape') skipIntro();
-  });
-
-  spawnBackgroundDust(36);
-
-  startBtn.tabIndex = 0;
-
-  audio.volume = 0.0;
-
-  window.addEventListener('keydown', (e)=> {
-    if((e.key === ' ' || e.key === 'Spacebar') && document.activeElement === startBtn) e.preventDefault();
-  });
-
-})();
+skipBtn.onclick = () => {
+    window.location.href = "main.html";
+};
 </script>
+
 </body>
 </html>
