@@ -76,8 +76,10 @@
         <label>✓ Role applying for
           <select name="role" required>
             <option value="">Select a role</option>
-            <option>President</option>
+            <option>Owner</option>
             <option>Admin</option>
+            <option>Manager</option>
+            <option>President</option>
             <option>Mod</option>
             <option>Helper</option>
           </select>
@@ -138,17 +140,38 @@
         </aside>
 
         <section class="content">
-          <article id="staffGuide" class="panel active-panel"><p class="eyebrow">STAFF RESOURCES</p><h1>Staff Guide</h1><div class="placeholder">To be continued</div></article>
-          <article id="abuseGuide" class="panel"><p class="eyebrow">STAFF RESOURCES</p><h1>Abuse Guide</h1><div class="placeholder">To be continued</div></article>
-          <article id="tryoutGuide" class="panel"><p class="eyebrow">STAFF RESOURCES</p><h1>Tryout Guide</h1><div class="placeholder">To be continued</div></article>
-          <article id="ticketGuide" class="panel"><p class="eyebrow">STAFF RESOURCES</p><h1>Ticket Guide</h1><div class="placeholder">To be continued</div></article>
+          <article id="staffGuide" class="panel active-panel">
+            <p class="eyebrow">STAFF RESOURCES</p>
+            <h1>Staff Guide</h1>
+            <div class="placeholder">To be continued</div>
+          </article>
+
+          <article id="abuseGuide" class="panel">
+            <p class="eyebrow">STAFF RESOURCES</p>
+            <h1>Abuse Guide</h1>
+            <div class="placeholder">To be continued</div>
+          </article>
+
+          <article id="tryoutGuide" class="panel">
+            <p class="eyebrow">STAFF RESOURCES</p>
+            <h1>Tryout Guide</h1>
+            <div class="placeholder">To be continued</div>
+          </article>
+
+          <article id="ticketGuide" class="panel">
+            <p class="eyebrow">STAFF RESOURCES</p>
+            <h1>Ticket Guide</h1>
+            <div class="placeholder">To be continued</div>
+          </article>
 
           <article id="loginLogs" class="panel leadership-only">
             <div class="panel-heading">
-              <div><p class="eyebrow">PANEL 5 · SECURITY AUDIT</p><h1>Log Ins</h1></div>
-              <button id="clearLogsButton" class="ghost-button">Clear logs</button>
+              <div>
+                <p class="eyebrow">PANEL 5 · SECURITY AUDIT</p>
+                <h1>Log Ins</h1>
+              </div>
             </div>
-            <p class="muted">Sanitized shared access events. Passwords are never shown.</p>
+            <p class="muted">Unread login events appear in the counter until this panel is opened.</p>
             <p id="logsMessage" class="action-message" role="status"></p>
             <div id="logList" class="log-list"></div>
           </article>
@@ -163,7 +186,7 @@
           <article id="staffAccounts" class="panel leadership-only">
             <p class="eyebrow">PANEL 7 · LEADERSHIP</p>
             <h1>Staff Accounts</h1>
-            <p class="muted">Only leadership can manage applications and staff accounts.</p>
+            <p class="muted">Leadership can change staff ranks or remove staff accounts.</p>
             <p id="accountsMessage" class="action-message" role="status"></p>
             <div id="staffAccountList" class="log-list"></div>
           </article>
