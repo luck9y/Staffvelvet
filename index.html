@@ -1,445 +1,385 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Black Velvet Clan — Reimagined Intro</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Black Velvet Clan — Intro</title>
 
 <!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Press+Start+2P&family=Major+Mono+Display&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Major+Mono+Display&family=Orbitron:wght@700&family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --azul:#4da6ff;
-    --abyss:#ff3b3b;
-    --bg:#000;
-    --audio-target:0.9;
+    --bg:#070407;
+    --velvet:#0b0b0f;
+    --accent1:#2aa6ff;
+    --accent2:#ff6fb3;
+    --accent3:#ffd166;
   }
 
-  html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;color:#fff;font-family:Orbitron, sans-serif;-webkit-font-smoothing:antialiased;}
-
-  /* ---------- Background subtle particles (velvet dust) ---------- */
-  .dust {
-    position:fixed; inset:0; pointer-events:none; z-index:5;
-    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity:0.06;
-    mix-blend-mode:screen;
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0b0710);font-family:Orbitron,system-ui;}
+  .intro-wrap{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, transparent 40%);
+    z-index:9999;
   }
 
-  /* ---------- Start screen ---------- */
-  #start-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(0,0,0,0.95));}
-  #start-btn{padding:18px 48px;border-radius:12px;background:linear-gradient(180deg,#0b0b0b,#151515);border:2px solid #222;color:#ddd;font-size:28px;letter-spacing:3px;cursor:pointer;box-shadow:0 12px 60px rgba(0,0,0,0.7);transition:transform .18s,box-shadow .18s;}
-  #start-btn:hover{transform:scale(1.04);box-shadow:0 18px 80px rgba(0,0,0,0.8);color:#fff;}
+  /* Start overlay */
+  .overlay{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.65));
+    -webkit-backdrop-filter: blur(6px);backdrop-filter: blur(6px);
+  }
+  .start-btn{
+    appearance:none;border:2px solid rgba(255,255,255,0.12);padding:18px 36px;border-radius:10px;color:#fff;background:transparent;font-size:20px;cursor:pointer;
+    font-family:Orbitron, sans-serif;letter-spacing:2px;
+  }
+  .start-btn:focus{outline:3px solid rgba(255,255,255,0.06);}
 
-  /* ---------- Skip ---------- */
-  #skip-btn{position:fixed;top:18px;right:18px;z-index:1001;display:none;background:#111;color:#cfcfcf;padding:8px 14px;border-radius:8px;border:1px solid #2a2a2a;cursor:pointer;font-size:14px;}
-  #skip-btn:hover{background:#222;color:#fff;}
-
-  /* ---------- Vignette ---------- */
-  .vignette{pointer-events:none;position:fixed;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%);z-index:900;}
-
-  /* ---------- Intro text base + outline ---------- */
-  .intro-text{
-    position:fixed; left:50%; top:50%;
-    transform:translate(-50%,-50%) scale(0.6);
-    opacity:0; text-align:center; letter-spacing:2px; z-index:60;
-    pointer-events:auto; will-change:transform,opacity,text-shadow;
-    -webkit-text-stroke: 1.6px rgba(0,0,0,0.95);
-    text-stroke: 1.6px rgba(0,0,0,0.95);
+  .skip-btn{
+    position:absolute;top:18px;right:18px;padding:8px 12px;border-radius:6px;background:rgba(0,0,0,0.45);color:#fff;border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-family:Arial, sans-serif;
+    display:none;
   }
 
-  /* Unique fonts & sizes */
-  #text1{font-family:'Orbitron',sans-serif;font-size:52px;color:#eaeaea;}
-  #textNew{font-family:'Audiowide',cursive;font-size:48px;color:#f6f6f6;}
-  #text2{font-family:'Press Start 2P',monospace;font-size:36px;color:#e8e8e8;letter-spacing:1px;}
-  #bvc{font-family:'Major Mono Display',monospace;font-size:92px;letter-spacing:8px;color:#fff;opacity:0;transform:translate(-50%,-50%) scale(0.6);-webkit-text-stroke:2px rgba(0,0,0,0.98);}
+  /* Background falling petals/velvet dust */
+  .particle-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+  .dust{position:absolute;width:6px;height:6px;border-radius:50%;background:linear-gradient(90deg,#fff2,#fff0);filter:blur(6px);opacity:0.12;animation:fall 12s linear infinite;}
+  @keyframes fall{0%{transform:translateY(-10vh) translateX(0) scale(0.6);opacity:0}50%{opacity:0.18}100%{transform:translateY(110vh) translateX(40vw) scale(1);opacity:0}}
 
-  .small{display:block;margin-top:12px;font-size:18px;color:#dcdcdc;text-shadow:0 0 12px rgba(0,0,0,0.6);}
-
-  .azul{color:var(--azul);text-shadow:0 0 36px rgba(77,166,255,0.95);}
-  .abyss{color:var(--abyss);text-shadow:0 0 36px rgba(255,59,59,0.95);}
-
-  /* ---------- Continuous pass animations (7s each) ---------- */
-  @keyframes passLeft7 {
-    0%   { transform:translate(-50%,-50%) scale(0.6) rotate(-4deg); opacity:0; filter:blur(2px); }
-    10%  { transform:translate(-50%,-50%) scale(1.02) rotate(0deg); opacity:1; filter:blur(0); }
-    100% { transform:translate(-220%,-50%) scale(3.6) rotate(-12deg); opacity:0; filter:blur(12px); }
+  /* Label base */
+  .label{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateZ(0);
+    color:#fff;font-weight:700;text-align:center;white-space:nowrap;padding:6px 12px;
+    -webkit-text-stroke:1px rgba(0,0,0,0.6);
   }
-  @keyframes passUp7 {
-    0%   { transform:translate(-50%,-50%) scale(0.6) rotate(3deg); opacity:0; filter:blur(2px); }
-    10%  { transform:translate(-50%,-50%) scale(1.02) rotate(0deg); opacity:1; filter:blur(0); }
-    100% { transform:translate(-50%,-420%) scale(3.4) rotate(20deg); opacity:0; filter:blur(12px); }
-  }
-  @keyframes passRight7 {
-    0%   { transform:translate(-50%,-50%) scale(0.6) rotate(-2deg); opacity:0; filter:blur(2px); }
-    10%  { transform:translate(-50%,-50%) scale(1.02) rotate(0deg); opacity:1; filter:blur(0); }
-    100% { transform:translate(420%,-50%) scale(3.6) rotate(16deg); opacity:0; filter:blur(12px); }
+  .label::after{
+    content:attr(data-text);position:absolute;left:0;top:0;width:100%;height:100%;z-index:-1;color:inherit;
+    filter:blur(14px) saturate(120%);opacity:0.85;transform:translate(6px,6px) scale(1.02);
+    mix-blend-mode:screen;transition:filter 300ms, transform 300ms;
   }
 
-  /* final title: long, cinematic pass (10s) but appears at audio+25s */
-  @keyframes finalPassLong {
-    0%   { transform:translate(-50%,-50%) scale(0.45) rotate(-6deg); opacity:0; filter:blur(3px); }
-    20%  { transform:translate(-50%,-50%) scale(1.25) rotate(0deg); opacity:1; filter:blur(0); }
-    80%  { transform:translate(-45%,-50%) scale(3.0) rotate(10deg); opacity:1; filter:blur(0); }
-    100% { transform:translate(420%,-50%) scale(5.0) rotate(22deg); opacity:0; filter:blur(14px); }
-  }
+  /* Per-label fonts & sizes */
+  .label.l1{font-family:Orbitron, sans-serif;font-size:48px;letter-spacing:6px;}
+  .label.l2{font-family:Audiowide, sans-serif;font-size:40px;letter-spacing:2px;}
+  .label.l3{font-family:Press+Start+2P, monospace;font-size:20px;letter-spacing:1px;}
+  .label.final{font-family:Major+Mono+Display, monospace;font-size:72px;letter-spacing:8px;}
 
-  /* ---------- Afterimage / water aura via ::after ---------- */
-  .intro-text::after{
-    content: attr(data-text);
-    position:absolute; left:50%; top:50%;
-    transform:translate(-50%,-50%) scale(0.6);
-    z-index:-1; opacity:0.6; filter: blur(14px) saturate(1.2);
-    -webkit-text-stroke:0.8px rgba(0,0,0,0.9); pointer-events:none; white-space:pre;
-  }
-  #text1::after{ color: rgba(77,166,255,0.55); text-shadow:0 0 40px rgba(77,166,255,0.95); }
-  #textNew::after{ color: rgba(120,200,255,0.45); text-shadow:0 0 36px rgba(120,200,255,0.85); }
-  #text2::after{ color: rgba(255,80,80,0.45); text-shadow:0 0 36px rgba(255,80,80,0.9); }
-  #bvc::after{ color: rgba(220,220,255,0.45); text-shadow:0 0 80px rgba(220,220,255,0.95); }
+  /* Glow color variants */
+  .l1::after{color:var(--accent1);filter:blur(18px) drop-shadow(0 0 18px rgba(42,166,255,0.6));}
+  .l2::after{color:var(--accent2);filter:blur(16px) drop-shadow(0 0 16px rgba(255,111,179,0.55));}
+  .l3::after{color:var(--accent3);filter:blur(12px) drop-shadow(0 0 12px rgba(255,209,102,0.45));}
+  .final::after{color:#fff;filter:blur(28px) drop-shadow(0 0 28px rgba(0,0,0,0.6));opacity:0.95;}
 
-  /* aura animations (blurred trailing) */
-  @keyframes auraLeft7 { 0%{transform:translate(-50%,-50%) scale(0.6);} 10%{transform:translate(-50%,-50%) scale(1.02);} 100%{transform:translate(-260%,-50%) scale(4.2); opacity:0.12;} }
-  @keyframes auraUp7   { 0%{transform:translate(-50%,-50%) scale(0.6);} 10%{transform:translate(-50%,-50%) scale(1.02);} 100%{transform:translate(-50%,-480%) scale(4.0); opacity:0.12;} }
-  @keyframes auraRight7{ 0%{transform:translate(-50%,-50%) scale(0.6);} 10%{transform:translate(-50%,-50%) scale(1.02);} 100%{transform:translate(480%,-50%) scale(4.2); opacity:0.12;} }
-  @keyframes auraFinal10{ 0%{transform:translate(-50%,-50%) scale(0.45);} 20%{transform:translate(-50%,-50%) scale(1.25);} 100%{transform:translate(420%,-50%) scale(5.2); opacity:0.08;} }
+  /* Motion keyframes (7s passes) */
+  @keyframes passLeft7{0%{transform:translate(-50%,-50%) scale(0.9) translateX(0) translateZ(0);opacity:1}100%{transform:translate(-150%,-60%) scale(2.2) translateZ(0);opacity:0}}
+  @keyframes passUp7{0%{transform:translate(-50%,-50%) scale(0.95) translateY(0)}100%{transform:translate(-40%,-200%) scale(2.6);opacity:0}}
+  @keyframes passRight7{0%{transform:translate(-50%,-50%) scale(0.95) translateX(0)}100%{transform:translate(60%,-40%) scale(3);opacity:0}}
+  @keyframes finalPassLong{0%{transform:translate(-50%,-50%) scale(0.9);opacity:0}10%{opacity:1}100%{transform:translate(-50%,-50%) scale(6);opacity:0}}
 
-  .play-aura-left::after{ animation: auraLeft7 9s cubic-bezier(.2,.8,.2,1) forwards; }
-  .play-aura-up::after{ animation: auraUp7 9s cubic-bezier(.2,.8,.2,1) forwards; }
-  .play-aura-right::after{ animation: auraRight7 9s cubic-bezier(.2,.8,.2,1) forwards; }
-  .play-aura-final::after{ animation: auraFinal10 12s cubic-bezier(.2,.8,.2,1) forwards; }
+  /* Apply animations when active */
+  .active.l1{animation:passLeft7 7s linear forwards;}
+  .active.l2{animation:passUp7 7s cubic-bezier(.22,.9,.3,1) forwards;}
+  .active.l3{animation:passRight7 7s cubic-bezier(.2,.8,.25,1) forwards;}
+  .active.final{animation:finalPassLong 10s ease-in-out forwards;}
 
-  /* ---------- Detailed flower (SVG container) ---------- */
-  .flower-wrap { position:fixed; inset:0; pointer-events:none; z-index:110; }
-  .flower-svg { width:220px; height:220px; position:fixed; left:50%; top:-160px; transform:translateX(-50%) scale(0.9); opacity:0; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6)); }
+  /* Flower container */
+  .flower-wrap{position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-start;justify-content:center;overflow:visible;opacity:0;transition:opacity 400ms;}
+  .flower-wrap.show{opacity:1;}
 
-  /* trail particles for flower */
-  .trail { position:fixed; pointer-events:none; z-index:105; left:0; top:0; }
+  /* Simple particle trail style */
+  .trail{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff8,#ff6fb3);filter:blur(6px);opacity:0.9;pointer-events:none;mix-blend-mode:screen;}
 
-  /* main site placeholder */
-  #main-site{ display:none; padding:40px; z-index:1; position:relative; color:#ddd; background:linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.02)); }
+  /* Accessibility: hide main content until intro done or skipped */
+  #main-content{display:none;}
 </style>
 </head>
 <body>
 
-<!-- Audio -->
-<audio id="intro-audio" src="sounds/intro.mp3" preload="auto"></audio>
+<div class="intro-wrap" id="intro">
+  <div class="overlay" id="overlay" role="dialog" aria-label="Intro start overlay">
+    <button class="start-btn" id="startBtn" aria-label="Start intro">START</button>
+    <div style="color:#ddd;opacity:0.7;font-size:13px">Press Enter or Space to start</div>
+  </div>
 
-<!-- Start screen -->
-<div id="start-screen"><div id="start-btn" role="button" tabindex="0">START</div></div>
+  <button class="skip-btn" id="skipBtn" aria-label="Skip intro">Skip Intro</button>
 
-<!-- Skip -->
-<div id="skip-btn">Skip Intro</div>
+  <div class="particle-bg" id="bgParticles" aria-hidden="true"></div>
 
-<!-- Dust + vignette -->
-<div class="dust"></div>
-<div class="vignette"></div>
+  <!-- Labels (hidden until scheduled) -->
+  <div class="label l1" id="label1" data-text="AZUL CLAN" aria-hidden="true">AZUL CLAN</div>
+  <div class="label l2" id="label2" data-text="Back stronger." aria-hidden="true">Back stronger.</div>
+  <div class="label l3" id="label3" data-text="Reborn in the flames of the abyss" aria-hidden="true">Reborn in the flames of the abyss</div>
+  <div class="label final" id="finalTitle" data-text="BLACK VELVET CLAN" aria-hidden="true">BLACK VELVET CLAN</div>
 
-<!-- Intro texts (data-text used by ::after for aura copy) -->
-<div id="text1" class="intro-text" data-text="By the founders of AZUL CLAN">By the founders of <span class="azul">AZUL CLAN</span></div>
-<div id="textNew" class="intro-text" data-text="Back stronger.">Back stronger.</div>
-<div id="text2" class="intro-text" data-text="Reborn in the flames of the abyss">Reborn in the flames of the abyss</div>
+  <!-- Flower SVG (inline, animated via JS) -->
+  <div class="flower-wrap" id="flowerWrap" aria-hidden="true">
+    <svg id="flowerSVG" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+      <defs>
+        <radialGradient id="g1" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#fff6" stop-opacity="0.95"/>
+          <stop offset="60%" stop-color="#ff6fb3" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#2aa6ff" stop-opacity="0.05"/>
+        </radialGradient>
+        <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
 
-<div id="bvc" class="intro-text" data-text="BLACK VELVET CLAN">BLACK VELVET CLAN<span class="small">Founders by Luckyy and Suoaz</span></div>
+      <g transform="translate(110,110)" filter="url(#softGlow)">
+        <!-- layered petals -->
+        <g id="petals">
+          <g id="p1" fill="url(#g1)" opacity="0.95">
+            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(0) scale(0.45)"/>
+            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(30) scale(0.42)"/>
+            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(60) scale(0.39)"/>
+            <path d="M0 -60 C18 -40 40 -18 60 0 C40 18 18 40 0 60 C-18 40 -40 18 -60 0 C-40 -18 -18 -40 0 -60Z" transform="rotate(90) scale(0.36)"/>
+          </g>
+        </g>
 
-<!-- Detailed flower SVG container (hidden until triggered) -->
-<div class="flower-wrap" id="flower-wrap" aria-hidden="true">
-  <svg class="flower-svg" id="flower-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="petalGrad" cx="30%" cy="30%">
-        <stop offset="0%" stop-color="#1a1a1a"/>
-        <stop offset="45%" stop-color="#0b0b0b"/>
-        <stop offset="100%" stop-color="#000000"/>
-      </radialGradient>
-      <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="6" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-
-    <!-- center core -->
-    <circle cx="100" cy="100" r="18" fill="#0b0b0b" stroke="#222" stroke-width="2" />
-
-    <!-- layered petals (rotated) -->
-    <g id="petals" transform="translate(100,100)">
-      <!-- 8 petals -->
-      <g id="p0" transform="rotate(0)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" filter="url(#softGlow)"/>
+        <!-- center sheen -->
+        <circle cx="0" cy="0" r="18" fill="rgba(255,255,255,0.9)" opacity="0.12"/>
+        <circle cx="0" cy="0" r="8" fill="#fff" opacity="0.06"/>
       </g>
-      <g id="p1" transform="rotate(45)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.98"/>
-      </g>
-      <g id="p2" transform="rotate(90)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.96"/>
-      </g>
-      <g id="p3" transform="rotate(135)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.94"/>
-      </g>
-      <g id="p4" transform="rotate(180)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.92"/>
-      </g>
-      <g id="p5" transform="rotate(225)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.9"/>
-      </g>
-      <g id="p6" transform="rotate(270)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.88"/>
-      </g>
-      <g id="p7" transform="rotate(315)">
-        <path d="M0,-18 C28,-40 48,-40 60,-18 C48,-8 28,-8 0,-18 Z" fill="url(#petalGrad)" opacity="0.86"/>
-      </g>
-    </g>
-
-    <!-- subtle center sheen -->
-    <ellipse cx="100" cy="92" rx="10" ry="6" fill="rgba(255,255,255,0.03)"/>
-  </svg>
+    </svg>
+  </div>
 </div>
 
-<!-- trail container -->
-<div id="trail" class="trail"></div>
+<!-- Main site placeholder -->
+<main id="main-content" aria-hidden="true">
+  <h1 style="color:#fff;text-align:center;padding:40px">Main site content</h1>
+</main>
 
-<!-- main site -->
-<div id="main-site"><h1>Welcome to Black Velvet Clan</h1><p>Main site content goes here.</p></div>
+<!-- Audio element (preload metadata) -->
+<audio id="introAudio" preload="metadata">
+  <source src="sounds/intro.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
 <script>
-/* ---------- Elements ---------- */
-const audio = document.getElementById('intro-audio');
-const startBtn = document.getElementById('start-btn');
-const skipBtn = document.getElementById('skip-btn');
-const text1 = document.getElementById('text1');
-const textNew = document.getElementById('textNew');
-const text2 = document.getElementById('text2');
-const bvc = document.getElementById('bvc');
-const mainSite = document.getElementById('main-site');
-const flowerWrap = document.getElementById('flower-wrap');
-const flowerSvg = document.getElementById('flower-svg');
-const trail = document.getElementById('trail');
+(function(){
+  const START_DELAY = 4000; // ms after Start click until audio begins
+  const audio = document.getElementById('introAudio');
+  const startBtn = document.getElementById('startBtn');
+  const overlay = document.getElementById('overlay');
+  const skipBtn = document.getElementById('skipBtn');
+  const intro = document.getElementById('intro');
+  const main = document.getElementById('main-content');
 
-/* ---------- Audio helpers (delayed start + ramp) ---------- */
-function rampAudioTo(target, durationMs = 3000) {
-  try {
-    audio.volume = 0;
-    const stepMs = 50;
-    const steps = Math.max(1, Math.floor(durationMs / stepMs));
-    let currentStep = 0;
-    const iv = setInterval(() => {
-      currentStep++;
-      const t = currentStep / steps;
-      audio.volume = Math.min(target, target * t);
-      if (currentStep >= steps) { clearInterval(iv); audio.volume = target; }
-    }, stepMs);
-  } catch (e) {}
-}
+  const label1 = document.getElementById('label1');
+  const label2 = document.getElementById('label2');
+  const label3 = document.getElementById('label3');
+  const finalTitle = document.getElementById('finalTitle');
+  const flowerWrap = document.getElementById('flowerWrap');
+  const bgParticles = document.getElementById('bgParticles');
 
-function playAudioDelayed(delayMs = 4000) {
-  setTimeout(() => {
-    audio.volume = 0;
-    audio.play().then(() => {
-      rampAudioTo(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--audio-target')) || 0.9, 3500);
-    }).catch(() => {
+  let timers = [];
+  let startedAt = null;
+  let audioStarted = false;
+
+  /* Utility: schedule and track timeouts so Skip can clear them */
+  function schedule(fn, ms){
+    const id = setTimeout(fn, ms);
+    timers.push(id);
+    return id;
+  }
+  function clearAllTimers(){
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  /* Audio ramp helper */
+  function rampAudioTo(target, duration){
+    const start = audio.volume;
+    const delta = target - start;
+    const steps = Math.max(12, Math.floor(duration/50));
+    let i = 0;
+    const step = () => {
+      i++;
+      const t = i/steps;
+      audio.volume = Math.min(1, Math.max(0, start + delta * t));
+      if(i < steps) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  /* Robust play with gesture fallback */
+  function tryPlayAudio(){
+    if(audioStarted) return;
+    audioStarted = true;
+    audio.volume = 0.0;
+    audio.play().then(()=> {
+      rampAudioTo(0.7, 3500);
+    }).catch(()=> {
+      // attach one-time gesture to resume
       const resume = () => {
-        audio.play().then(() => rampAudioTo(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--audio-target')) || 0.9, 3500)).catch(()=>{});
+        audio.play().then(()=> rampAudioTo(0.7, 3500)).catch(()=>{});
         window.removeEventListener('pointerdown', resume);
         window.removeEventListener('touchstart', resume);
       };
-      window.addEventListener('pointerdown', resume, { once: true });
-      window.addEventListener('touchstart', resume, { once: true });
+      window.addEventListener('pointerdown', resume, {once:true});
+      window.addEventListener('touchstart', resume, {once:true});
     });
-  }, delayMs);
-}
-
-/* ---------- Mouse proximity glow (keeps outline) ---------- */
-const introEls = [text1, textNew, text2, bvc];
-function updateGlow(e) {
-  introEls.forEach(el => {
-    if (!el || el.style.display === 'none') return;
-    const r = el.getBoundingClientRect();
-    const cx = r.left + r.width/2, cy = r.top + r.height/2;
-    const dx = e.clientX - cx, dy = e.clientY - cy;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const max = Math.max(window.innerWidth, window.innerHeight);
-    const t = Math.max(0, 1 - (dist / (max * 0.6)));
-    const glow = 12 + Math.round(48 * t);
-    const spread = 6 + Math.round(36 * t);
-    let color = 'rgba(255,255,255,' + (0.6 + 0.4*t) + ')';
-    if (el.id === 'text1') color = 'rgba(77,166,255,' + (0.6 + 0.4*t) + ')';
-    if (el.id === 'text2') color = 'rgba(255,59,59,' + (0.6 + 0.4*t) + ')';
-    if (el.id === 'textNew') color = 'rgba(120,200,255,' + (0.55 + 0.45*t) + ')';
-    if (el.id === 'bvc') color = 'rgba(220,220,255,' + (0.6 + 0.4*t) + ')';
-    el.style.textShadow = `0 0 ${glow}px ${color}, 0 0 ${spread}px rgba(0,0,0,0.45)`;
-    const scale = 0.98 + 0.12 * t;
-    el.style.transform = `translate(-50%,-50%) scale(${scale})`;
-  });
-}
-window.addEventListener('pointermove', updateGlow);
-
-/* ---------- Petals background spawn ---------- */
-function spawnDust(count = 28) {
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.className = 'petal';
-    p.style.left = (Math.random() * 100) + 'vw';
-    const s = 10 + Math.random() * 28;
-    p.style.width = s + 'px';
-    p.style.height = (s * 0.9) + 'px';
-    const dur = 4 + Math.random() * 7;
-    p.style.animationDuration = dur + 's';
-    p.style.animationDelay = (Math.random() * 2) + 's';
-    p.style.opacity = 0.45 + Math.random() * 0.5;
-    document.body.appendChild(p);
-    p.style.animationName = 'fall';
-    p.style.animationTimingFunction = 'linear';
-    p.style.animationIterationCount = 'infinite';
   }
-}
 
-/* ---------- Trail particles for flower (small glowing dust) ---------- */
-function spawnTrailParticle(x, y, color) {
-  const t = document.createElement('div');
-  t.style.position = 'fixed';
-  t.style.left = x + 'px';
-  t.style.top = y + 'px';
-  const size = 6 + Math.random() * 10;
-  t.style.width = size + 'px';
-  t.style.height = size + 'px';
-  t.style.borderRadius = '50%';
-  t.style.background = color;
-  t.style.opacity = 0.9;
-  t.style.pointerEvents = 'none';
-  t.style.zIndex = 104;
-  t.style.filter = 'blur(6px)';
-  trail.appendChild(t);
-  // animate fade and drift
-  const dx = (Math.random() - 0.5) * 120;
-  const dy = 80 + Math.random() * 120;
-  t.animate([
-    { transform: 'translate(0,0) scale(1)', opacity: 0.9 },
-    { transform: `translate(${dx}px, ${dy}px) scale(0.6)`, opacity: 0.05 }
-  ], { duration: 1600 + Math.random() * 800, easing: 'cubic-bezier(.2,.8,.2,1)' });
-  setTimeout(() => t.remove(), 2200 + Math.random() * 800);
-}
+  /* Create background dust particles */
+  function spawnBackgroundDust(count=28){
+    const w = window.innerWidth, h = window.innerHeight;
+    for(let i=0;i<count;i++){
+      const d = document.createElement('div');
+      d.className = 'dust';
+      d.style.left = Math.random()*100 + 'vw';
+      d.style.top = (-10 - Math.random()*10) + 'vh';
+      d.style.width = (4 + Math.random()*8) + 'px';
+      d.style.height = d.style.width;
+      d.style.opacity = (0.05 + Math.random()*0.18);
+      d.style.animationDelay = (Math.random()*6) + 's';
+      d.style.transform = `translateX(${(Math.random()*40-20)}vw)`;
+      bgParticles.appendChild(d);
+    }
+  }
 
-/* ---------- Detailed flower animation across screen ---------- */
-function spawnDetailedFlowerAcross() {
-  // show SVG and animate across with easing
-  flowerSvg.style.transition = 'none';
-  flowerSvg.style.opacity = '0';
-  flowerSvg.style.transform = 'translateX(-50%) translateY(-160px) scale(0.9) rotate(-10deg)';
-  flowerWrap.style.pointerEvents = 'none';
-  // small delay then animate
-  requestAnimationFrame(() => {
-    flowerSvg.style.transition = 'transform 6.2s cubic-bezier(.2,.8,.2,1), opacity 0.6s linear';
-    flowerSvg.style.opacity = '1';
-    // animate path: start above center, move diagonally across screen
-    const startX = window.innerWidth * 1.1;
-    const endX = -window.innerWidth * 0.4;
-    const startY = -160;
-    const midY = window.innerHeight * 0.45;
-    const endY = window.innerHeight * 1.2;
-    // use CSS transforms relative to center: we'll animate left/top via style
-    flowerSvg.style.left = startX + 'px';
-    flowerSvg.style.top = startY + 'px';
-    // animate using JS for better control and spawn trail particles
-    const duration = 6200;
+  /* Flower animation + trail */
+  function runFlowerAnimation(){
+    flowerWrap.classList.add('show');
+    const svg = document.getElementById('flowerSVG');
+    const startX = -0.2 * window.innerWidth;
+    const endX = 1.2 * window.innerWidth;
+    const startY = 0.05 * window.innerHeight;
+    const endY = 0.6 * window.innerHeight;
+    const duration = 5200; // ms
     const start = performance.now();
-    function step(now) {
-      const t = Math.min(1, (now - start) / duration);
-      // ease
-      const ease = (t) => (--t)*t*t+1; // easeOutCubic
-      const e = ease(t);
-      const x = startX + (endX - startX) * e;
-      const y = startY + (endY - startY) * e + Math.sin(e * Math.PI * 2) * 40;
-      flowerSvg.style.left = x + 'px';
-      flowerSvg.style.top = y + 'px';
-      // spawn trail particles along the way
-      if (Math.random() < 0.25) {
-        spawnTrailParticle(x + 110, y + 110, 'rgba(20,20,30,0.9)');
-        spawnTrailParticle(x + 90, y + 120, 'rgba(60,60,80,0.12)');
-      }
-      if (t < 1) requestAnimationFrame(step);
+
+    function spawnTrail(x,y){
+      const t = document.createElement('div');
+      t.className = 'trail';
+      t.style.left = x + 'px';
+      t.style.top = y + 'px';
+      t.style.width = (6 + Math.random()*10) + 'px';
+      t.style.height = t.style.width;
+      t.style.opacity = 0.9;
+      document.body.appendChild(t);
+      const life = 800 + Math.random()*600;
+      t.animate([
+        {transform:`translate(-50%,-50%) scale(1)`, opacity:0.9},
+        {transform:`translate(-50%,-50%) scale(0.2)`, opacity:0}
+      ], {duration:life, easing:'ease-out'});
+      setTimeout(()=> t.remove(), life+50);
+    }
+
+    function frame(now){
+      const t = Math.min(1, (now - start)/duration);
+      // easing
+      const ease = (--t)*t*t+1;
+      const x = startX + (endX - startX) * ease;
+      const y = startY + (endY - startY) * ease;
+      svg.style.position = 'fixed';
+      svg.style.left = x + 'px';
+      svg.style.top = y + 'px';
+      svg.style.transform = `translate(-50%,-50%) scale(${0.9 + ease*0.6}) rotate(${ease*20}deg)`;
+      // spawn trail occasionally
+      if(Math.random() < 0.25) spawnTrail(x + 20 - Math.random()*40, y + 10 - Math.random()*20);
+      if(ease < 1) requestAnimationFrame(frame);
       else {
         // fade out
-        flowerSvg.style.transition = 'opacity .6s linear';
-        flowerSvg.style.opacity = '0';
-        setTimeout(() => { try { flowerSvg.style.left = '-9999px'; } catch(e){} }, 700);
+        flowerWrap.classList.remove('show');
       }
     }
-    requestAnimationFrame(step);
+    requestAnimationFrame(frame);
+  }
+
+  /* Schedule labels relative to audio start */
+  function scheduleSequence(){
+    // All offsets are relative to audio start (ms)
+    // Label 1: audio+1s, duration 7s
+    // Label 2: immediately after label1 (audio+8s), duration 7s
+    // Label 3: immediately after label2 (audio+15s), duration 7s
+    // Flower: immediately after label3 finishes (audio+22s)
+    // Final title: audio+25s (long 10s)
+    const audioStart = startedAt + START_DELAY;
+    const now = Date.now();
+
+    const offset = (t)=> Math.max(0, audioStart + t - now);
+
+    // label1 at audio+1s
+    schedule(()=> { label1.classList.add('active','l1'); label1.setAttribute('aria-hidden','false'); }, offset(1000));
+    // label2 at audio+8s
+    schedule(()=> { label2.classList.add('active','l2'); label2.setAttribute('aria-hidden','false'); }, offset(8000));
+    // label3 at audio+15s
+    schedule(()=> { label3.classList.add('active','l3'); label3.setAttribute('aria-hidden','false'); }, offset(15000));
+    // flower at audio+22s (immediately after label3 finishes)
+    schedule(()=> { runFlowerAnimation(); }, offset(22000));
+    // final title at audio+25s
+    schedule(()=> { finalTitle.classList.add('active','final'); finalTitle.setAttribute('aria-hidden','false'); }, offset(25000));
+    // end of intro at audio+44s -> reveal main content
+    schedule(()=> { endIntro(); }, offset(44000));
+  }
+
+  function endIntro(){
+    clearAllTimers();
+    // hide intro and show main content
+    intro.style.display = 'none';
+    main.style.display = '';
+    main.setAttribute('aria-hidden','false');
+    // stop audio ramp to normal if still playing
+    rampAudioTo(0.6, 800);
+  }
+
+  /* Skip handler */
+  function skipIntro(){
+    // stop audio
+    try{ audio.pause(); audio.currentTime = 0; }catch(e){}
+    endIntro();
+  }
+
+  /* Start click handler */
+  function onStart(){
+    if(startedAt) return;
+    startedAt = Date.now();
+    overlay.style.display = 'none';
+    skipBtn.style.display = 'inline-block';
+    // schedule audio start after 4s
+    schedule(()=> tryPlayAudio(), START_DELAY);
+    // schedule label sequence relative to audio start
+    scheduleSequence();
+  }
+
+  /* Keyboard accessibility for Start */
+  startBtn.addEventListener('click', onStart);
+  startBtn.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); onStart(); }
   });
-}
 
-/* ---------- Sequence scheduling (synced to audio) ----------
-   - Start click t=0
-   - audio starts at t=4000ms
-   - text1 starts at 5000ms (audio+1s) duration 7s => ends 12000ms
-   - textNew starts at 12000ms duration 7s => ends 19000ms
-   - text2 starts at 19000ms duration 7s => ends 26000ms
-   - after text2 ends (26000ms) spawn detailed flower across (~6.2s)
-   - BLACK VELVET CLAN appears at audio+25s => 4000 + 25000 = 29000ms after click
-   - final pass lasts 10s; end intro at audio+44s => 48000ms after click
-*/
-function startSequence() {
-  spawnDust(36);
-  playAudioDelayed(4000);
+  // Also allow Enter/Space when overlay focused
+  overlay.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onStart(); }
+  });
 
-  // text1: 7s pass left
-  setTimeout(() => {
-    text1.style.display = 'block';
-    text1.classList.add('play-aura-left');
-    text1.style.animation = 'passLeft7 7s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 5000);
+  // Skip button
+  skipBtn.addEventListener('click', skipIntro);
 
-  // textNew: 7s pass up
-  setTimeout(() => {
-    textNew.style.display = 'block';
-    textNew.classList.add('play-aura-up');
-    textNew.style.animation = 'passUp7 7s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 12000);
+  // If audio play is blocked, attach fallback pointerdown to resume (one-time)
+  audio.addEventListener('play', ()=> { /* no-op; handled in tryPlayAudio */ });
 
-  // text2: 7s pass right
-  setTimeout(() => {
-    text2.style.display = 'block';
-    text2.classList.add('play-aura-right');
-    text2.style.animation = 'passRight7 7s cubic-bezier(.2,.8,.2,1) forwards';
-  }, 19000);
+  // Spawn background dust
+  spawnBackgroundDust(36);
 
-  // after text2 ends (26s), spawn detailed flower across
-  setTimeout(() => {
-    // fade small dust
-    document.querySelectorAll('.petal').forEach(p => { p.style.transition = 'opacity .8s linear'; p.style.opacity = '0'; });
-    spawnDetailedFlowerAcross();
-  }, 26000);
+  // Make sure Start is keyboard-focusable
+  startBtn.tabIndex = 0;
 
-  // final title at audio+25s => 29s after click
-  setTimeout(() => {
-    bvc.style.display = 'block';
-    bvc.classList.add('play-aura-final');
-    bvc.style.animation = 'finalPassLong 10s cubic-bezier(.2,.8,.2,1) forwards';
-    rampAudioTo(0.98, 3500);
-  }, 29000);
+  // Expose skip via Escape key
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape') skipIntro();
+  });
 
-  // end intro at audio+44s => 48s after click
-  setTimeout(() => endIntro(), 48000);
-}
+  // Ensure audio volume is set before play attempts
+  audio.volume = 0.0;
 
-/* ---------- End intro cleanup ---------- */
-function endIntro() {
-  document.querySelectorAll('.petal').forEach(p => p.remove());
-  [text1, textNew, text2, bvc].forEach(el => { if (el) el.style.display = 'none'; });
-  skipBtn.style.display = 'none';
-  mainSite.style.display = 'block';
-  try { audio.pause(); audio.currentTime = 0; } catch (e) {}
-}
+  // Prevent accidental scrolling on space when overlay is focused
+  window.addEventListener('keydown', (e)=> {
+    if((e.key === ' ' || e.key === 'Spacebar') && document.activeElement === startBtn) e.preventDefault();
+  });
 
-/* ---------- Handlers ---------- */
-startBtn.addEventListener('click', () => {
-  document.getElementById('start-screen').style.display = 'none';
-  skipBtn.style.display = 'block';
-  startSequence();
-});
-skipBtn.addEventListener('click', endIntro);
-startBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startBtn.click(); } });
-
-/* cleanup on unload */
-window.addEventListener('beforeunload', () => { try { audio.pause(); } catch (e) {} });
+})();
 </script>
 </body>
 </html>
