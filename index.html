@@ -12,7 +12,7 @@
     --azul: #4da6ff;
     --abyss: #ff3b3b;
     --bg: #000;
-    --audio-target: 0.75;
+    --audio-target: 0.85;
   }
 
   html,body{
@@ -42,6 +42,30 @@
   @keyframes fall {
     0% { transform: translateY(0) rotate(0deg); opacity:0.95; }
     100% { transform: translateY(120vh) rotate(720deg); opacity:0.15; }
+  }
+
+  /* Big single flower that crosses the screen */
+  .big-flower {
+    position:fixed;
+    top:-120px;
+    left:110%;
+    width:120px;
+    height:120px;
+    background: radial-gradient(circle at 30% 30%, #0b0b0b 30%, #000 100%);
+    border-radius:50% 50% 40% 60%;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 -12px 20px rgba(30,30,30,0.7);
+    z-index:120;
+    pointer-events:none;
+    opacity:0;
+    transform: rotate(-20deg) scale(0.9);
+  }
+
+  @keyframes bigFallAcross {
+    0% { transform: translateX(0) translateY(0) rotate(-20deg) scale(0.9); opacity:0; left:110%; top:-120px; }
+    10% { opacity:1; }
+    50% { left:10%; top:40vh; transform: rotate(10deg) scale(1.05); opacity:1; }
+    90% { left:-40%; top:110vh; transform: rotate(40deg) scale(1.2); opacity:0.6; }
+    100% { left:-60%; top:140vh; opacity:0; transform: rotate(60deg) scale(1.3); }
   }
 
   /* Start screen */
@@ -144,11 +168,12 @@
     100% { transform: translate(160%,-50%) scale(2.8) rotate(8deg); opacity:0; filter:blur(8px); }
   }
 
-  @keyframes zoomDepth {
-    0%   { transform: translate(-50%,-50%) scale(0.4) rotate(-6deg); opacity:0; filter:blur(3px); }
-    25%  { transform: translate(-50%,-50%) scale(1.3) rotate(0deg); opacity:1; filter:blur(0); }
-    60%  { transform: translate(-45%,-50%) scale(2.2) rotate(10deg); opacity:1; filter:blur(0); }
-    100% { transform: translate(220%,-50%) scale(3.6) rotate(18deg); opacity:0; filter:blur(10px); }
+  /* slower, longer final zoom-through (10s) */
+  @keyframes zoomDepthLong {
+    0%   { transform: translate(-50%,-50%) scale(0.45) rotate(-6deg); opacity:0; filter:blur(3px); }
+    25%  { transform: translate(-50%,-50%) scale(1.25) rotate(0deg); opacity:1; filter:blur(0); }
+    65%  { transform: translate(-45%,-50%) scale(2.4) rotate(10deg); opacity:1; filter:blur(0); }
+    100% { transform: translate(260%,-50%) scale(4.0) rotate(22deg); opacity:0; filter:blur(12px); }
   }
 
   /* Afterimage / water aura pseudo-element base */
@@ -161,7 +186,7 @@
     z-index: -1;
     opacity: 0.55;
     filter: blur(10px) saturate(1.2);
-    -webkit-text-stroke: 0.8px rgba(0,0,0,0.9); /* outline for aura copy too */
+    -webkit-text-stroke: 0.8px rgba(0,0,0,0.9);
     pointer-events:none;
     transition: opacity .2s ease;
     white-space: pre;
@@ -195,8 +220,8 @@
     100% { transform: translate(200%,-50%) scale(3.2) rotate(12deg); opacity:0.12; filter:blur(18px); }
   }
 
-  @keyframes auraDepth {
-    0%   { transform: translate(-50%,-50%) scale(0.4) rotate(-6deg); opacity:0.45; filter:blur(14px); }
+  @keyframes auraDepthLong {
+    0%   { transform: translate(-50%,-50%) scale(0.45) rotate(-6deg); opacity:0.45; filter:blur(14px); }
     30%  { transform: translate(-50%,-50%) scale(1.35) rotate(0deg); opacity:0.7; filter:blur(8px); }
     60%  { transform: translate(-45%,-50%) scale(2.6) rotate(12deg); opacity:0.5; filter:blur(10px); }
     100% { transform: translate(260%,-50%) scale(4.0) rotate(22deg); opacity:0.08; filter:blur(22px); }
@@ -302,15 +327,13 @@ function rampAudioTo(target, durationMs = 3000) {
 /* robust audio start delayed by 4s, with fade-in */
 function playAudioDelayed(delayMs = 4000) {
   setTimeout(() => {
-    // set volume to 0 and attempt play, then ramp
     audio.volume = 0;
     audio.play().then(() => {
-      rampAudioTo(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--audio-target')) || 0.75, 3000);
+      rampAudioTo(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--audio-target')) || 0.85, 3500);
     }).catch(() => {
-      // if blocked, attach one-time gesture to resume and ramp
       const resume = () => {
         audio.play().then(() => {
-          rampAudioTo(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--audio-target')) || 0.75, 3000);
+          rampAudioTo(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--audio-target')) || 0.85, 3500);
         }).catch(()=>{});
         window.removeEventListener('pointerdown', resume);
         window.removeEventListener('touchstart', resume);
@@ -343,7 +366,6 @@ function updateGlowOnPointer(e) {
     if (el.id === 'bvc') color = 'rgba(220,220,255,' + (0.6 + 0.4*t) + ')';
     el.style.textShadow = `0 0 ${glow}px ${color}, 0 0 ${spread}px rgba(0,0,0,0.45)`;
     const scale = 0.98 + 0.12 * t;
-    // keep transform consistent with animations by applying a small additive scale
     el.style.transform = `translate(-50%,-50%) scale(${scale})`;
   });
 }
@@ -356,8 +378,9 @@ window.addEventListener('pointermove', updateGlowOnPointer);
    - textNew at 10000ms
    - text2 at 15000ms
    - black screen at 20000ms (hide texts)
-   - BVC at 24000ms after audio start => 4000 + 24000 = 28000ms after click
-   - end at 44000ms after audio start => 48000ms after click
+   - big flower across screen shortly after 20s
+   - BVC at 24s after audio start => 4s + 24000ms = 28000ms after click
+   - end at 44s after audio start => 48000ms after click
 */
 function startSequence() {
   spawnPetals(32);
@@ -366,58 +389,59 @@ function startSequence() {
   // text1: zoomLeft (5s)
   setTimeout(() => {
     text1.style.display = 'block';
-    // set data-text for ::after already present; start main animation and aura animation
     text1.style.animation = 'zoomLeft 5s cubic-bezier(.2,.8,.2,1) forwards';
-    text1.style.setProperty('--aura', 'auraLeft');
-    text1.style.setProperty('animation-name', 'zoomLeft');
-    // start aura by animating ::after via inline style (using CSS animation on pseudo-element not possible inline)
-    text1.classList.add('anim-left');
-    // apply aura animation by toggling a style on the element's pseudo-element via a CSS rule (we will set it by adding a class)
-    text1.classList.add('aura-left');
-    // apply aura animation via style injection
-    text1.style.setProperty('--aura-anim', 'auraLeft 5s cubic-bezier(.2,.8,.2,1) forwards');
-    // apply aura animation by setting style on element (the ::after uses this via CSS)
-    text1.style.setProperty('animation', 'none');
-    // trigger aura by setting a CSS variable used in a style block below (we'll use a small timeout to ensure CSS picks it up)
-    setTimeout(()=> {
-      text1.style.setProperty('animation', 'zoomLeft 5s cubic-bezier(.2,.8,.2,1) forwards');
-      text1.style.setProperty('--aura-play', 'auraLeft 5s cubic-bezier(.2,.8,.2,1) forwards');
-      // apply aura animation to pseudo-element by adding a class that has the rule
-      text1.classList.add('play-aura-left');
-    }, 10);
+    text1.classList.add('play-aura-left');
   }, 5000);
 
   // textNew: zoomUp
   setTimeout(() => {
     textNew.style.display = 'block';
     textNew.style.animation = 'zoomUp 5s cubic-bezier(.2,.8,.2,1) forwards';
-    setTimeout(()=> textNew.classList.add('play-aura-up'), 10);
+    textNew.classList.add('play-aura-up');
   }, 10000);
 
   // text2: zoomRight
   setTimeout(() => {
     text2.style.display = 'block';
     text2.style.animation = 'zoomRight 5s cubic-bezier(.2,.8,.2,1) forwards';
-    setTimeout(()=> text2.classList.add('play-aura-right'), 10);
+    text2.classList.add('play-aura-right');
   }, 15000);
 
   // black screen from 20s: hide texts and fade petals
   setTimeout(() => {
     [text1, textNew, text2].forEach(t => { if (t) t.style.display = 'none'; });
     document.querySelectorAll('.petal').forEach(p => { p.style.transition = 'opacity 1s linear'; p.style.opacity = '0'; });
+    // spawn the single dramatic flower that crosses the screen right after the last label
+    spawnBigFlower();
   }, 20000);
 
   // BLACK VELVET CLAN appears 24s after audio start => 28s after click
   setTimeout(() => {
     bvc.style.display = 'block';
-    bvc.style.animation = 'zoomDepth 8s cubic-bezier(.2,.8,.2,1) forwards';
-    setTimeout(()=> bvc.classList.add('play-aura-depth'), 10);
-    // slowly raise audio a bit more for dramatic final (if still ramping)
-    rampAudioTo(0.85, 2500);
+    // longer, slower cinematic reveal (10s)
+    bvc.style.animation = 'zoomDepthLong 10s cubic-bezier(.2,.8,.2,1) forwards';
+    bvc.classList.add('play-aura-depth');
+    // gently raise audio during final reveal
+    rampAudioTo(0.95, 4000);
   }, 28000);
 
   // End intro at 44s after audio start => 48s after click
   setTimeout(() => endIntro(), 48000);
+}
+
+/* spawn a single big flower that crosses the screen */
+function spawnBigFlower() {
+  const f = document.createElement('div');
+  f.className = 'big-flower';
+  document.body.appendChild(f);
+  // trigger animation
+  f.style.animation = 'bigFallAcross 6.5s cubic-bezier(.2,.8,.2,1) forwards';
+  // remove after animation
+  setTimeout(() => {
+    f.style.transition = 'opacity 0.6s linear';
+    f.style.opacity = '0';
+    setTimeout(() => f.remove(), 800);
+  }, 7000);
 }
 
 /* End intro cleanup */
@@ -442,11 +466,10 @@ startBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key ===
 (function injectAuraStyles(){
   const s = document.createElement('style');
   s.textContent = `
-    /* play aura classes apply animation to ::after */
     .play-aura-left::after { animation: auraLeft 5s cubic-bezier(.2,.8,.2,1) forwards; }
     .play-aura-up::after { animation: auraUp 5s cubic-bezier(.2,.8,.2,1) forwards; }
     .play-aura-right::after { animation: auraRight 5s cubic-bezier(.2,.8,.2,1) forwards; }
-    .play-aura-depth::after { animation: auraDepth 8s cubic-bezier(.2,.8,.2,1) forwards; }
+    .play-aura-depth::after { animation: auraDepthLong 10s cubic-bezier(.2,.8,.2,1) forwards; }
   `;
   document.head.appendChild(s);
 })();
