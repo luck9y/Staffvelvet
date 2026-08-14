@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Black Velvet Clan</title>
+<title>Black Velvet Clan Intro</title>
 
 <style>
     body {
@@ -13,27 +13,39 @@
         color: white;
     }
 
-    /* Intro text styling */
-    .intro-text {
+    /* START SCREEN */
+    #start-screen {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 32px;
-        opacity: 0;
-        text-align: center;
+        width: 100%;
+        height: 100%;
+        background: black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    #start-btn {
+        padding: 20px 50px;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 10px;
+        color: #ccc;
+        font-size: 24px;
         letter-spacing: 2px;
-        transition: opacity 2s ease;
+        cursor: pointer;
+        transition: 0.2s;
     }
 
-    /* Small text under BLACK VELVET */
-    #bv-small {
-        font-size: 16px;
-        margin-top: 10px;
-        opacity: 0.8;
+    #start-btn:hover {
+        background: #222;
+        color: white;
+        border-color: #555;
+        transform: scale(1.05);
     }
 
-    /* Skip button */
+    /* SKIP BUTTON */
     #skip-btn {
         position: absolute;
         top: 20px;
@@ -46,7 +58,8 @@
         font-size: 14px;
         border: 1px solid #333;
         transition: 0.2s;
-        z-index: 999;
+        display: none;
+        z-index: 998;
     }
 
     #skip-btn:hover {
@@ -54,7 +67,66 @@
         color: white;
     }
 
-    /* Main site content (hidden until intro ends) */
+    /* INTRO TEXT */
+    .intro-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        text-align: center;
+        font-size: 36px;
+        letter-spacing: 3px;
+        transition: opacity 2s ease;
+    }
+
+    /* Azul Clan Glow */
+    .azul {
+        color: #4da6ff;
+        text-shadow: 0 0 15px #4da6ff;
+    }
+
+    /* Abyss Ember Glow */
+    .abyss {
+        color: #ff3b3b;
+        text-shadow: 0 0 20px #660000;
+    }
+
+    /* BLACK VELVET CLAN Movie Animation */
+    #bvc {
+        font-size: 60px;
+        font-weight: bold;
+        letter-spacing: 6px;
+        opacity: 0;
+    }
+
+    #bv-small {
+        font-size: 18px;
+        margin-top: 10px;
+        color: #cfcfcf;
+        text-shadow: 0 0 10px #444;
+    }
+
+    @keyframes movieZoomRotate {
+        0% {
+            transform: translate(-50%, -50%) scale(0.3) rotate(-8deg);
+            opacity: 0;
+        }
+        20% {
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            opacity: 1;
+        }
+        60% {
+            transform: translate(-50%, -50%) scale(1.15) rotate(3deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(150%, -50%) scale(1.15) rotate(3deg);
+            opacity: 0;
+        }
+    }
+
+    /* MAIN SITE */
     #main-site {
         display: none;
         padding: 40px;
@@ -65,54 +137,89 @@
 
 <body>
 
-<!-- Skip Button -->
+<!-- AUDIO -->
+<audio id="intro-audio" src="sounds/intro.mp3"></audio>
+
+<!-- START SCREEN -->
+<div id="start-screen">
+    <div id="start-btn">START</div>
+</div>
+
+<!-- SKIP BUTTON -->
 <div id="skip-btn">Skip Intro</div>
 
-<!-- Intro Text Elements -->
-<div id="text1" class="intro-text">By the founders of AZUL CLAN</div>
-<div id="text2" class="intro-text">Reborn in the flames of the abyss</div>
+<!-- INTRO TEXT SEQUENCE -->
+<div id="text1" class="intro-text">
+    By the founders of <span class="azul">AZUL CLAN</span>
+</div>
 
-<div id="text3" class="intro-text">
-    BLACK VELVET
+<div id="text2" class="intro-text abyss">
+    Reborn in the flames of the abyss
+</div>
+
+<div id="bvc" class="intro-text">
+    BLACK VELVET CLAN
     <div id="bv-small">Founders by Luckyy and Suoaz</div>
 </div>
 
-<!-- Main Site Content -->
+<!-- MAIN SITE -->
 <div id="main-site">
-    <!-- Replace this with your actual homepage content -->
     <h1>Welcome to the Black Velvet Clan</h1>
-    <p>Your main site loads here after the intro.</p>
+    <p>Main site content goes here.</p>
 </div>
 
 <script>
-/* Fade sequence timing */
-function fadeIn(el) {
-    el.style.opacity = 1;
+/* AUDIO PLAY */
+function playAudio() {
+    const audio = document.getElementById("intro-audio");
+    audio.volume = 0.5;
+
+    audio.play().catch(() => {
+        document.body.addEventListener("touchstart", () => {
+            audio.play();
+        }, { once: true });
+    });
 }
-function fadeOut(el) {
-    el.style.opacity = 0;
+
+/* START INTRO */
+document.getElementById("start-btn").onclick = () => {
+    document.getElementById("start-screen").style.display = "none";
+    document.getElementById("skip-btn").style.display = "block";
+    playAudio();
+    startSequence();
+};
+
+/* INTRO SEQUENCE (44 seconds total) */
+function startSequence() {
+
+    /* Azul Clan */
+    setTimeout(() => text1.style.opacity = 1, 1000);
+    setTimeout(() => text1.style.opacity = 0, 6000);
+
+    /* Abyss */
+    setTimeout(() => text2.style.opacity = 1, 8000);
+    setTimeout(() => text2.style.opacity = 0, 13000);
+
+    /* BLACK VELVET CLAN — Movie Zoom + Rotation */
+    setTimeout(() => {
+        bvc.style.opacity = 1;
+        bvc.style.animation = "movieZoomRotate 6s ease forwards";
+    }, 25000);
+
+    /* End intro at 44 seconds */
+    setTimeout(() => endIntro(), 44000);
 }
 
-/* Sequence */
-setTimeout(() => fadeIn(text1), 500);        // Show first line
-setTimeout(() => fadeOut(text1), 3000);      // Hide first line
-
-setTimeout(() => fadeIn(text2), 4500);       // Show second line
-setTimeout(() => fadeOut(text2), 7000);      // Hide second line
-
-setTimeout(() => fadeIn(text3), 8500);       // Show BLACK VELVET
-setTimeout(() => endIntro(), 12000);         // End intro
-
-/* End intro function */
+/* END INTRO */
 function endIntro() {
     text1.style.display = "none";
     text2.style.display = "none";
-    text3.style.display = "none";
+    bvc.style.display = "none";
     document.getElementById("skip-btn").style.display = "none";
     document.getElementById("main-site").style.display = "block";
 }
 
-/* Skip button */
+/* SKIP BUTTON */
 document.getElementById("skip-btn").onclick = endIntro;
 </script>
 
