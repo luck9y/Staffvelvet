@@ -9,11 +9,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&display=swap");
 
 :root {
-  --black: #020104;
-  --purple: #8b2cff;
-  --violet: #c084ff;
-  --white: #fff;
-  --muted: rgba(255,255,255,.7);
+  --black: #010101;
+  --charcoal: #111214;
+  --steel: #777b80;
+  --silver: #c9cdd1;
+  --white: #f5f5f5;
+  --muted: rgba(220, 224, 228, .7);
 }
 
 * {
@@ -43,17 +44,17 @@ body::after {
 
 body::before {
   background:
-    radial-gradient(circle at 50% 45%, transparent 5%, rgba(0,0,0,.2) 48%, rgba(0,0,0,.95) 120%),
-    linear-gradient(110deg, rgba(88,0,170,.08), transparent 35%, rgba(140,0,255,.08));
+    radial-gradient(circle at 50% 45%, transparent 5%, rgba(0, 0, 0, .22) 48%, rgba(0, 0, 0, .98) 120%),
+    linear-gradient(110deg, rgba(255,255,255,.035), transparent 35%, rgba(255,255,255,.04));
 }
 
 body::after {
-  opacity: .16;
+  opacity: .13;
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
     transparent 3px,
-    rgba(255,255,255,.08) 4px
+    rgba(255,255,255,.12) 4px
   );
   mix-blend-mode: screen;
 }
@@ -69,17 +70,17 @@ body::after {
 
 #starField {
   z-index: 0;
-  opacity: .65;
+  opacity: .62;
   background-image:
     radial-gradient(circle, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(160,70,255,.7) 0 1px, transparent 1.5px);
+    radial-gradient(circle, rgba(150,155,160,.7) 0 1px, transparent 1.5px);
   background-size: 170px 170px, 230px 230px;
   background-position: 20px 40px, 100px 90px;
   animation: starDrift 35s linear infinite;
 }
 
 #starField::before {
-  background: radial-gradient(ellipse at center, transparent 20%, rgba(20,0,45,.5) 75%);
+  background: radial-gradient(ellipse at center, transparent 20%, rgba(30,32,35,.65) 75%);
   animation: breathe 8s ease-in-out infinite;
 }
 
@@ -90,31 +91,32 @@ body::after {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at center, rgba(96,0,180,.16), transparent 35%),
-    #020104;
+    radial-gradient(circle at center, rgba(210,215,220,.11), transparent 35%),
+    #010101;
   transition: opacity 1s ease, visibility 1s ease;
 }
 
-#startScreen::before {
+#startScreen::before,
+#startScreen::after {
   position: absolute;
+  border: 1px solid rgba(205,210,215,.32);
+  border-radius: 50%;
+  content: "";
+}
+
+#startScreen::before {
   width: 420px;
   height: 420px;
-  border: 1px solid rgba(174,94,255,.25);
-  border-radius: 50%;
   box-shadow:
-    0 0 30px rgba(130,30,255,.25),
-    inset 0 0 40px rgba(130,30,255,.15);
-  content: "";
+    0 0 30px rgba(190,195,200,.2),
+    inset 0 0 40px rgba(190,195,200,.12);
   animation: portal 5s ease-in-out infinite;
 }
 
 #startScreen::after {
-  position: absolute;
   width: 300px;
   height: 300px;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 50%;
-  content: "";
+  border-color: rgba(255,255,255,.18);
   animation: portalReverse 8s linear infinite;
 }
 
@@ -130,10 +132,10 @@ body::after {
   min-width: 220px;
   padding: 19px 42px;
   overflow: hidden;
-  border: 1px solid rgba(190,120,255,.8);
+  border: 1px solid rgba(220,225,230,.8);
   border-radius: 3px;
-  background: linear-gradient(135deg, rgba(73,10,125,.8), rgba(12,4,23,.95));
-  color: #fff;
+  background: linear-gradient(135deg, rgba(75,78,82,.8), rgba(10,10,11,.96));
+  color: var(--white);
   cursor: pointer;
   font-family: Orbitron, sans-serif;
   font-size: 19px;
@@ -141,8 +143,8 @@ body::after {
   letter-spacing: 6px;
   text-indent: 6px;
   box-shadow:
-    0 0 12px rgba(139,44,255,.6),
-    inset 0 0 20px rgba(139,44,255,.18);
+    0 0 12px rgba(210,215,220,.45),
+    inset 0 0 20px rgba(255,255,255,.12);
   transition: .35s ease;
 }
 
@@ -152,7 +154,7 @@ body::after {
   left: -100%;
   width: 70%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
   content: "";
   transform: skewX(-25deg);
   transition: left .7s ease;
@@ -162,9 +164,9 @@ body::after {
   transform: scale(1.08);
   letter-spacing: 8px;
   box-shadow:
-    0 0 20px var(--purple),
-    0 0 70px rgba(139,44,255,.55),
-    inset 0 0 25px rgba(139,44,255,.4);
+    0 0 20px rgba(220,225,230,.8),
+    0 0 70px rgba(170,175,180,.35),
+    inset 0 0 25px rgba(255,255,255,.25);
 }
 
 #startBtn:hover::before {
@@ -178,10 +180,10 @@ body::after {
   z-index: 1100;
   display: none;
   padding: 9px 15px;
-  border: 1px solid rgba(255,255,255,.35);
+  border: 1px solid rgba(220,225,230,.4);
   border-radius: 2px;
-  background: rgba(0,0,0,.35);
-  color: rgba(255,255,255,.75);
+  background: rgba(0,0,0,.42);
+  color: var(--muted);
   cursor: pointer;
   font-family: Orbitron, sans-serif;
   font-size: 11px;
@@ -191,9 +193,9 @@ body::after {
 }
 
 #skipBtn:hover {
-  border-color: var(--violet);
+  border-color: var(--silver);
   color: #fff;
-  box-shadow: 0 0 18px rgba(139,44,255,.7);
+  box-shadow: 0 0 18px rgba(210,215,220,.55);
 }
 
 .label,
@@ -210,7 +212,7 @@ body::after {
   width: min(90%, 1100px);
   text-align: center;
   opacity: 0;
-  color: #f9f3ff;
+  color: var(--white);
   font-family: Cinzel, Georgia, serif;
   font-size: clamp(21px, 3.5vw, 54px);
   font-weight: 700;
@@ -218,8 +220,8 @@ body::after {
   line-height: 1.3;
   text-shadow:
     0 0 6px #fff,
-    0 0 18px var(--violet),
-    0 0 45px var(--purple);
+    0 0 18px var(--silver),
+    0 0 45px rgba(180,185,190,.9);
   will-change: transform, opacity, filter;
 }
 
@@ -228,8 +230,8 @@ body::after {
   width: 90px;
   height: 1px;
   margin: 22px auto 0;
-  background: linear-gradient(90deg, transparent, var(--violet), transparent);
-  box-shadow: 0 0 12px var(--purple);
+  background: linear-gradient(90deg, transparent, var(--silver), transparent);
+  box-shadow: 0 0 12px rgba(220,225,230,.8);
   content: "";
 }
 
@@ -250,8 +252,8 @@ body::after {
   text-shadow:
     0 0 5px #fff,
     0 0 15px #fff,
-    0 0 35px var(--violet),
-    0 0 75px var(--purple);
+    0 0 35px var(--silver),
+    0 0 75px rgba(180,185,190,.9);
   will-change: transform, opacity, filter;
 }
 
@@ -261,8 +263,8 @@ body::after {
   top: 50%;
   width: 12vw;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--violet));
-  box-shadow: 0 0 12px var(--purple);
+  background: linear-gradient(90deg, transparent, var(--silver));
+  box-shadow: 0 0 12px rgba(220,225,230,.8);
   content: "";
 }
 
@@ -283,8 +285,10 @@ body::after {
   width: 190px;
   opacity: 0;
   filter:
+    grayscale(1)
+    contrast(1.3)
     drop-shadow(0 0 12px #000)
-    drop-shadow(0 0 25px rgba(139,44,255,.65));
+    drop-shadow(0 0 25px rgba(220,225,230,.5));
 }
 
 .hidden {
@@ -303,28 +307,28 @@ body::after {
 
 @keyframes passRight {
   0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateX(-100px) scale(.75); filter: blur(10px); }
-  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateX(0) scale(1); filter: blur(2px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) scale(1); filter: blur(2px); }
   52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateX(180px) scale(1.15); filter: blur(0); }
   100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateX(800px) scale(.45); filter: blur(10px); }
 }
 
 @keyframes passLeft {
   0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateX(100px) scale(.75); filter: blur(10px); }
-  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateX(0) scale(1); filter: blur(2px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) scale(1); filter: blur(2px); }
   52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateX(-180px) scale(1.15); filter: blur(0); }
   100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateX(-800px) scale(.45); filter: blur(10px); }
 }
 
 @keyframes passDown {
   0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateY(-100px) scale(.75); filter: blur(10px); }
-  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateY(0) scale(1); filter: blur(2px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) scale(1); filter: blur(2px); }
   52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateY(180px) scale(1.15); filter: blur(0); }
   100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateY(800px) scale(.45); filter: blur(10px); }
 }
 
 @keyframes passUp {
   0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateY(100px) scale(.75); filter: blur(10px); }
-  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateY(0) scale(1); filter: blur(2px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) scale(1); filter: blur(2px); }
   52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateY(-180px) scale(1.15); filter: blur(0); }
   100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateY(-800px) scale(.45); filter: blur(10px); }
 }
@@ -338,14 +342,14 @@ body::after {
 
 @keyframes passDiagDR {
   0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translate(-90px,-90px) scale(.75); filter: blur(10px); }
-  20% { opacity: 1; transform: translate(-50%,-50%) translateZ(250px) translate(0,0) scale(1); filter: blur(2px); }
+  20% { opacity: 1; transform: translate(-50%,-50%) translateZ(250px) scale(1); filter: blur(2px); }
   55% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translate(180px,180px) scale(1.15); filter: blur(0); }
   100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translate(800px,800px) scale(.45); filter: blur(10px); }
 }
 
 @keyframes passDiagUL {
   0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translate(90px,90px) scale(.75); filter: blur(10px); }
-  20% { opacity: 1; transform: translate(-50%,-50%) translateZ(250px) translate(0,0) scale(1); filter: blur(2px); }
+  20% { opacity: 1; transform: translate(-50%,-50%) translateZ(250px) scale(1); filter: blur(2px); }
   55% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translate(-180px,-180px) scale(1.15); filter: blur(0); }
   100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translate(-800px,-800px) scale(.45); filter: blur(10px); }
 }
@@ -410,7 +414,7 @@ body::after {
 
 <button id="skipBtn" type="button">SKIP INTRO</button>
 
-<audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
+<audio id="introAudio" src="sounds/intro2.mp3" preload="auto"></audio>
 
 <img id="flower" src="blackvelvet_flower.png" alt="">
 
@@ -486,12 +490,10 @@ body::after {
     audio.currentTime = 0;
     audio.volume = 1;
 
-    // Start audio two seconds after the button is clicked.
     schedule(() => {
       audio.play().catch(() => {});
     }, 2000);
 
-    // Show one cinematic line every five seconds.
     labels.forEach(([id, animationClass], index) => {
       schedule(() => showLabel(id, animationClass), 2000 + index * 5000);
     });
@@ -502,7 +504,6 @@ body::after {
       flower.classList.add("flower-fall");
     }, 37000);
 
-    // Show the title at 41.13 seconds after the audio starts.
     schedule(() => {
       mainTitle.className = "";
       void mainTitle.offsetWidth;
