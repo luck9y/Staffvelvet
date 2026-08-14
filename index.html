@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Black Velvet Clan</title>
 
 <style>
@@ -17,7 +17,9 @@
   --muted:rgba(220,224,228,.7);
 }
 
-* { box-sizing:border-box; }
+* {
+  box-sizing:border-box;
+}
 
 html,
 body {
@@ -27,7 +29,7 @@ body {
   overflow:hidden;
   background:var(--black);
   color:var(--white);
-  font-family:Inter, sans-serif;
+  font-family:Inter,sans-serif;
   perspective:1600px;
 }
 
@@ -35,7 +37,7 @@ body::before,
 body::after {
   position:fixed;
   inset:0;
-  z-index:900;
+  z-index:50;
   pointer-events:none;
   content:"";
 }
@@ -132,7 +134,7 @@ body::after {
   background:linear-gradient(135deg, rgba(75,78,82,.8), rgba(10,10,11,.96));
   color:var(--white);
   cursor:pointer;
-  font-family:Orbitron, sans-serif;
+  font-family:Orbitron,sans-serif;
   font-size:19px;
   font-weight:700;
   letter-spacing:6px;
@@ -141,25 +143,11 @@ body::after {
   transition:.35s ease;
 }
 
-#startBtn::before {
-  position:absolute;
-  top:0;
-  left:-100%;
-  width:70%;
-  height:100%;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
-  content:"";
-  transform:skewX(-25deg);
-  transition:left .7s ease;
-}
-
 #startBtn:hover {
   transform:scale(1.08);
   letter-spacing:8px;
   box-shadow:0 0 20px rgba(220,225,230,.8), 0 0 70px rgba(170,175,180,.35), inset 0 0 25px rgba(255,255,255,.25);
 }
-
-#startBtn:hover::before { left:140%; }
 
 #skipBtn {
   position:fixed;
@@ -173,7 +161,7 @@ body::after {
   background:rgba(0,0,0,.42);
   color:var(--muted);
   cursor:pointer;
-  font-family:Orbitron, sans-serif;
+  font-family:Orbitron,sans-serif;
   font-size:11px;
   letter-spacing:2px;
   backdrop-filter:blur(8px);
@@ -196,18 +184,18 @@ body::after {
   position:fixed;
   top:45%;
   left:50%;
-  z-index:10;
-  width:min(90%, 1100px);
+  z-index:100;
+  width:min(90%,1100px);
   text-align:center;
   opacity:0;
   color:var(--white);
-  font-family:Cinzel, Georgia, serif;
-  font-size:clamp(21px, 3.5vw, 54px);
+  font-family:Cinzel,Georgia,serif;
+  font-size:clamp(21px,3.5vw,54px);
   font-weight:700;
-  letter-spacing:clamp(1px, .4vw, 6px);
+  letter-spacing:clamp(1px,.4vw,6px);
   line-height:1.3;
   text-shadow:0 0 6px #fff, 0 0 18px var(--silver), 0 0 45px rgba(180,185,190,.9);
-  will-change:transform, opacity, filter;
+  will-change:transform,opacity,filter;
 }
 
 .label::after {
@@ -215,7 +203,7 @@ body::after {
   width:90px;
   height:1px;
   margin:22px auto 0;
-  background:linear-gradient(90deg, transparent, var(--silver), transparent);
+  background:linear-gradient(90deg,transparent,var(--silver),transparent);
   box-shadow:0 0 12px rgba(220,225,230,.8);
   content:"";
 }
@@ -229,18 +217,18 @@ body::after {
   position:fixed;
   top:45%;
   left:50%;
-  z-index:20;
+  z-index:120;
   width:96%;
   text-align:center;
   opacity:0;
   color:#fff;
-  font-family:Cinzel, Georgia, serif;
-  font-size:clamp(32px, 8vw, 112px);
+  font-family:Cinzel,Georgia,serif;
+  font-size:clamp(32px,8vw,112px);
   font-weight:900;
-  letter-spacing:clamp(3px, 1vw, 15px);
+  letter-spacing:clamp(3px,1vw,15px);
   line-height:1.1;
   text-shadow:0 0 5px #fff, 0 0 15px #fff, 0 0 35px var(--silver), 0 0 75px rgba(180,185,190,.9);
-  will-change:transform, opacity, filter;
+  will-change:transform,opacity,filter;
 }
 
 #mainTitle::before,
@@ -249,25 +237,29 @@ body::after {
   top:50%;
   width:12vw;
   height:1px;
-  background:linear-gradient(90deg, transparent, var(--silver));
+  background:linear-gradient(90deg,transparent,var(--silver));
   box-shadow:0 0 12px rgba(220,225,230,.8);
   content:"";
 }
 
-#mainTitle::before { right:100%; }
-#mainTitle::after { left:100%; transform:rotate(180deg); }
+#mainTitle::before {
+  right:100%;
+}
+
+#mainTitle::after {
+  left:100%;
+  transform:rotate(180deg);
+}
 
 #flower {
   position:fixed;
   top:-220px;
   left:50%;
-  z-index:5;
+  z-index:90;
   width:190px;
   opacity:0;
   filter:grayscale(1) contrast(1.3) drop-shadow(0 0 12px #000) drop-shadow(0 0 25px rgba(220,225,230,.5));
 }
-
-.hidden { display:none !important; }
 
 .pass-right { animation:passRight 10s ease-in-out forwards; }
 .pass-left { animation:passLeft 10s ease-in-out forwards; }
@@ -347,8 +339,13 @@ body::after {
   50% { transform:scale(1.12) rotate(180deg); opacity:.8; }
 }
 
-@keyframes portalReverse { to { transform:rotate(-360deg); } }
-@keyframes starDrift { to { background-position:20px 500px, 100px -400px; } }
+@keyframes portalReverse {
+  to { transform:rotate(-360deg); }
+}
+
+@keyframes starDrift {
+  to { background-position:20px 500px,100px -400px; }
+}
 
 @keyframes breathe {
   0%,100% { opacity:.35; transform:scale(.9); }
@@ -358,9 +355,15 @@ body::after {
 @media (max-width:600px) {
   #startScreen::before { width:280px; height:280px; }
   #startScreen::after { width:210px; height:210px; }
+
   #mainTitle::before,
-  #mainTitle::after { display:none; }
-  .label { width:88%; }
+  #mainTitle::after {
+    display:none;
+  }
+
+  .label {
+    width:88%;
+  }
 }
 
 @media (prefers-reduced-motion:reduce) {
@@ -385,7 +388,7 @@ body::after {
 
 <audio id="introAudio" src="sounds/intro2.mp3" preload="auto"></audio>
 
-<img id="flower" src="blackvelvet_flower.png" alt="" onerror="this.style.display='none'">
+<img id="flower" src="blackvelvet_flower.png" alt="">
 
 <div id="mainTitle">BLACK VELVET CLAN</div>
 
@@ -451,16 +454,13 @@ body::after {
 
     label.className = "label";
     label.style.opacity = "0";
+
     void label.offsetWidth;
+
     label.classList.add(animationClass);
   }
 
   function startAudioReliably() {
-    /*
-     * Calling play() directly inside the click event satisfies browser
-     * autoplay rules. The audio is muted only during the two-second
-     * cinematic delay, then fades in.
-     */
     audio.currentTime = 0;
     audio.volume = 0;
     audio.muted = true;
@@ -468,8 +468,8 @@ body::after {
     const playRequest = audio.play();
 
     if (playRequest && typeof playRequest.catch === "function") {
-      playRequest.catch(() => {
-        // The animation still works if the audio file is unavailable.
+      playRequest.catch(error => {
+        console.warn("Audio playback was blocked:", error);
       });
     }
 
@@ -497,17 +497,16 @@ body::after {
 
     introStarted = true;
     resetIntro();
+
     startScreen.classList.add("hidden");
     skipBtn.style.display = "block";
 
-    // Must be called synchronously from the user's click.
     startAudioReliably();
 
     labels.forEach(([id, animationClass], index) => {
       schedule(() => showLabel(id, animationClass), 2000 + index * 5000);
     });
 
-    // Flower appears before the title.
     schedule(() => {
       if (flower.style.display === "none") return;
 
@@ -516,14 +515,12 @@ body::after {
       flower.classList.add("flower-fall");
     }, 40500);
 
-    // Title appears 41.13 seconds into the audio.
     schedule(() => {
       mainTitle.className = "";
       void mainTitle.offsetWidth;
       mainTitle.classList.add("title-reveal");
     }, 41130);
 
-    // Redirect after the title animation completes.
     schedule(() => {
       window.location.href = "home.html";
     }, 46130);
@@ -531,10 +528,12 @@ body::after {
 
   function skipIntro() {
     clearTimers();
+
     audio.pause();
     audio.currentTime = 0;
     audio.muted = false;
     audio.volume = 1;
+
     resetIntro();
 
     startScreen.classList.remove("hidden");
@@ -543,7 +542,7 @@ body::after {
   }
 
   audio.addEventListener("error", () => {
-    console.warn("The audio could not be loaded. Check that sounds/intro2.mp3 exists.");
+    console.warn("Audio could not be loaded. Check sounds/intro2.mp3.");
   });
 
   startBtn.addEventListener("click", startIntro);
