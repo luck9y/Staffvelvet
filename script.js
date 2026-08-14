@@ -8,8 +8,10 @@ const supabase = createClient(
 const adminCredentials = {
   imjustluckyy: { password: "Energyball2001", role: "Owner" },
   suoaz: { password: "Lightning10", role: "Owner" },
-  gear: { password: "mygear10", role: "Manager" }
+  managergear: { password: "mygear10", role: "Manager" }
 };
+
+const leadershipRoles = ["Owner", "Admin", "Manager"];
 
 const $ = (id) => document.getElementById(id);
 const homeView = $("homeView");
@@ -76,14 +78,42 @@ function deviceInfo() {
   };
 }
 
+function getReadKey() {
+  return `blackVelvetLogsRead:${currentUser?.username || "unknown"}`;
+}
+
+function getUnreadLogs() {
+  const lastRead = Number(localStorage.getItem(getReadKey()) || 0);
+
+  return accessLogs.filter((log) => {
+    const time = log.created_at ? new Date(log.created_at).getTime() : 0;
+    return time > lastRead;
+  });
+}
+
+function markLogsRead() {
+  localStorage.setItem(getReadKey(), String(Date.now()));
+  renderLogs();
+  setMessage("logsMessage", "All current login logs marked as read.", "success");
+}
+
 function isLeadership() {
   const username = currentUser?.username?.trim().toLowerCase();
-  return Boolean(username && adminCredentials[username]);
+  const role = currentUser?.role;
+
+  return Boolean(
+    username &&
+    (
+      adminCredentials[username] ||
+      leadershipRoles.includes(role)
+    )
+  );
 }
 
 function show(view) {
   [homeView, loginView, applicationView, portalView]
     .forEach((item) => item.classList.add("hidden"));
+
   view.classList.remove("hidden");
 }
 
@@ -132,7 +162,8 @@ async function addAccessLog(username, success, reason) {
 }
 
 function renderLogs() {
-  $("logCount").textContent = accessLogs.length;
+  const unreadLogs = getUnreadLogs();
+  $("logCount").textContent = unreadLogs.length;
 
   $("logList").innerHTML = accessLogs.length
     ? accessLogs.map((log) => `
@@ -203,6 +234,8 @@ function renderApplications() {
 }
 
 function renderAccounts() {
+  const roles = ["Owner", "Admin", "Manager", "President", "Mod", "Helper"];
+
   $("staffAccountList").innerHTML = staffAccounts.length
     ? staffAccounts.map((account) => `
       <div class="log-card approved">
@@ -214,6 +247,14 @@ function renderAccounts() {
           <div class="log-field">
             <span>Created</span>
             <strong>${escapeHtml(account.created_at)}</strong>
+          </div>
+          <div class="log-field">
+            <span>Rank</span>
+            <select data-role-account="${escapeHtml(account.username)}">
+              ${roles.map((role) => `
+                <option value="${role}" ${account.role === role ? "selected" : ""}>${role}</option>
+              `).join("")}
+            </select>
           </div>
         </div>
         <div class="card-actions">
@@ -339,6 +380,10 @@ $("navigation").addEventListener("click", (event) => {
   document.querySelectorAll(".panel").forEach((panel) => {
     panel.classList.toggle("active-panel", panel.id === button.dataset.panel);
   });
+
+  if (button.dataset.panel === "loginLogs") {
+    markLogsRead();
+  }
 });
 
 $("applicationList").addEventListener("click", async (event) => {
@@ -403,6 +448,39 @@ $("applicationList").addEventListener("click", async (event) => {
   await loadData();
 });
 
+$("staffAccountList").addEventListener("change", async (event) => {
+  const select = event.target.closest("select[data-role-account]");
+  if (!select || !isLeadership()) return;
+
+  const username = select.dataset.roleAccount;
+  const role = select.value;
+
+  setMessage("accountsMessage", `Changing ${username} to ${role}...`);
+  select.disabled = true;
+
+  const { error } = await supabase
+    .from("staff_accounts")
+    .update({ role })
+    .eq("username", username);
+
+  select.disabled = false;
+
+  if (error) {
+    showDatabaseError("accountsMessage", "Could not change staff rank", error);
+    await loadData();
+    return;
+  }
+
+  if (currentUser?.username === username.toLowerCase()) {
+    currentUser.role = role;
+    $("signedInAs").textContent = `${username} · ${role}`;
+    renderLeadership();
+  }
+
+  setMessage("accountsMessage", `${username} is now ${role}.`, "success");
+  await loadData();
+});
+
 $("staffAccountList").addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-delete-account]");
   if (!button || !isLeadership()) return;
@@ -433,25 +511,6 @@ $("staffAccountList").addEventListener("click", async (event) => {
   }
 
   setMessage("accountsMessage", `${username} removed successfully.`, "success");
-  await loadData();
-});
-
-$("clearLogsButton").addEventListener("click", async () => {
-  if (!isLeadership()) return;
-
-  setMessage("logsMessage", "Clearing logs...");
-
-  const { error } = await supabase
-    .from("access_logs")
-    .delete()
-    .not("id", "is", null);
-
-  if (error) {
-    showDatabaseError("logsMessage", "Could not clear logs", error);
-    return;
-  }
-
-  setMessage("logsMessage", "Login logs cleared.", "success");
   await loadData();
 });
 
