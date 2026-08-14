@@ -1,256 +1,404 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8" />
 <title>Black Velvet Clan Intro</title>
 
-<!-- Cinematic font -->
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<!-- Gamer font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-    body {
-        margin: 0;
-        background: black;
-        overflow: hidden;
-        font-family: 'Cinzel', serif;
-        color: white;
-        transition: background 1s ease;
-    }
+  :root{
+    --azul: #4da6ff;
+    --abyss: #ff3b3b;
+    --bg: #000;
+  }
 
-    /* START SCREEN */
-    #start-screen {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: black;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 999;
-    }
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    overflow:hidden;
+    font-family: 'Orbitron', sans-serif;
+    color:#fff;
+  }
 
-    #start-btn {
-        padding: 20px 50px;
-        background: #111;
-        border: 2px solid #333;
-        border-radius: 10px;
-        color: #ccc;
-        font-size: 28px;
-        letter-spacing: 3px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+  /* Petals (black velvet flowers) */
+  .petal{
+    position:fixed;
+    top:-60px;
+    width:28px;
+    height:28px;
+    background: radial-gradient(circle at 30% 30%, #0b0b0b 30%, #000 100%);
+    border-radius:50% 50% 40% 60%;
+    box-shadow: 0 0 12px rgba(0,0,0,0.6), inset 0 -6px 10px rgba(20,20,20,0.6);
+    opacity:0.85;
+    transform-origin:center;
+    z-index:10;
+    pointer-events:none;
+  }
 
-    #start-btn:hover {
-        background: #222;
-        color: white;
-        border-color: #555;
-        transform: scale(1.05);
-    }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity:0.9; }
+    100% { transform: translateY(120vh) rotate(720deg); opacity:0.2; }
+  }
 
-    /* SKIP BUTTON */
-    #skip-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: #1a1a1a;
-        color: #ccc;
-        padding: 10px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        border: 1px solid #333;
-        transition: 0.2s;
-        display: none;
-        z-index: 998;
-    }
+  /* Start screen */
+  #start-screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.9));
+  }
+  #start-btn{
+    padding:18px 48px;
+    border-radius:10px;
+    background:#0f0f0f;
+    border:2px solid #222;
+    color:#ddd;
+    font-size:28px;
+    letter-spacing:3px;
+    cursor:pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.6), 0 0 18px rgba(77,166,255,0.02);
+  }
+  #start-btn:hover{ transform:scale(1.04); box-shadow:0 10px 40px rgba(0,0,0,0.7); color:#fff; }
 
-    #skip-btn:hover {
-        background: #2a2a2a;
-        color: white;
-    }
+  /* Skip */
+  #skip-btn{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:1001;
+    display:none;
+    background:#111;
+    color:#cfcfcf;
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid #2a2a2a;
+    cursor:pointer;
+    font-size:14px;
+  }
+  #skip-btn:hover{ background:#222; color:#fff; }
 
-    /* INTRO TEXT BASE STYLE */
-    .intro-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        opacity: 0;
-        text-align: center;
-        font-size: 40px;
-        letter-spacing: 3px;
-        transform: translate(-50%, -50%) scale(0.6);
-        text-shadow: 0 0 15px rgba(255,255,255,0.4);
-        transition: 0.3s;
-    }
+  /* Intro text base */
+  .intro-text{
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%) scale(0.6);
+    opacity:0;
+    text-align:center;
+    letter-spacing:2px;
+    z-index:50;
+    pointer-events:auto;
+    transition: transform .2s ease, text-shadow .2s ease;
+    will-change: transform, opacity, text-shadow;
+  }
 
-    /* Hover glow boost */
-    .intro-text:hover {
-        text-shadow: 0 0 25px white;
-        transform: translate(-50%, -50%) scale(1.05);
-    }
+  .intro-text.gamer{
+    font-size:44px;
+    text-shadow: 0 0 18px rgba(255,255,255,0.08), 0 0 30px rgba(0,0,0,0.6);
+    color:#e6e6e6;
+  }
 
-    /* Azul Clan Glow */
-    .azul {
-        color: #4da6ff;
-        text-shadow: 0 0 20px #4da6ff;
-    }
+  .intro-text .small{
+    display:block;
+    margin-top:10px;
+    font-size:18px;
+    color:#cfcfcf;
+    text-shadow:0 0 12px rgba(0,0,0,0.6);
+  }
 
-    /* Abyss Ember Glow */
-    .abyss {
-        color: #ff3b3b;
-        text-shadow: 0 0 25px #660000;
-    }
+  .azul{
+    color:var(--azul);
+    text-shadow: 0 0 28px rgba(77,166,255,0.9), 0 0 6px rgba(77,166,255,0.25);
+  }
 
-    /* Cinematic zoom animation for all lines */
-    @keyframes cinematicZoom {
-        0%   { transform: translate(-50%, -50%) scale(0.6) rotate(-3deg); opacity: 0; }
-        20%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-        60%  { transform: translate(-48%, -50%) scale(1.3) rotate(2deg); opacity: 1; }
-        100% { transform: translate(-40%, -50%) scale(1.4) rotate(3deg); opacity: 0; }
-    }
+  .abyss{
+    color:var(--abyss);
+    text-shadow: 0 0 32px rgba(255,59,59,0.9), 0 0 8px rgba(102,0,0,0.25);
+  }
 
-    /* Stronger cinematic zoom for BLACK VELVET CLAN */
-    @keyframes cinematicZoomStrong {
-        0%   { transform: translate(-50%, -50%) scale(0.4) rotate(-5deg); opacity: 0; }
-        30%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-        70%  { transform: translate(-45%, -50%) scale(1.5) rotate(3deg); opacity: 1; }
-        100% { transform: translate(150%, -50%) scale(1.6) rotate(3deg); opacity: 0; }
-    }
+  /* cinematic zoom-through (labels) */
+  @keyframes cinematicZoom {
+    0%   { transform: translate(-50%,-50%) scale(0.6) rotate(-3deg); opacity:0; filter:blur(2px); }
+    20%  { transform: translate(-50%,-50%) scale(1.0) rotate(0deg); opacity:1; filter:blur(0px); }
+    60%  { transform: translate(-48%,-50%) scale(1.7) rotate(2deg); opacity:1; filter:blur(0px); }
+    100% { transform: translate(-40%,-50%) scale(2.6) rotate(3deg); opacity:0; filter:blur(6px); }
+  }
 
-    #bvc {
-        font-size: 70px;
-        font-weight: bold;
-        letter-spacing: 8px;
-        opacity: 0;
-    }
+  /* stronger final zoom-through */
+  @keyframes cinematicZoomStrong {
+    0%   { transform: translate(-50%,-50%) scale(0.4) rotate(-6deg); opacity:0; filter:blur(3px); }
+    30%  { transform: translate(-50%,-50%) scale(1.3) rotate(0deg); opacity:1; filter:blur(0px); }
+    70%  { transform: translate(-45%,-50%) scale(2.0) rotate(3deg); opacity:1; filter:blur(0px); }
+    100% { transform: translate(150%,-50%) scale(3.0) rotate(3deg); opacity:0; filter:blur(8px); }
+  }
 
-    #bv-small {
-        font-size: 20px;
-        margin-top: 10px;
-        color: #cfcfcf;
-        text-shadow: 0 0 10px #444;
-    }
+  /* final title style */
+  #bvc{
+    font-size:78px;
+    letter-spacing:8px;
+    text-shadow: 0 0 60px rgba(255,255,255,0.9), 0 0 30px rgba(0,0,0,0.6);
+    color:#fff;
+    z-index:60;
+  }
 
-    /* MAIN SITE */
-    #main-site {
-        display: none;
-        padding: 40px;
-        font-size: 24px;
-    }
+  #bvc .small{
+    font-size:20px;
+    margin-top:12px;
+    color:#dcdcdc;
+    text-shadow:0 0 18px rgba(0,0,0,0.6);
+  }
+
+  /* main site placeholder */
+  #main-site{
+    display:none;
+    padding:40px;
+    z-index:1;
+    position:relative;
+    color:#ddd;
+  }
+
+  /* subtle vignette */
+  .vignette{
+    pointer-events:none;
+    position:fixed;
+    inset:0;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
+    z-index:900;
+  }
 </style>
 </head>
-
 <body>
 
-<!-- AUDIO -->
-<audio id="intro-audio" src="sounds/intro.mp3"></audio>
+<!-- Audio -->
+<audio id="intro-audio" src="sounds/intro.mp3" preload="auto"></audio>
 
-<!-- START SCREEN -->
+<!-- Start screen -->
 <div id="start-screen">
-    <div id="start-btn">START</div>
+  <div id="start-btn">START</div>
 </div>
 
-<!-- SKIP BUTTON -->
+<!-- Skip -->
 <div id="skip-btn">Skip Intro</div>
 
-<!-- INTRO TEXT SEQUENCE -->
-<div id="text1" class="intro-text">
-    By the founders of <span class="azul">AZUL CLAN</span>
+<!-- Vignette -->
+<div class="vignette"></div>
+
+<!-- Intro texts -->
+<div id="text1" class="intro-text gamer">By the founders of <span class="azul">AZUL CLAN</span></div>
+<div id="textNew" class="intro-text gamer">Back stronger.</div>
+<div id="text2" class="intro-text gamer abyss">Reborn in the flames of the abyss</div>
+
+<div id="bvc" class="intro-text">BLACK VELVET CLAN
+  <span class="small">Founders by Luckyy and Suoaz</span>
 </div>
 
-<div id="textNew" class="intro-text">
-    Reaching for goals beyond reach
-</div>
-
-<div id="text2" class="intro-text abyss">
-    Reborn in the flames of the abyss
-</div>
-
-<div id="bvc" class="intro-text">
-    BLACK VELVET CLAN
-    <div id="bv-small">Founders by Luckyy and Suoaz</div>
-</div>
-
-<!-- MAIN SITE -->
+<!-- Main site -->
 <div id="main-site">
-    <h1>Welcome to the Black Velvet Clan</h1>
-    <p>Main site content goes here.</p>
+  <h1>Welcome to Black Velvet Clan</h1>
+  <p>Your main site content goes here.</p>
 </div>
 
 <script>
-/* AUDIO PLAY */
-function playAudio() {
-    const audio = document.getElementById("intro-audio");
-    audio.volume = 0.7;
+/* ---------- Utility and state ---------- */
+const audio = document.getElementById('intro-audio');
+const startBtn = document.getElementById('start-btn');
+const skipBtn = document.getElementById('skip-btn');
+const text1 = document.getElementById('text1');
+const textNew = document.getElementById('textNew');
+const text2 = document.getElementById('text2');
+const bvc = document.getElementById('bvc');
+const mainSite = document.getElementById('main-site');
+let audioStartedAt = null; // timestamp when audio actually begins
 
-    audio.play().catch(() => {
-        document.body.addEventListener("touchstart", () => {
-            audio.play();
-        }, { once: true });
+/* ---------- Petal spawn ---------- */
+function spawnPetals(count = 28) {
+  for (let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    // random horizontal start
+    p.style.left = (Math.random()*100) + 'vw';
+    // random size
+    const s = 14 + Math.random()*28;
+    p.style.width = s + 'px';
+    p.style.height = (s*0.9) + 'px';
+    // random delay and duration
+    const dur = 4 + Math.random()*7;
+    p.style.animationDuration = dur + 's';
+    p.style.animationDelay = (Math.random()*2) + 's';
+    // random opacity
+    p.style.opacity = 0.6 + Math.random()*0.4;
+    // slight horizontal drift via transform
+    p.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    // apply animation
+    p.style.animationName = 'fall';
+    p.style.animationTimingFunction = 'linear';
+    p.style.animationIterationCount = 'infinite';
+  }
+}
+
+/* ---------- Audio play robustly ---------- */
+function playAudioDelayed(delayMs = 4000) {
+  // schedule play after delayMs from now
+  setTimeout(() => {
+    // set volume before play
+    audio.volume = 0.75;
+    // try to play
+    audio.play().then(() => {
+      audioStartedAt = performance.now();
+    }).catch(() => {
+      // if blocked, attach one-time user gesture to resume
+      const resume = () => {
+        audio.play().then(()=> {
+          audioStartedAt = performance.now();
+        }).catch(()=>{});
+        window.removeEventListener('pointerdown', resume);
+        window.removeEventListener('touchstart', resume);
+      };
+      window.addEventListener('pointerdown', resume, { once: true });
+      window.addEventListener('touchstart', resume, { once: true });
     });
+  }, delayMs);
 }
 
-/* START INTRO */
-document.getElementById("start-btn").onclick = () => {
-    document.getElementById("start-screen").style.display = "none";
-    document.getElementById("skip-btn").style.display = "block";
+/* ---------- Mouse proximity glow ---------- */
+const introEls = [text1, textNew, text2, bvc];
 
-    /* Audio starts 4 seconds in */
-    setTimeout(() => playAudio(), 4000);
+function updateGlowOnPointer(e){
+  // for each visible intro element, compute distance from pointer to element center
+  introEls.forEach(el => {
+    if (!el || el.style.display === 'none') return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    // map distance to glow intensity (closer => stronger)
+    const max = Math.max(window.innerWidth, window.innerHeight);
+    const t = Math.max(0, 1 - (dist / (max*0.6))); // 0..1
+    const glow = 12 + Math.round(40 * t); // px
+    const spread = 6 + Math.round(30 * t);
+    const color = el.classList.contains('azul') ? 'rgba(77,166,255,' + (0.6 + 0.4*t) + ')' :
+                  el.classList.contains('abyss') ? 'rgba(255,59,59,' + (0.6 + 0.4*t) + ')' :
+                  'rgba(255,255,255,' + (0.6 + 0.4*t) + ')';
+    el.style.textShadow = `0 0 ${glow}px ${color}, 0 0 ${spread}px rgba(0,0,0,0.45)`;
+    // slight scale boost when pointer is near
+    const scale = 0.98 + 0.12 * t;
+    el.style.transform = `translate(-50%,-50%) scale(${scale})`;
+  });
+}
 
-    startSequence();
-};
+window.addEventListener('pointermove', updateGlowOnPointer);
 
-/* INTRO SEQUENCE (44 seconds total) */
+/* ---------- Sequence scheduling synced to audio start ---------- */
+/*
+  Behavior:
+  - User clicks Start (t=0)
+  - Audio scheduled to start at t=4000ms
+  - All timings below are relative to Start click (ms)
+  - But the 25s countdown for BLACK VELVET is relative to audio start:
+      BVC_time_from_click = 4000 + 25000 = 29000ms
+  - Intro end is 44000ms after audio start => 4000 + 44000 = 48000ms after click
+*/
+
 function startSequence() {
+  // spawn petals
+  spawnPetals(30);
 
-    /* Azul Clan — starts at 5s */
-    setTimeout(() => {
-        text1.style.animation = "cinematicZoom 6s ease forwards";
-    }, 5000);
+  // schedule audio to start at 4s
+  playAudioDelayed(4000);
 
-    /* New line — starts at 10s */
-    setTimeout(() => {
-        textNew.style.animation = "cinematicZoom 6s ease forwards";
-    }, 10000);
+  // label durations: each label animation lasts 5s and zooms past viewer
+  // text1 starts at 5s (1s after audio start)
+  setTimeout(() => {
+    text1.style.display = 'block';
+    text1.style.animation = 'cinematicZoom 5s cubic-bezier(.2,.8,.2,1) forwards';
+  }, 5000);
 
-    /* Abyss — starts at 15s */
-    setTimeout(() => {
-        text2.style.animation = "cinematicZoom 6s ease forwards";
-    }, 15000);
+  // textNew starts at 10s
+  setTimeout(() => {
+    textNew.style.display = 'block';
+    textNew.style.animation = 'cinematicZoom 5s cubic-bezier(.2,.8,.2,1) forwards';
+  }, 10000);
 
-    /* Black screen from 21s to 25s */
-    setTimeout(() => {
-        text1.style.display = "none";
-        textNew.style.display = "none";
-        text2.style.display = "none";
-        document.body.style.background = "black";
-    }, 21000);
+  // text2 starts at 15s
+  setTimeout(() => {
+    text2.style.display = 'block';
+    text2.style.animation = 'cinematicZoom 5s cubic-bezier(.2,.8,.2,1) forwards';
+  }, 15000);
 
-    /* BLACK VELVET CLAN — appears at 25s */
-    setTimeout(() => {
-        bvc.style.animation = "cinematicZoomStrong 8s ease forwards";
-    }, 25000);
+  // black screen from 20s to 24s (relative to audio start: 16s..20s after audio start)
+  // we hide the texts at 20s
+  setTimeout(() => {
+    text1.style.display = 'none';
+    textNew.style.display = 'none';
+    text2.style.display = 'none';
+    // ensure background is black (it already is) but we can briefly clear petals
+    // fade out petals gently
+    document.querySelectorAll('.petal').forEach(p => {
+      p.style.transition = 'opacity 1s linear';
+      p.style.opacity = '0';
+    });
+  }, 20000);
 
-    /* End intro at 44 seconds */
-    setTimeout(() => endIntro(), 44000);
+  // BLACK VELVET CLAN appears 25s after audio start => 29s after click
+  setTimeout(() => {
+    bvc.style.display = 'block';
+    bvc.style.animation = 'cinematicZoomStrong 8s cubic-bezier(.2,.8,.2,1) forwards';
+  }, 29000);
+
+  // End intro at 44s after audio start => 48s after click
+  setTimeout(() => {
+    endIntro();
+  }, 48000);
 }
 
-/* END INTRO */
-function endIntro() {
-    text1.style.display = "none";
-    textNew.style.display = "none";
-    text2.style.display = "none";
-    bvc.style.display = "none";
-    document.getElementById("skip-btn").style.display = "none";
-    document.getElementById("main-site").style.display = "block";
+/* ---------- End intro ---------- */
+function endIntro(){
+  // remove any remaining petals
+  document.querySelectorAll('.petal').forEach(p => p.remove());
+  // hide intro elements
+  [text1, textNew, text2, bvc].forEach(el => { if(el) el.style.display = 'none'; });
+  // hide skip
+  skipBtn.style.display = 'none';
+  // show main site
+  mainSite.style.display = 'block';
+  // stop audio if still playing
+  try { audio.pause(); audio.currentTime = 0; } catch(e){}
 }
 
-/* SKIP BUTTON */
-document.getElementById("skip-btn").onclick = endIntro;
+/* ---------- Start / Skip handlers ---------- */
+startBtn.addEventListener('click', () => {
+  // hide start screen
+  document.getElementById('start-screen').style.display = 'none';
+  // show skip
+  skipBtn.style.display = 'block';
+  // start sequence
+  startSequence();
+});
+
+skipBtn.addEventListener('click', endIntro);
+
+/* ---------- Accessibility: allow keyboard start ---------- */
+startBtn.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    startBtn.click();
+  }
+});
+
+/* ---------- Clean up on unload ---------- */
+window.addEventListener('beforeunload', () => {
+  try { audio.pause(); } catch(e){}
+});
 </script>
-
 </body>
 </html>
