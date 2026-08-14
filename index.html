@@ -1,168 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Black Velvet Azul Clan Intro</title>
-<style>
-  body {
-    margin:0;
-    background:#000;
-    color:#fff;
-    font-family:"Inter","Segoe UI",sans-serif;
-    overflow:hidden;
-    perspective:1600px;
-  }
+/* PERFECTLY CENTERED START SCREEN */
+#startScreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.95);
+  z-index: 1000;
 
-  /* Start screen */
-  #startScreen {
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,0.95);
-    z-index:1000;
-  }
-  #startBtn {
-    padding:18px 44px;
-    font-size:20px;
-    background:#111;
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    box-shadow:0 0 20px rgba(111,0,255,0.6);
-  }
+  /* Prevent perspective from affecting it */
+  transform: none !important;
+  perspective: none !important;
+}
 
-  #skipBtn {
-    position:fixed;
-    top:20px;
-    right:20px;
-    display:none;
-    color:#fff;
-    background:rgba(0,0,0,0.4);
-    padding:8px 12px;
-    border-radius:6px;
-    cursor:pointer;
-    z-index:1100;
-  }
-
-  .label {
-    position:fixed;
-    left:50%;
-    top:45%;
-    transform:translate(-50%,-50%);
-    font-size:44px;
-    font-weight:700;
-    opacity:0;
-    text-shadow:0 0 20px rgba(111,0,255,0.6);
-    pointer-events:none;
-  }
-
-  #mainTitle {
-    position:fixed;
-    left:50%;
-    top:45%;
-    transform:translate(-50%,-50%);
-    font-size:92px;
-    font-weight:900;
-    opacity:0;
-    text-shadow:0 0 40px #fff;
-    pointer-events:none;
-  }
-
-  #flower {
-    position:fixed;
-    left:50%;
-    top:-200px;
-    transform:translateX(-50%);
-    width:200px;
-    opacity:0;
-    filter:drop-shadow(0 0 20px #000);
-    pointer-events:none;
-  }
-
-  /* Animations */
-  .pass-right   { animation: passRight 5s ease-in-out forwards; }
-  .pass-left    { animation: passLeft 5s ease-in-out forwards; }
-  .pass-down    { animation: passDown 5s ease-in-out forwards; }
-  .pass-up      { animation: passUp 5s ease-in-out forwards; }
-  .pass-forward { animation: passForward 5s ease-in-out forwards; }
-  .pass-diagdr  { animation: passDiagDR 5s ease-in-out forwards; }
-  .pass-diagul  { animation: passDiagUL 5s ease-in-out forwards; }
-
-  .flower-fall  { animation: flowerFall 7s ease-in-out forwards; }
-  .title-reveal { animation: titleReveal 4s ease-out forwards; }
-
-  /* Keyframes */
-  @keyframes passRight {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(600px) rotateY(0deg);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(300px) rotateY(10deg);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(0) translateX(200px) rotateY(20deg);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(-600px) translateX(600px) rotateY(40deg);}
-  }
-  @keyframes passLeft {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(600px) rotateY(0deg);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(300px) rotateY(-10deg);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(0) translateX(-200px) rotateY(-20deg);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(-600px) translateX(-600px) rotateY(-40deg);}
-  }
-  @keyframes passDown {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(600px) rotateX(0deg);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(300px) rotateX(10deg);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(0) translateY(200px) rotateX(20deg);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(-600px) translateY(600px) rotateX(40deg);}
-  }
-  @keyframes passUp {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(600px) rotateX(0deg);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(300px) rotateX(-10deg);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(0) translateY(-200px) rotateX(-20deg);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(-600px) translateY(-600px) rotateX(-40deg);}
-  }
-  @keyframes passForward {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(-800px) scale(0.5);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(-300px) scale(0.9);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(600px) scale(2);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(1200px) scale(3);}
-  }
-  @keyframes passDiagDR {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(600px);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(300px);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(0) translate(200px,200px);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(-600px) translate(600px,600px);}
-  }
-  @keyframes passDiagUL {
-    0% {opacity:0; transform:translate(-50%,-50%) translateZ(600px);}
-    20%{opacity:1; transform:translate(-50%,-50%) translateZ(300px);}
-    50%{opacity:1; transform:translate(-50%,-50%) translateZ(0) translate(-200px,-200px);}
-    100%{opacity:0; transform:translate(-50%,-50%) translateZ(-600px) translate(-600px,-600px);}
-  }
-
-  @keyframes flowerFall {
-    0% {opacity:0; transform:translateX(-50%) translateY(-200px) rotate(-10deg);}
-    20%{opacity:1; transform:translateX(-50%) translateY(0) rotate(5deg);}
-    50%{transform:translateX(calc(-50% + 40px)) translateY(300px) rotate(-15deg);}
-    100%{opacity:0; transform:translateX(calc(-50% - 20px)) translateY(800px) rotate(20deg);}
-  }
-
-  @keyframes titleReveal {
-    0% {opacity:0; transform:translate(-50%,-50%) scale(0.8);}
-    50%{opacity:1; transform:translate(-50%,-50%) scale(1.2);}
-    100%{opacity:1; transform:translate(-50%,-50%) scale(1.3);}
-  }
-</style>
-</head>
-<body>
-
-<div id="startScreen"><button id="startBtn">START</button></div>
-<button id="skipBtn">Skip</button>
-
-<audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
-<img id="flower" src="blackvelvet_flower.png" alt="">
-<div id="mainTitle">BLACK VELVET CLAN</div>
-
-<div class="label" id="l1">By the founders of Azul Clan</div>
-<div class="label" id="l2">Forged stronger in the abyss</div>
-<div class="label" id="l3">Motivated by memories</div>
-<div class="label"
+/* START BUTTON FIXED POSITIONING */
+#startBtn {
+  padding: 20px 48px;
+  font-size: 22px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(111,0,255,0.6);
+  transform: none !important;   /* Prevent inherited transforms */
+  position: relative;           /* Prevent weird offsets */
+}
