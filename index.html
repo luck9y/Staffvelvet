@@ -14,7 +14,9 @@
   --steel: #777b80;
   --silver: #c9cdd1;
   --white: #f5f5f5;
-  --muted: rgba(220, 224, 228, .7);
+  --blue: #4aa3ff;
+  --blue-bright: #a9d7ff;
+  --muted: rgba(220,224,228,.7);
 }
 
 * {
@@ -44,7 +46,7 @@ body::after {
 
 body::before {
   background:
-    radial-gradient(circle at 50% 45%, transparent 5%, rgba(0, 0, 0, .22) 48%, rgba(0, 0, 0, .98) 120%),
+    radial-gradient(circle at 50% 45%, transparent 5%, rgba(0,0,0,.22) 48%, rgba(0,0,0,.98) 120%),
     linear-gradient(110deg, rgba(255,255,255,.035), transparent 35%, rgba(255,255,255,.04));
 }
 
@@ -235,6 +237,14 @@ body::after {
   content: "";
 }
 
+.accent {
+  color: var(--blue-bright);
+  text-shadow:
+    0 0 5px #fff,
+    0 0 14px var(--blue),
+    0 0 35px rgba(40,145,255,.95);
+}
+
 #mainTitle {
   position: fixed;
   top: 45%;
@@ -355,21 +365,21 @@ body::after {
 }
 
 @keyframes flowerFall {
-  0% { opacity: 0; transform: translateX(-50%) translateY(-240px) rotate(-10deg); }
-  20% { opacity: 1; transform: translateX(-50%) translateY(0) rotate(6deg); }
-  80% { opacity: .8; transform: translateX(calc(-50% - 20px)) translateY(600px) rotate(10deg); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(900px) rotate(20deg); }
+  0% { opacity: 0; transform: translateX(-50%) translateY(-240px) rotate(-10deg) scale(.7); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(0) rotate(6deg) scale(1); }
+  80% { opacity: .8; transform: translateX(calc(-50% - 20px)) translateY(600px) rotate(10deg) scale(1.1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(900px) rotate(20deg) scale(1.3); }
 }
 
 @keyframes titleReveal {
   0% { opacity: 0; transform: translate(-50%,-50%) scale(.55); filter: blur(18px); letter-spacing: 25px; }
   45% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); filter: blur(2px); }
   75% { transform: translate(-50%,-50%) scale(1.16); }
-  100% { opacity: 1; transform: translate(-50%,-50%) scale(1.25); filter: blur(0); letter-spacing: clamp(3px, 1vw, 15px); }
+  100% { opacity: 1; transform: translate(-50%,-50%) scale(1.25); filter: blur(0); letter-spacing: clamp(3px,1vw,15px); }
 }
 
 @keyframes portal {
-  0%, 100% { transform: scale(.8) rotate(0); opacity: .35; }
+  0%,100% { transform: scale(.8) rotate(0); opacity: .35; }
   50% { transform: scale(1.12) rotate(180deg); opacity: .8; }
 }
 
@@ -382,7 +392,7 @@ body::after {
 }
 
 @keyframes breathe {
-  0%, 100% { opacity: .35; transform: scale(.9); }
+  0%,100% { opacity: .35; transform: scale(.9); }
   50% { opacity: 1; transform: scale(1.1); }
 }
 
@@ -420,13 +430,14 @@ body::after {
 
 <div id="mainTitle">BLACK VELVET CLAN</div>
 
-<div class="label" id="l1">By the founders of Azul Clan</div>
+<div class="label" id="l1">By the founders of <span class="accent">Azul Clan</span></div>
 <div class="label" id="l2">Forged stronger in the abyss</div>
 <div class="label" id="l3">Motivated by memories</div>
 <div class="label" id="l4">A legacy carved in darkness</div>
 <div class="label" id="l5">Directed by those who never stopped dreaming</div>
 <div class="label" id="l6">Managed by Gears</div>
 <div class="label" id="l7">Back like we never left</div>
+<div class="label" id="l8">FOUNDED BY LUCKYY AND SUOAZ</div>
 
 <script>
 (() => {
@@ -444,7 +455,8 @@ body::after {
     ["l4", "pass-up"],
     ["l5", "pass-forward"],
     ["l6", "pass-diagdr"],
-    ["l7", "pass-diagul"]
+    ["l7", "pass-diagul"],
+    ["l8", "pass-right"]
   ];
 
   let timers = [];
@@ -498,17 +510,24 @@ body::after {
       schedule(() => showLabel(id, animationClass), 2000 + index * 5000);
     });
 
+    // The flower appears immediately before the clan title.
     schedule(() => {
       flower.className = "";
       void flower.offsetWidth;
       flower.classList.add("flower-fall");
-    }, 37000);
+    }, 40500);
 
+    // 41.13 seconds into the audio; audio begins 2 seconds after START.
     schedule(() => {
       mainTitle.className = "";
       void mainTitle.offsetWidth;
       mainTitle.classList.add("title-reveal");
     }, 2000 + 41130);
+
+    // title-reveal lasts 5 seconds, then continue to the home page.
+    schedule(() => {
+      window.location.href = "home.html";
+    }, 2000 + 41130 + 5000);
   }
 
   function skipIntro() {
