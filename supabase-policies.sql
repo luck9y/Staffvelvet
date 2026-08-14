@@ -79,3 +79,4 @@ on public.staff_accounts
 for delete
 to anon, authenticated
 using (true);
+
