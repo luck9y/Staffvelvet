@@ -6,9 +6,9 @@ const supabase = createClient(
 );
 
 const adminCredentials = {
-  Imjustluckyy: { password: "Energyball2001", role: "President" },
-  suoazisking: { password: "Lightning10", role: "Admin" },
-  ManagerGear: { password: "mygear10", role: "Admin" }
+  imjustluckyy: { password: "Energyball2001", role: "Owner" },
+  suoaz: { password: "Lightning10", role: "Owner" },
+  gear: { password: "mygear10", role: "Manager" }
 };
 
 const $ = (id) => document.getElementById(id);
@@ -23,21 +23,34 @@ let accessLogs = [];
 let applications = [];
 let staffAccounts = [];
 let currentUser = null;
-let realtimeChannel;
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   }[character]));
+}
+
+function setMessage(id, text, type = "") {
+  const element = $(id);
+  if (!element) return;
+  element.textContent = text;
+  element.className = `action-message ${type}`;
+}
+
+function showDatabaseError(id, action, error) {
+  console.error(action, error);
+  setMessage(id, `${action}: ${error?.message || "Database error."}`, "error");
 }
 
 function createDeviceHex() {
   const bytes = new Uint8Array(2);
   crypto.getRandomValues(bytes);
-  return `D${Array.from(bytes)
-    .map((value) => value.toString(16).padStart(2, "0"))
-    .join("")
-    .toUpperCase()}`;
+  return `D${Array.from(bytes).map((value) =>
+    value.toString(16).padStart(2, "0")).join("").toUpperCase()}`;
 }
 
 function getDeviceHex() {
@@ -55,14 +68,29 @@ function getDeviceHex() {
 function deviceInfo() {
   return {
     deviceHex: getDeviceHex(),
-    device: /Mobi|Android/i.test(navigator.userAgent)
-      ? "Mobile device"
-      : "Desktop device",
+    device: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile device" : "Desktop device",
     browser: navigator.userAgent,
     language: navigator.language || "Unknown",
     platform: navigator.platform || "Unknown",
     resolution: `${screen.width}x${screen.height}`
   };
+}
+
+function isLeadership() {
+  const username = currentUser?.username?.trim().toLowerCase();
+  return Boolean(username && adminCredentials[username]);
+}
+
+function show(view) {
+  [homeView, loginView, applicationView, portalView]
+    .forEach((item) => item.classList.add("hidden"));
+  view.classList.remove("hidden");
+}
+
+function renderLeadership() {
+  document.querySelectorAll(".leadership-only").forEach((element) => {
+    element.classList.toggle("hidden", !isLeadership());
+  });
 }
 
 async function loadData() {
@@ -72,8 +100,8 @@ async function loadData() {
     supabase.from("staff_accounts").select("*").order("created_at", { ascending: false })
   ]);
 
-  const result = [logs, apps, accounts].find((item) => item.error);
-  if (result) throw result.error;
+  const failedQuery = [logs, apps, accounts].find((result) => result.error);
+  if (failedQuery) throw failedQuery.error;
 
   accessLogs = logs.data || [];
   applications = apps.data || [];
@@ -105,11 +133,12 @@ async function addAccessLog(username, success, reason) {
 
 function renderLogs() {
   $("logCount").textContent = accessLogs.length;
+
   $("logList").innerHTML = accessLogs.length
     ? accessLogs.map((log) => `
       <div class="log-card ${log.success ? "success" : ""}">
         <div class="log-title">
-          <span>Staff Login · ${escapeHtml(log.username)}</span>
+          <span>Staff Login · ${escapeHtml(log.username || log.user)}</span>
           <span class="log-status">${log.success ? "Correct credentials" : "Incorrect credentials"}</span>
         </div>
         <div class="log-grid">
@@ -164,8 +193,8 @@ function renderApplications() {
         </div>
         ${app.status === "Pending" ? `
           <div class="card-actions">
-            <button data-application-action="approve" data-id="${app.id}">Accept</button>
-            <button data-application-action="deny" data-id="${app.id}">Deny</button>
+            <button type="button" data-application-action="approve" data-id="${escapeHtml(app.id)}">Accept</button>
+            <button type="button" data-application-action="deny" data-id="${escapeHtml(app.id)}">Deny</button>
           </div>
         ` : ""}
       </div>
@@ -188,28 +217,11 @@ function renderAccounts() {
           </div>
         </div>
         <div class="card-actions">
-          <button data-delete-account="${escapeHtml(account.username)}">Delete account</button>
+          <button type="button" data-delete-account="${escapeHtml(account.username)}">Remove account</button>
         </div>
       </div>
     `).join("")
     : '<div class="empty-state">No approved staff accounts yet.</div>';
-}
-
-function show(view) {
-  [homeView, loginView, applicationView, portalView]
-    .forEach((item) => item.classList.add("hidden"));
-  view.classList.remove("hidden");
-}
-
-function isLeadership() {
-  return currentUser &&
-    Object.prototype.hasOwnProperty.call(adminCredentials, currentUser.username);
-}
-
-function renderLeadership() {
-  document.querySelectorAll(".leadership-only").forEach((element) => {
-    element.classList.toggle("hidden", !isLeadership());
-  });
 }
 
 $("staffLoginButton").addEventListener("click", () => show(loginView));
@@ -222,17 +234,22 @@ document.querySelectorAll("[data-home]").forEach((button) => {
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const username = $("username").value.trim();
+  const usernameInput = $("username").value.trim();
+  const usernameKey = usernameInput.toLowerCase();
   const password = $("password").value;
-  const admin = adminCredentials[username];
-  const account = staffAccounts.find((item) => item.username === username);
+  const admin = adminCredentials[usernameKey];
+
+  const account = staffAccounts.find(
+    (item) => item.username?.trim().toLowerCase() === usernameKey
+  );
+
   const valid = Boolean(
     (admin && admin.password === password) ||
     (account && account.staff_password === password)
   );
 
   await addAccessLog(
-    username || "Blank username",
+    usernameInput || "Blank username",
     valid,
     valid ? "Correct credentials" : "Username or password was incorrect"
   );
@@ -245,11 +262,11 @@ loginForm.addEventListener("submit", async (event) => {
   }
 
   currentUser = {
-    username,
+    username: usernameKey,
     role: admin?.role || account.role
   };
 
-  $("signedInAs").textContent = `${username} · ${currentUser.role}`;
+  $("signedInAs").textContent = `${usernameInput} · ${currentUser.role}`;
   $("loginMessage").textContent = "";
   loginForm.reset();
   show(portalView);
@@ -260,26 +277,23 @@ applicationForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const data = Object.fromEntries(new FormData(applicationForm));
-  const username = data.staffUsername.trim().toLowerCase();
+  const username = data.staffUsername.trim();
+  const usernameKey = username.toLowerCase();
 
-  const duplicate = applications.some((app) =>
-    app.staff_username.toLowerCase() === username
-  ) || staffAccounts.some((account) =>
-    account.username.toLowerCase() === username
-  ) || Object.keys(adminCredentials).some((name) =>
-    name.toLowerCase() === username
-  );
+  const duplicate =
+    applications.some((app) => app.staff_username?.toLowerCase() === usernameKey) ||
+    staffAccounts.some((account) => account.username?.toLowerCase() === usernameKey) ||
+    Object.keys(adminCredentials).includes(usernameKey);
 
   if (duplicate) {
-    $("applicationMessage").textContent =
-      "That staff username already exists or is pending.";
+    $("applicationMessage").textContent = "That staff username already exists or is pending.";
     $("applicationMessage").className = "login-message error";
     return;
   }
 
   const { error } = await supabase.from("applications").insert({
     discord_tag: data.discordTag,
-    staff_username: data.staffUsername.trim(),
+    staff_username: username,
     staff_password: data.staffPassword,
     age: Number(data.age),
     timezone: data.timezone,
@@ -292,15 +306,13 @@ applicationForm.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    console.error(error);
-    $("applicationMessage").textContent = "Signup could not be submitted.";
+    $("applicationMessage").textContent = `Signup failed: ${error.message}`;
     $("applicationMessage").className = "login-message error";
     return;
   }
 
   applicationForm.reset();
-  $("applicationMessage").textContent =
-    "Your signup was submitted. You will receive an approval or denial message.";
+  $("applicationMessage").textContent = "Your signup was submitted.";
   $("applicationMessage").className = "login-message success";
   await loadData();
 });
@@ -317,7 +329,7 @@ $("logoutButton").addEventListener("click", () => {
 
 $("navigation").addEventListener("click", (event) => {
   const button = event.target.closest(".nav-button");
-  if (!button) return;
+  if (!button || button.classList.contains("hidden")) return;
   if (button.classList.contains("leadership-only") && !isLeadership()) return;
 
   document.querySelectorAll(".nav-button").forEach((item) => {
@@ -330,61 +342,121 @@ $("navigation").addEventListener("click", (event) => {
 });
 
 $("applicationList").addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-application-action]");
+  const button = event.target.closest("button[data-application-action]");
   if (!button || !isLeadership()) return;
 
-  const app = applications.find((item) => item.id === button.dataset.id);
-  if (!app) return;
+  const applicationId = button.dataset.id;
+  const action = button.dataset.applicationAction;
+  const status = action === "approve" ? "Approved" : "Denied";
+  const message = action === "approve" ? "Accepting application..." : "Denying application...";
 
-  const status = button.dataset.applicationAction === "approve"
-    ? "Approved"
-    : "Denied";
+  if (!applicationId) {
+    setMessage("applicationsMessage", "This application has no database ID.", "error");
+    return;
+  }
 
-  const { error } = await supabase
+  setMessage("applicationsMessage", message);
+  button.disabled = true;
+  button.textContent = action === "approve" ? "Accepting..." : "Denying...";
+
+  const { data: updatedRows, error: updateError } = await supabase
     .from("applications")
     .update({ status })
-    .eq("id", app.id);
+    .eq("id", applicationId)
+    .select("id, status");
 
-  if (error) return console.error(error);
+  if (updateError) {
+    button.disabled = false;
+    button.textContent = action === "approve" ? "Accept" : "Deny";
+    showDatabaseError("applicationsMessage", `Could not ${action} application`, updateError);
+    return;
+  }
 
-  if (status === "Approved") {
-    await supabase.from("staff_accounts").upsert({
+  if (!updatedRows?.length) {
+    button.disabled = false;
+    button.textContent = action === "approve" ? "Accept" : "Deny";
+    setMessage("applicationsMessage", "No application was updated.", "error");
+    return;
+  }
+
+  const app = applications.find((item) => String(item.id) === String(applicationId));
+
+  if (status === "Approved" && app) {
+    const { error: accountError } = await supabase.from("staff_accounts").upsert({
       username: app.staff_username,
       staff_password: app.staff_password,
       role: app.role
-    });
+    }, { onConflict: "username" });
+
+    if (accountError) {
+      showDatabaseError("applicationsMessage", "Approved, but account creation failed", accountError);
+      return;
+    }
   }
+
+  setMessage(
+    "applicationsMessage",
+    status === "Approved" ? "Application accepted." : "Application denied.",
+    "success"
+  );
 
   await loadData();
 });
 
 $("staffAccountList").addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-delete-account]");
+  const button = event.target.closest("button[data-delete-account]");
   if (!button || !isLeadership()) return;
 
-  const { error } = await supabase
+  const username = button.dataset.deleteAccount;
+  setMessage("accountsMessage", `Removing ${username}...`);
+  button.disabled = true;
+  button.textContent = "Removing...";
+
+  const { data: deletedRows, error } = await supabase
     .from("staff_accounts")
     .delete()
-    .eq("username", button.dataset.deleteAccount);
+    .eq("username", username)
+    .select("username");
 
-  if (error) return console.error(error);
+  if (error) {
+    button.disabled = false;
+    button.textContent = "Remove account";
+    showDatabaseError("accountsMessage", "Could not remove staff account", error);
+    return;
+  }
+
+  if (!deletedRows?.length) {
+    button.disabled = false;
+    button.textContent = "Remove account";
+    setMessage("accountsMessage", "No account was removed.", "error");
+    return;
+  }
+
+  setMessage("accountsMessage", `${username} removed successfully.`, "success");
   await loadData();
 });
 
 $("clearLogsButton").addEventListener("click", async () => {
   if (!isLeadership()) return;
 
+  setMessage("logsMessage", "Clearing logs...");
+
   const { error } = await supabase
     .from("access_logs")
     .delete()
     .not("id", "is", null);
 
-  if (error) return console.error(error);
+  if (error) {
+    showDatabaseError("logsMessage", "Could not clear logs", error);
+    return;
+  }
+
+  setMessage("logsMessage", "Login logs cleared.", "success");
   await loadData();
 });
 
 function subscribeToChanges() {
-  realtimeChannel = supabase
+  supabase
     .channel("black-velvet-live-updates")
     .on("postgres_changes", { event: "*", schema: "public", table: "access_logs" }, loadData)
     .on("postgres_changes", { event: "*", schema: "public", table: "applications" }, loadData)
@@ -399,7 +471,7 @@ function subscribeToChanges() {
   } catch (error) {
     console.error("Supabase setup error:", error);
     $("loginMessage").textContent =
-      "Supabase is connected, but the database tables or policies are not ready.";
+      `Supabase error: ${error.message || "Check your tables and policies."}`;
     $("loginMessage").className = "login-message error";
   }
 })();
