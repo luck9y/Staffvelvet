@@ -12,6 +12,7 @@ const adminCredentials = {
 };
 
 const leadershipRoles = ["Owner", "Admin", "Manager"];
+const protectedOwner = "imjustluckyy";
 
 const $ = (id) => document.getElementById(id);
 const homeView = $("homeView");
@@ -70,7 +71,9 @@ function getDeviceHex() {
 function deviceInfo() {
   return {
     deviceHex: getDeviceHex(),
-    device: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile device" : "Desktop device",
+    device: /Mobi|Android/i.test(navigator.userAgent)
+      ? "Mobile device"
+      : "Desktop device",
     browser: navigator.userAgent,
     language: navigator.language || "Unknown",
     platform: navigator.platform || "Unknown",
@@ -82,19 +85,35 @@ function getReadKey() {
   return `blackVelvetLogsRead:${currentUser?.username || "unknown"}`;
 }
 
+function getLogTime(log) {
+  return log.created_at ? new Date(log.created_at).getTime() : 0;
+}
+
 function getUnreadLogs() {
   const lastRead = Number(localStorage.getItem(getReadKey()) || 0);
-
-  return accessLogs.filter((log) => {
-    const time = log.created_at ? new Date(log.created_at).getTime() : 0;
-    return time > lastRead;
-  });
+  return accessLogs.filter((log) => getLogTime(log) > lastRead);
 }
 
 function markLogsRead() {
-  localStorage.setItem(getReadKey(), String(Date.now()));
+  const newestLogTime = accessLogs.reduce(
+    (latest, log) => Math.max(latest, getLogTime(log)),
+    Date.now()
+  );
+
+  localStorage.setItem(getReadKey(), String(newestLogTime));
   renderLogs();
-  setMessage("logsMessage", "All current login logs marked as read.", "success");
+  setMessage("logsMessage", "Login logs marked as read.", "success");
+}
+
+function updateLogNavigationLabel() {
+  const button = document.querySelector('[data-panel="loginLogs"]');
+  if (!button) return;
+
+  button.innerHTML = `Unread Log Ins <span id="logCount" class="count">0</span>`;
+}
+
+function isProtectedOwner(username) {
+  return String(username || "").trim().toLowerCase() === protectedOwner;
 }
 
 function isLeadership() {
@@ -103,10 +122,7 @@ function isLeadership() {
 
   return Boolean(
     username &&
-    (
-      adminCredentials[username] ||
-      leadershipRoles.includes(role)
-    )
+    (adminCredentials[username] || leadershipRoles.includes(role))
   );
 }
 
@@ -125,9 +141,17 @@ function renderLeadership() {
 
 async function loadData() {
   const [logs, apps, accounts] = await Promise.all([
-    supabase.from("access_logs").select("*").order("created_at", { ascending: false }),
-    supabase.from("applications").select("*").order("created_at", { ascending: false }),
-    supabase.from("staff_accounts").select("*").order("created_at", { ascending: false })
+    supabase.from("access_logs")
+      .select("*")
+      .order("created_at", { ascending: false }),
+
+    supabase.from("applications")
+      .select("*")
+      .order("created_at", { ascending: false }),
+
+    supabase.from("staff_accounts")
+      .select("*")
+      .order("created_at", { ascending: false })
   ]);
 
   const failedQuery = [logs, apps, accounts].find((result) => result.error);
@@ -170,8 +194,11 @@ function renderLogs() {
       <div class="log-card ${log.success ? "success" : ""}">
         <div class="log-title">
           <span>Staff Login · ${escapeHtml(log.username || log.user)}</span>
-          <span class="log-status">${log.success ? "Correct credentials" : "Incorrect credentials"}</span>
+          <span class="log-status">
+            ${log.success ? "Correct credentials" : "Incorrect credentials"}
+          </span>
         </div>
+
         <div class="log-grid">
           ${[
             ["Device Hex", log.device_hex],
@@ -181,7 +208,9 @@ function renderLogs() {
             ["Language", log.language],
             ["Platform", log.platform],
             ["Resolution", log.resolution],
-            ["Time", log.created_at ? new Date(log.created_at).toString() : ""]
+            ["Time", log.created_at
+              ? new Date(log.created_at).toString()
+              : ""]
           ].map(([label, value]) => `
             <div class="log-field">
               <span>${label}</span>
@@ -205,6 +234,7 @@ function renderApplications() {
           <span>${escapeHtml(app.staff_username)} · ${escapeHtml(app.role)}</span>
           <span class="log-status">${escapeHtml(app.status)}</span>
         </div>
+
         <div class="log-grid">
           ${[
             ["Discord Tag", app.discord_tag],
@@ -222,10 +252,22 @@ function renderApplications() {
             </div>
           `).join("")}
         </div>
+
         ${app.status === "Pending" ? `
           <div class="card-actions">
-            <button type="button" data-application-action="approve" data-id="${escapeHtml(app.id)}">Accept</button>
-            <button type="button" data-application-action="deny" data-id="${escapeHtml(app.id)}">Deny</button>
+            <button
+              type="button"
+              data-application-action="approve"
+              data-id="${escapeHtml(app.id)}">
+              Accept
+            </button>
+
+            <button
+              type="button"
+              data-application-action="deny"
+              data-id="${escapeHtml(app.id)}">
+              Deny
+            </button>
           </div>
         ` : ""}
       </div>
@@ -234,34 +276,69 @@ function renderApplications() {
 }
 
 function renderAccounts() {
-  const roles = ["Owner", "Admin", "Manager", "President", "Mod", "Helper"];
+  const roles = [
+    "Owner",
+    "Admin",
+    "Manager",
+    "President",
+    "Mod",
+    "Helper"
+  ];
 
   $("staffAccountList").innerHTML = staffAccounts.length
-    ? staffAccounts.map((account) => `
-      <div class="log-card approved">
-        <div class="log-title">
-          <span>${escapeHtml(account.username)}</span>
-          <span class="log-status">${escapeHtml(account.role)}</span>
-        </div>
-        <div class="log-grid">
-          <div class="log-field">
-            <span>Created</span>
-            <strong>${escapeHtml(account.created_at)}</strong>
+    ? staffAccounts.map((account) => {
+      const username = account.username || "";
+      const protectedAccount = isProtectedOwner(username);
+
+      return `
+        <div class="log-card approved">
+          <div class="log-title">
+            <span>${escapeHtml(username)}</span>
+            <span class="log-status">${escapeHtml(account.role)}</span>
           </div>
-          <div class="log-field">
-            <span>Rank</span>
-            <select data-role-account="${escapeHtml(account.username)}">
-              ${roles.map((role) => `
-                <option value="${role}" ${account.role === role ? "selected" : ""}>${role}</option>
-              `).join("")}
-            </select>
+
+          <div class="log-grid">
+            <div class="log-field">
+              <span>Created</span>
+              <strong>${escapeHtml(account.created_at)}</strong>
+            </div>
+
+            <div class="log-field">
+              <span>Rank</span>
+              ${
+                protectedAccount
+                  ? `<strong>Owner · Protected</strong>`
+                  : `
+                    <select data-role-account="${escapeHtml(username)}">
+                      ${roles.map((role) => `
+                        <option
+                          value="${role}"
+                          ${account.role === role ? "selected" : ""}>
+                          ${role}
+                        </option>
+                      `).join("")}
+                    </select>
+                  `
+              }
+            </div>
           </div>
+
+          ${
+            protectedAccount
+              ? `<p class="muted">This owner account cannot be changed or removed.</p>`
+              : `
+                <div class="card-actions">
+                  <button
+                    type="button"
+                    data-delete-account="${escapeHtml(username)}">
+                    Remove account
+                  </button>
+                </div>
+              `
+          }
         </div>
-        <div class="card-actions">
-          <button type="button" data-delete-account="${escapeHtml(account.username)}">Remove account</button>
-        </div>
-      </div>
-    `).join("")
+      `;
+    }).join("")
     : '<div class="empty-state">No approved staff accounts yet.</div>';
 }
 
@@ -322,12 +399,17 @@ applicationForm.addEventListener("submit", async (event) => {
   const usernameKey = username.toLowerCase();
 
   const duplicate =
-    applications.some((app) => app.staff_username?.toLowerCase() === usernameKey) ||
-    staffAccounts.some((account) => account.username?.toLowerCase() === usernameKey) ||
+    applications.some((app) =>
+      app.staff_username?.toLowerCase() === usernameKey
+    ) ||
+    staffAccounts.some((account) =>
+      account.username?.toLowerCase() === usernameKey
+    ) ||
     Object.keys(adminCredentials).includes(usernameKey);
 
   if (duplicate) {
-    $("applicationMessage").textContent = "That staff username already exists or is pending.";
+    $("applicationMessage").textContent =
+      "That staff username already exists or is pending.";
     $("applicationMessage").className = "login-message error";
     return;
   }
@@ -347,7 +429,8 @@ applicationForm.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    $("applicationMessage").textContent = `Signup failed: ${error.message}`;
+    $("applicationMessage").textContent =
+      `Signup failed: ${error.message}`;
     $("applicationMessage").className = "login-message error";
     return;
   }
@@ -378,7 +461,10 @@ $("navigation").addEventListener("click", (event) => {
   });
 
   document.querySelectorAll(".panel").forEach((panel) => {
-    panel.classList.toggle("active-panel", panel.id === button.dataset.panel);
+    panel.classList.toggle(
+      "active-panel",
+      panel.id === button.dataset.panel
+    );
   });
 
   if (button.dataset.panel === "loginLogs") {
@@ -393,16 +479,24 @@ $("applicationList").addEventListener("click", async (event) => {
   const applicationId = button.dataset.id;
   const action = button.dataset.applicationAction;
   const status = action === "approve" ? "Approved" : "Denied";
-  const message = action === "approve" ? "Accepting application..." : "Denying application...";
+  const message = action === "approve"
+    ? "Accepting application..."
+    : "Denying application...";
 
   if (!applicationId) {
-    setMessage("applicationsMessage", "This application has no database ID.", "error");
+    setMessage(
+      "applicationsMessage",
+      "This application has no database ID.",
+      "error"
+    );
     return;
   }
 
   setMessage("applicationsMessage", message);
   button.disabled = true;
-  button.textContent = action === "approve" ? "Accepting..." : "Denying...";
+  button.textContent = action === "approve"
+    ? "Accepting..."
+    : "Denying...";
 
   const { data: updatedRows, error: updateError } = await supabase
     .from("applications")
@@ -413,35 +507,53 @@ $("applicationList").addEventListener("click", async (event) => {
   if (updateError) {
     button.disabled = false;
     button.textContent = action === "approve" ? "Accept" : "Deny";
-    showDatabaseError("applicationsMessage", `Could not ${action} application`, updateError);
+    showDatabaseError(
+      "applicationsMessage",
+      `Could not ${action} application`,
+      updateError
+    );
     return;
   }
 
   if (!updatedRows?.length) {
     button.disabled = false;
     button.textContent = action === "approve" ? "Accept" : "Deny";
-    setMessage("applicationsMessage", "No application was updated.", "error");
+    setMessage(
+      "applicationsMessage",
+      "No application was updated.",
+      "error"
+    );
     return;
   }
 
-  const app = applications.find((item) => String(item.id) === String(applicationId));
+  const app = applications.find(
+    (item) => String(item.id) === String(applicationId)
+  );
 
   if (status === "Approved" && app) {
-    const { error: accountError } = await supabase.from("staff_accounts").upsert({
-      username: app.staff_username,
-      staff_password: app.staff_password,
-      role: app.role
-    }, { onConflict: "username" });
+    const { error: accountError } = await supabase
+      .from("staff_accounts")
+      .upsert({
+        username: app.staff_username,
+        staff_password: app.staff_password,
+        role: app.role
+      }, { onConflict: "username" });
 
     if (accountError) {
-      showDatabaseError("applicationsMessage", "Approved, but account creation failed", accountError);
+      showDatabaseError(
+        "applicationsMessage",
+        "Approved, but account creation failed",
+        accountError
+      );
       return;
     }
   }
 
   setMessage(
     "applicationsMessage",
-    status === "Approved" ? "Application accepted." : "Application denied.",
+    status === "Approved"
+      ? "Application accepted."
+      : "Application denied.",
     "success"
   );
 
@@ -453,8 +565,18 @@ $("staffAccountList").addEventListener("change", async (event) => {
   if (!select || !isLeadership()) return;
 
   const username = select.dataset.roleAccount;
-  const role = select.value;
 
+  if (isProtectedOwner(username)) {
+    setMessage(
+      "accountsMessage",
+      "Imjustluckyy is a protected Owner account.",
+      "error"
+    );
+    await loadData();
+    return;
+  }
+
+  const role = select.value;
   setMessage("accountsMessage", `Changing ${username} to ${role}...`);
   select.disabled = true;
 
@@ -466,7 +588,11 @@ $("staffAccountList").addEventListener("change", async (event) => {
   select.disabled = false;
 
   if (error) {
-    showDatabaseError("accountsMessage", "Could not change staff rank", error);
+    showDatabaseError(
+      "accountsMessage",
+      "Could not change staff rank",
+      error
+    );
     await loadData();
     return;
   }
@@ -477,7 +603,12 @@ $("staffAccountList").addEventListener("change", async (event) => {
     renderLeadership();
   }
 
-  setMessage("accountsMessage", `${username} is now ${role}.`, "success");
+  setMessage(
+    "accountsMessage",
+    `${username} is now ${role}.`,
+    "success"
+  );
+
   await loadData();
 });
 
@@ -486,6 +617,16 @@ $("staffAccountList").addEventListener("click", async (event) => {
   if (!button || !isLeadership()) return;
 
   const username = button.dataset.deleteAccount;
+
+  if (isProtectedOwner(username)) {
+    setMessage(
+      "accountsMessage",
+      "Imjustluckyy is a protected Owner account.",
+      "error"
+    );
+    return;
+  }
+
   setMessage("accountsMessage", `Removing ${username}...`);
   button.disabled = true;
   button.textContent = "Removing...";
@@ -499,29 +640,56 @@ $("staffAccountList").addEventListener("click", async (event) => {
   if (error) {
     button.disabled = false;
     button.textContent = "Remove account";
-    showDatabaseError("accountsMessage", "Could not remove staff account", error);
+    showDatabaseError(
+      "accountsMessage",
+      "Could not remove staff account",
+      error
+    );
     return;
   }
 
   if (!deletedRows?.length) {
     button.disabled = false;
     button.textContent = "Remove account";
-    setMessage("accountsMessage", "No account was removed.", "error");
+    setMessage(
+      "accountsMessage",
+      "No account was removed.",
+      "error"
+    );
     return;
   }
 
-  setMessage("accountsMessage", `${username} removed successfully.`, "success");
+  setMessage(
+    "accountsMessage",
+    `${username} removed successfully.`,
+    "success"
+  );
+
   await loadData();
 });
 
 function subscribeToChanges() {
   supabase
     .channel("black-velvet-live-updates")
-    .on("postgres_changes", { event: "*", schema: "public", table: "access_logs" }, loadData)
-    .on("postgres_changes", { event: "*", schema: "public", table: "applications" }, loadData)
-    .on("postgres_changes", { event: "*", schema: "public", table: "staff_accounts" }, loadData)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "access_logs" },
+      loadData
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "applications" },
+      loadData
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "staff_accounts" },
+      loadData
+    )
     .subscribe();
 }
+
+updateLogNavigationLabel();
 
 (async function start() {
   try {
