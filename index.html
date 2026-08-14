@@ -14,6 +14,7 @@
         overflow: hidden;
         font-family: 'Cinzel', serif;
         color: white;
+        transition: background 1s ease;
     }
 
     /* START SCREEN */
@@ -70,18 +71,18 @@
         color: white;
     }
 
-    /* INTRO TEXT */
+    /* INTRO TEXT BASE STYLE */
     .intro-text {
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(0.7);
         opacity: 0;
         text-align: center;
         font-size: 40px;
         letter-spacing: 3px;
-        transition: 0.3s;
+        transform: translate(-50%, -50%) scale(0.6);
         text-shadow: 0 0 15px rgba(255,255,255,0.4);
+        transition: 0.3s;
     }
 
     /* Hover glow boost */
@@ -102,24 +103,20 @@
         text-shadow: 0 0 25px #660000;
     }
 
-    /* BLACK VELVET CLAN Movie Animation */
-    @keyframes movieZoomRotate {
-        0% {
-            transform: translate(-50%, -50%) scale(0.3) rotate(-8deg);
-            opacity: 0;
-        }
-        20% {
-            transform: translate(-50%, -50%) scale(1) rotate(0deg);
-            opacity: 1;
-        }
-        60% {
-            transform: translate(-50%, -50%) scale(1.15) rotate(3deg);
-            opacity: 1;
-        }
-        100% {
-            transform: translate(150%, -50%) scale(1.15) rotate(3deg);
-            opacity: 0;
-        }
+    /* Cinematic zoom animation for all lines */
+    @keyframes cinematicZoom {
+        0%   { transform: translate(-50%, -50%) scale(0.6) rotate(-3deg); opacity: 0; }
+        20%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        60%  { transform: translate(-48%, -50%) scale(1.3) rotate(2deg); opacity: 1; }
+        100% { transform: translate(-40%, -50%) scale(1.4) rotate(3deg); opacity: 0; }
+    }
+
+    /* Stronger cinematic zoom for BLACK VELVET CLAN */
+    @keyframes cinematicZoomStrong {
+        0%   { transform: translate(-50%, -50%) scale(0.4) rotate(-5deg); opacity: 0; }
+        30%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        70%  { transform: translate(-45%, -50%) scale(1.5) rotate(3deg); opacity: 1; }
+        100% { transform: translate(150%, -50%) scale(1.6) rotate(3deg); opacity: 0; }
     }
 
     #bvc {
@@ -199,41 +196,42 @@ function playAudio() {
 document.getElementById("start-btn").onclick = () => {
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("skip-btn").style.display = "block";
-    playAudio();
+
+    /* Audio starts 4 seconds in */
+    setTimeout(() => playAudio(), 4000);
+
     startSequence();
 };
 
 /* INTRO SEQUENCE (44 seconds total) */
 function startSequence() {
 
-    /* Azul Clan */
+    /* Azul Clan — starts at 5s */
     setTimeout(() => {
-        text1.style.opacity = 1;
-        text1.style.transform = "translate(-50%, -50%) scale(1) rotate(2deg)";
-    }, 1000);
+        text1.style.animation = "cinematicZoom 6s ease forwards";
+    }, 5000);
 
-    setTimeout(() => text1.style.opacity = 0, 6000);
-
-    /* NEW LINE */
+    /* New line — starts at 10s */
     setTimeout(() => {
-        textNew.style.opacity = 1;
-        textNew.style.transform = "translate(-50%, -50%) scale(1) rotate(-2deg)";
-    }, 7500);
+        textNew.style.animation = "cinematicZoom 6s ease forwards";
+    }, 10000);
 
-    setTimeout(() => textNew.style.opacity = 0, 12000);
-
-    /* Abyss */
+    /* Abyss — starts at 15s */
     setTimeout(() => {
-        text2.style.opacity = 1;
-        text2.style.transform = "translate(-50%, -50%) scale(1) rotate(2deg)";
-    }, 14000);
+        text2.style.animation = "cinematicZoom 6s ease forwards";
+    }, 15000);
 
-    setTimeout(() => text2.style.opacity = 0, 19000);
-
-    /* BLACK VELVET CLAN — Movie Zoom + Rotation */
+    /* Black screen from 21s to 25s */
     setTimeout(() => {
-        bvc.style.opacity = 1;
-        bvc.style.animation = "movieZoomRotate 6s ease forwards";
+        text1.style.display = "none";
+        textNew.style.display = "none";
+        text2.style.display = "none";
+        document.body.style.background = "black";
+    }, 21000);
+
+    /* BLACK VELVET CLAN — appears at 25s */
+    setTimeout(() => {
+        bvc.style.animation = "cinematicZoomStrong 8s ease forwards";
     }, 25000);
 
     /* End intro at 44 seconds */
