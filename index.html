@@ -163,6 +163,10 @@
     By the founders of <span class="azul">AZUL CLAN</span>
 </div>
 
+<div id="textNew" class="intro-text">
+    Reaching for goals beyond reach
+</div>
+
 <div id="text2" class="intro-text abyss">
     Reborn in the flames of the abyss
 </div>
@@ -210,13 +214,21 @@ function startSequence() {
 
     setTimeout(() => text1.style.opacity = 0, 6000);
 
+    /* NEW LINE */
+    setTimeout(() => {
+        textNew.style.opacity = 1;
+        textNew.style.transform = "translate(-50%, -50%) scale(1) rotate(-2deg)";
+    }, 7500);
+
+    setTimeout(() => textNew.style.opacity = 0, 12000);
+
     /* Abyss */
     setTimeout(() => {
         text2.style.opacity = 1;
-        text2.style.transform = "translate(-50%, -50%) scale(1) rotate(-2deg)";
-    }, 8000);
+        text2.style.transform = "translate(-50%, -50%) scale(1) rotate(2deg)";
+    }, 14000);
 
-    setTimeout(() => text2.style.opacity = 0, 13000);
+    setTimeout(() => text2.style.opacity = 0, 19000);
 
     /* BLACK VELVET CLAN — Movie Zoom + Rotation */
     setTimeout(() => {
@@ -231,6 +243,7 @@ function startSequence() {
 /* END INTRO */
 function endIntro() {
     text1.style.display = "none";
+    textNew.style.display = "none";
     text2.style.display = "none";
     bvc.style.display = "none";
     document.getElementById("skip-btn").style.display = "none";
