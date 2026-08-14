@@ -17,7 +17,7 @@
     --accent3:#ffd166;
   }
 
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0b0710);font-family:Orbitron,system-ui;}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0b0710);font-family:Orbitron,system-ui;color:#fff;}
   .intro-wrap{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, transparent 40%);
     z-index:9999;
@@ -50,6 +50,7 @@
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateZ(0);
     color:#fff;font-weight:700;text-align:center;white-space:nowrap;padding:6px 12px;
     -webkit-text-stroke:1px rgba(0,0,0,0.6);
+    pointer-events:none;
   }
   .label::after{
     content:attr(data-text);position:absolute;left:0;top:0;width:100%;height:100%;z-index:-1;color:inherit;
@@ -57,11 +58,11 @@
     mix-blend-mode:screen;transition:filter 300ms, transform 300ms;
   }
 
-  /* Per-label fonts & sizes */
-  .label.l1{font-family:Orbitron, sans-serif;font-size:48px;letter-spacing:6px;}
-  .label.l2{font-family:Audiowide, sans-serif;font-size:40px;letter-spacing:2px;}
-  .label.l3{font-family:Press+Start+2P, monospace;font-size:20px;letter-spacing:1px;}
-  .label.final{font-family:Major+Mono+Display, monospace;font-size:72px;letter-spacing:8px;}
+  /* Per-label fonts & sizes (use exact font family names) */
+  .label.l1{font-family:"Orbitron", sans-serif;font-size:48px;letter-spacing:6px;}
+  .label.l2{font-family:"Audiowide", sans-serif;font-size:40px;letter-spacing:2px;}
+  .label.l3{font-family:"Press Start 2P", monospace;font-size:20px;letter-spacing:1px;}
+  .label.final{font-family:"Major Mono Display", monospace;font-size:72px;letter-spacing:8px;}
 
   /* Glow color variants */
   .l1::after{color:var(--accent1);filter:blur(18px) drop-shadow(0 0 18px rgba(42,166,255,0.6));}
@@ -95,7 +96,7 @@
 <body>
 
 <div class="intro-wrap" id="intro">
-  <div class="overlay" id="overlay" role="dialog" aria-label="Intro start overlay">
+  <div class="overlay" id="overlay" role="dialog" aria-label="Intro start overlay" tabindex="0">
     <button class="start-btn" id="startBtn" aria-label="Start intro">START</button>
     <div style="color:#ddd;opacity:0.7;font-size:13px">Press Enter or Space to start</div>
   </div>
@@ -112,7 +113,7 @@
 
   <!-- Flower SVG (inline, animated via JS) -->
   <div class="flower-wrap" id="flowerWrap" aria-hidden="true">
-    <svg id="flowerSVG" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    <svg id="flowerSVG" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;position:fixed;left:-9999px;top:-9999px;transform:translate(-50%,-50%)">
       <defs>
         <radialGradient id="g1" cx="50%" cy="40%">
           <stop offset="0%" stop-color="#fff6" stop-opacity="0.95"/>
@@ -171,12 +172,12 @@
   const finalTitle = document.getElementById('finalTitle');
   const flowerWrap = document.getElementById('flowerWrap');
   const bgParticles = document.getElementById('bgParticles');
+  const flowerSVG = document.getElementById('flowerSVG');
 
   let timers = [];
   let startedAt = null;
   let audioStarted = false;
 
-  /* Utility: schedule and track timeouts so Skip can clear them */
   function schedule(fn, ms){
     const id = setTimeout(fn, ms);
     timers.push(id);
@@ -187,7 +188,6 @@
     timers = [];
   }
 
-  /* Audio ramp helper */
   function rampAudioTo(target, duration){
     const start = audio.volume;
     const delta = target - start;
@@ -202,7 +202,6 @@
     requestAnimationFrame(step);
   }
 
-  /* Robust play with gesture fallback */
   function tryPlayAudio(){
     if(audioStarted) return;
     audioStarted = true;
@@ -210,7 +209,6 @@
     audio.play().then(()=> {
       rampAudioTo(0.7, 3500);
     }).catch(()=> {
-      // attach one-time gesture to resume
       const resume = () => {
         audio.play().then(()=> rampAudioTo(0.7, 3500)).catch(()=>{});
         window.removeEventListener('pointerdown', resume);
@@ -221,16 +219,15 @@
     });
   }
 
-  /* Create background dust particles */
   function spawnBackgroundDust(count=28){
-    const w = window.innerWidth, h = window.innerHeight;
     for(let i=0;i<count;i++){
       const d = document.createElement('div');
       d.className = 'dust';
       d.style.left = Math.random()*100 + 'vw';
       d.style.top = (-10 - Math.random()*10) + 'vh';
-      d.style.width = (4 + Math.random()*8) + 'px';
-      d.style.height = d.style.width;
+      const size = (4 + Math.random()*8);
+      d.style.width = size + 'px';
+      d.style.height = size + 'px';
       d.style.opacity = (0.05 + Math.random()*0.18);
       d.style.animationDelay = (Math.random()*6) + 's';
       d.style.transform = `translateX(${(Math.random()*40-20)}vw)`;
@@ -238,10 +235,9 @@
     }
   }
 
-  /* Flower animation + trail */
   function runFlowerAnimation(){
     flowerWrap.classList.add('show');
-    const svg = document.getElementById('flowerSVG');
+    const svg = flowerSVG;
     const startX = -0.2 * window.innerWidth;
     const endX = 1.2 * window.innerWidth;
     const startY = 0.05 * window.innerHeight;
@@ -254,8 +250,9 @@
       t.className = 'trail';
       t.style.left = x + 'px';
       t.style.top = y + 'px';
-      t.style.width = (6 + Math.random()*10) + 'px';
-      t.style.height = t.style.width;
+      const size = (6 + Math.random()*10);
+      t.style.width = size + 'px';
+      t.style.height = size + 'px';
       t.style.opacity = 0.9;
       document.body.appendChild(t);
       const life = 800 + Math.random()*600;
@@ -266,115 +263,83 @@
       setTimeout(()=> t.remove(), life+50);
     }
 
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
     function frame(now){
       const t = Math.min(1, (now - start)/duration);
-      // easing
-      const ease = (--t)*t*t+1;
-      const x = startX + (endX - startX) * ease;
-      const y = startY + (endY - startY) * ease;
-      svg.style.position = 'fixed';
+      const eased = easeOutCubic(t);
+      const x = startX + (endX - startX) * eased;
+      const y = startY + (endY - startY) * eased;
       svg.style.left = x + 'px';
       svg.style.top = y + 'px';
-      svg.style.transform = `translate(-50%,-50%) scale(${0.9 + ease*0.6}) rotate(${ease*20}deg)`;
-      // spawn trail occasionally
+      svg.style.transform = `translate(-50%,-50%) scale(${0.9 + eased*0.6}) rotate(${eased*20}deg)`;
       if(Math.random() < 0.25) spawnTrail(x + 20 - Math.random()*40, y + 10 - Math.random()*20);
-      if(ease < 1) requestAnimationFrame(frame);
+      if(eased < 1) requestAnimationFrame(frame);
       else {
-        // fade out
         flowerWrap.classList.remove('show');
       }
     }
     requestAnimationFrame(frame);
   }
 
-  /* Schedule labels relative to audio start */
   function scheduleSequence(){
-    // All offsets are relative to audio start (ms)
-    // Label 1: audio+1s, duration 7s
-    // Label 2: immediately after label1 (audio+8s), duration 7s
-    // Label 3: immediately after label2 (audio+15s), duration 7s
-    // Flower: immediately after label3 finishes (audio+22s)
-    // Final title: audio+25s (long 10s)
     const audioStart = startedAt + START_DELAY;
     const now = Date.now();
-
     const offset = (t)=> Math.max(0, audioStart + t - now);
 
-    // label1 at audio+1s
-    schedule(()=> { label1.classList.add('active','l1'); label1.setAttribute('aria-hidden','false'); }, offset(1000));
-    // label2 at audio+8s
-    schedule(()=> { label2.classList.add('active','l2'); label2.setAttribute('aria-hidden','false'); }, offset(8000));
-    // label3 at audio+15s
-    schedule(()=> { label3.classList.add('active','l3'); label3.setAttribute('aria-hidden','false'); }, offset(15000));
-    // flower at audio+22s (immediately after label3 finishes)
+    schedule(()=> { label1.classList.add('active'); label1.setAttribute('aria-hidden','false'); }, offset(1000));
+    schedule(()=> { label2.classList.add('active'); label2.setAttribute('aria-hidden','false'); }, offset(8000));
+    schedule(()=> { label3.classList.add('active'); label3.setAttribute('aria-hidden','false'); }, offset(15000));
     schedule(()=> { runFlowerAnimation(); }, offset(22000));
-    // final title at audio+25s
-    schedule(()=> { finalTitle.classList.add('active','final'); finalTitle.setAttribute('aria-hidden','false'); }, offset(25000));
-    // end of intro at audio+44s -> reveal main content
+    schedule(()=> { finalTitle.classList.add('active'); finalTitle.setAttribute('aria-hidden','false'); }, offset(25000));
     schedule(()=> { endIntro(); }, offset(44000));
   }
 
   function endIntro(){
     clearAllTimers();
-    // hide intro and show main content
+    try{ audio.pause(); }catch(e){}
     intro.style.display = 'none';
     main.style.display = '';
     main.setAttribute('aria-hidden','false');
-    // stop audio ramp to normal if still playing
     rampAudioTo(0.6, 800);
   }
 
-  /* Skip handler */
   function skipIntro(){
-    // stop audio
     try{ audio.pause(); audio.currentTime = 0; }catch(e){}
+    clearAllTimers();
     endIntro();
   }
 
-  /* Start click handler */
   function onStart(){
     if(startedAt) return;
     startedAt = Date.now();
     overlay.style.display = 'none';
     skipBtn.style.display = 'inline-block';
-    // schedule audio start after 4s
     schedule(()=> tryPlayAudio(), START_DELAY);
-    // schedule label sequence relative to audio start
     scheduleSequence();
   }
 
-  /* Keyboard accessibility for Start */
   startBtn.addEventListener('click', onStart);
   startBtn.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); onStart(); }
+    if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){ e.preventDefault(); onStart(); }
   });
 
-  // Also allow Enter/Space when overlay focused
   overlay.addEventListener('keydown', (e)=> {
-    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onStart(); }
+    if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); onStart(); }
   });
 
-  // Skip button
   skipBtn.addEventListener('click', skipIntro);
 
-  // If audio play is blocked, attach fallback pointerdown to resume (one-time)
-  audio.addEventListener('play', ()=> { /* no-op; handled in tryPlayAudio */ });
-
-  // Spawn background dust
-  spawnBackgroundDust(36);
-
-  // Make sure Start is keyboard-focusable
-  startBtn.tabIndex = 0;
-
-  // Expose skip via Escape key
   window.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape') skipIntro();
   });
 
-  // Ensure audio volume is set before play attempts
+  spawnBackgroundDust(36);
+
+  startBtn.tabIndex = 0;
+
   audio.volume = 0.0;
 
-  // Prevent accidental scrolling on space when overlay is focused
   window.addEventListener('keydown', (e)=> {
     if((e.key === ' ' || e.key === 'Spacebar') && document.activeElement === startBtn) e.preventDefault();
   });
