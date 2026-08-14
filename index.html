@@ -1,408 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Black Velvet Azul Clan Intro</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Black Velvet Clan</title>
 
 <style>
-
-/* ---------------------------------------------------------
-   GLOBAL RESET + BASE
-   --------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&display=swap");
 
 :root {
-  --bg: #000;
+  --black: #020104;
+  --purple: #8b2cff;
+  --violet: #c084ff;
   --white: #fff;
-  --accent: #6f00ff;
-  --title-glow: rgba(255,255,255,0.35);
-  --label-glow: rgba(111,0,255,0.45);
+  --muted: rgba(255,255,255,.7);
 }
 
-html, body {
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--white);
-  font-family: "Inter", "Segoe UI", sans-serif;
   overflow: hidden;
+  background: var(--black);
+  color: var(--white);
+  font-family: Inter, sans-serif;
   perspective: 1600px;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* ---------------------------------------------------------
-   START SCREEN — PERFECT CENTERING
-   --------------------------------------------------------- */
+body::before,
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  content: "";
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 50% 45%, transparent 5%, rgba(0,0,0,.2) 48%, rgba(0,0,0,.95) 120%),
+    linear-gradient(110deg, rgba(88,0,170,.08), transparent 35%, rgba(140,0,255,.08));
+}
+
+body::after {
+  opacity: .16;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 3px,
+    rgba(255,255,255,.08) 4px
+  );
+  mix-blend-mode: screen;
+}
+
+#starField,
+#starField::before,
+#starField::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+#starField {
+  z-index: 0;
+  opacity: .65;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(160,70,255,.7) 0 1px, transparent 1.5px);
+  background-size: 170px 170px, 230px 230px;
+  background-position: 20px 40px, 100px 90px;
+  animation: starDrift 35s linear infinite;
+}
+
+#starField::before {
+  background: radial-gradient(ellipse at center, transparent 20%, rgba(20,0,45,.5) 75%);
+  animation: breathe 8s ease-in-out infinite;
+}
 
 #startScreen {
   position: fixed;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.95);
   z-index: 1000;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(96,0,180,.16), transparent 35%),
+    #020104;
+  transition: opacity 1s ease, visibility 1s ease;
+}
 
-  /* Prevent perspective from affecting it */
-  transform: none !important;
-  perspective: none !important;
+#startScreen::before {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(174,94,255,.25);
+  border-radius: 50%;
+  box-shadow:
+    0 0 30px rgba(130,30,255,.25),
+    inset 0 0 40px rgba(130,30,255,.15);
+  content: "";
+  animation: portal 5s ease-in-out infinite;
+}
+
+#startScreen::after {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 50%;
+  content: "";
+  animation: portalReverse 8s linear infinite;
+}
+
+#startScreen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 #startBtn {
-  padding: 22px 48px;
-  font-size: 24px;
-  background: #111;
-  color: var(--white);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  letter-spacing: 2px;
-  box-shadow: 0 0 25px var(--accent);
-  transform: none !important;
   position: relative;
+  z-index: 1;
+  min-width: 220px;
+  padding: 19px 42px;
+  overflow: hidden;
+  border: 1px solid rgba(190,120,255,.8);
+  border-radius: 3px;
+  background: linear-gradient(135deg, rgba(73,10,125,.8), rgba(12,4,23,.95));
+  color: #fff;
+  cursor: pointer;
+  font-family: Orbitron, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-indent: 6px;
+  box-shadow:
+    0 0 12px rgba(139,44,255,.6),
+    inset 0 0 20px rgba(139,44,255,.18);
+  transition: .35s ease;
 }
 
-/* ---------------------------------------------------------
-   SKIP BUTTON
-   --------------------------------------------------------- */
+#startBtn::before {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  content: "";
+  transform: skewX(-25deg);
+  transition: left .7s ease;
+}
+
+#startBtn:hover {
+  transform: scale(1.08);
+  letter-spacing: 8px;
+  box-shadow:
+    0 0 20px var(--purple),
+    0 0 70px rgba(139,44,255,.55),
+    inset 0 0 25px rgba(139,44,255,.4);
+}
+
+#startBtn:hover::before {
+  left: 140%;
+}
 
 #skipBtn {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  display: none;
-  padding: 10px 14px;
-  font-size: 16px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 6px;
-  color: var(--white);
-  cursor: pointer;
+  top: 24px;
+  right: 28px;
   z-index: 1100;
+  display: none;
+  padding: 9px 15px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 2px;
+  background: rgba(0,0,0,.35);
+  color: rgba(255,255,255,.75);
+  cursor: pointer;
+  font-family: Orbitron, sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  backdrop-filter: blur(8px);
+  transition: .3s ease;
 }
 
-/* ---------------------------------------------------------
-   LABELS (THE 7 SENTENCES)
-   --------------------------------------------------------- */
+#skipBtn:hover {
+  border-color: var(--violet);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(139,44,255,.7);
+}
+
+.label,
+#mainTitle,
+#flower {
+  pointer-events: none;
+}
 
 .label {
   position: fixed;
-  left: 50%;
   top: 45%;
-  transform: translate(-50%, -50%);
-  font-size: 44px;
-  font-weight: 700;
+  left: 50%;
+  z-index: 10;
+  width: min(90%, 1100px);
+  text-align: center;
   opacity: 0;
-  text-shadow: 0 0 20px var(--label-glow);
-  pointer-events: none;
+  color: #f9f3ff;
+  font-family: Cinzel, Georgia, serif;
+  font-size: clamp(21px, 3.5vw, 54px);
+  font-weight: 700;
+  letter-spacing: clamp(1px, .4vw, 6px);
+  line-height: 1.3;
+  text-shadow:
+    0 0 6px #fff,
+    0 0 18px var(--violet),
+    0 0 45px var(--purple);
   will-change: transform, opacity, filter;
 }
 
-/* ---------------------------------------------------------
-   MAIN TITLE
-   --------------------------------------------------------- */
+.label::after {
+  display: block;
+  width: 90px;
+  height: 1px;
+  margin: 22px auto 0;
+  background: linear-gradient(90deg, transparent, var(--violet), transparent);
+  box-shadow: 0 0 12px var(--purple);
+  content: "";
+}
 
 #mainTitle {
   position: fixed;
-  left: 50%;
   top: 45%;
-  transform: translate(-50%, -50%);
-  font-size: 92px;
-  font-weight: 900;
+  left: 50%;
+  z-index: 20;
+  width: 96%;
+  text-align: center;
   opacity: 0;
-  text-shadow: 0 0 40px var(--title-glow);
-  pointer-events: none;
+  color: #fff;
+  font-family: Cinzel, Georgia, serif;
+  font-size: clamp(32px, 8vw, 112px);
+  font-weight: 900;
+  letter-spacing: clamp(3px, 1vw, 15px);
+  line-height: 1.1;
+  text-shadow:
+    0 0 5px #fff,
+    0 0 15px #fff,
+    0 0 35px var(--violet),
+    0 0 75px var(--purple);
   will-change: transform, opacity, filter;
 }
 
-/* ---------------------------------------------------------
-   FLOWER
-   --------------------------------------------------------- */
+#mainTitle::before,
+#mainTitle::after {
+  position: absolute;
+  top: 50%;
+  width: 12vw;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--violet));
+  box-shadow: 0 0 12px var(--purple);
+  content: "";
+}
+
+#mainTitle::before {
+  right: 100%;
+}
+
+#mainTitle::after {
+  left: 100%;
+  transform: rotate(180deg);
+}
 
 #flower {
   position: fixed;
+  top: -220px;
   left: 50%;
-  top: -200px;
-  transform: translateX(-50%);
-  width: 200px;
+  z-index: 5;
+  width: 190px;
   opacity: 0;
-  filter: drop-shadow(0 0 20px #000);
-  pointer-events: none;
-  will-change: transform, opacity;
+  filter:
+    drop-shadow(0 0 12px #000)
+    drop-shadow(0 0 25px rgba(139,44,255,.65));
 }
 
-/* ---------------------------------------------------------
-   ANIMATION CLASSES
-   --------------------------------------------------------- */
+.hidden {
+  display: none !important;
+}
 
-.pass-right   { animation: passRight 5s ease-in-out forwards; }
-.pass-left    { animation: passLeft 5s ease-in-out forwards; }
-.pass-down    { animation: passDown 5s ease-in-out forwards; }
-.pass-up      { animation: passUp 5s ease-in-out forwards; }
-.pass-forward { animation: passForward 5s ease-in-out forwards; }
-.pass-diagdr  { animation: passDiagDR 5s ease-in-out forwards; }
-.pass-diagul  { animation: passDiagUL 5s ease-in-out forwards; }
+.pass-right { animation: passRight 10s ease-in-out forwards; }
+.pass-left { animation: passLeft 10s ease-in-out forwards; }
+.pass-down { animation: passDown 10s ease-in-out forwards; }
+.pass-up { animation: passUp 10s ease-in-out forwards; }
+.pass-forward { animation: passForward 10s ease-in-out forwards; }
+.pass-diagdr { animation: passDiagDR 10s ease-in-out forwards; }
+.pass-diagul { animation: passDiagUL 10s ease-in-out forwards; }
+.flower-fall { animation: flowerFall 7s ease-in-out forwards; }
+.title-reveal { animation: titleReveal 5s cubic-bezier(.2,.8,.2,1) forwards; }
 
-.flower-fall  { animation: flowerFall 7s ease-in-out forwards; }
-.title-reveal { animation: titleReveal 4s ease-out forwards; }
-
-/* ---------------------------------------------------------
-   KEYFRAMES — CINEMATIC MOTION (CONTINUES IN PART 2)
-   --------------------------------------------------------- */
-/* ---------------------------------------------------------
-   KEYFRAMES — CINEMATIC MOTION
-   --------------------------------------------------------- */
-
-/* PASS RIGHT — drift right + depth */
 @keyframes passRight {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(600px) rotateY(0deg) scale(0.85);
-    filter: blur(6px);
-  }
-  15% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(350px) rotateY(8deg) scale(1.05);
-    filter: blur(2px);
-  }
-  45% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(0px) translateX(180px) rotateY(18deg) scale(1.15);
-    filter: blur(0px);
-  }
-  80% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) translateZ(-450px) translateX(480px) rotateY(32deg) scale(0.75);
-    filter: blur(3px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) translateX(680px) rotateY(40deg) scale(0.55);
-    filter: blur(6px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateX(-100px) scale(.75); filter: blur(10px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateX(0) scale(1); filter: blur(2px); }
+  52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateX(180px) scale(1.15); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateX(800px) scale(.45); filter: blur(10px); }
 }
 
-/* PASS LEFT — mirrored motion */
 @keyframes passLeft {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(600px) rotateY(0deg) scale(0.85);
-    filter: blur(6px);
-  }
-  15% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(350px) rotateY(-8deg) scale(1.05);
-    filter: blur(2px);
-  }
-  45% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(0px) translateX(-180px) rotateY(-18deg) scale(1.15);
-    filter: blur(0px);
-  }
-  80% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) translateZ(-450px) translateX(-480px) rotateY(-32deg) scale(0.75);
-    filter: blur(3px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) translateX(-680px) rotateY(-40deg) scale(0.55);
-    filter: blur(6px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateX(100px) scale(.75); filter: blur(10px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateX(0) scale(1); filter: blur(2px); }
+  52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateX(-180px) scale(1.15); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateX(-800px) scale(.45); filter: blur(10px); }
 }
 
-/* PASS DOWN — falling motion */
 @keyframes passDown {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(600px) rotateX(0deg) scale(0.85);
-    filter: blur(6px);
-  }
-  15% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(350px) rotateX(8deg) scale(1.05);
-    filter: blur(2px);
-  }
-  45% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(0px) translateY(180px) rotateX(18deg) scale(1.15);
-    filter: blur(0px);
-  }
-  80% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) translateZ(-450px) translateY(480px) rotateX(32deg) scale(0.75);
-    filter: blur(3px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) translateY(680px) rotateX(40deg) scale(0.55);
-    filter: blur(6px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateY(-100px) scale(.75); filter: blur(10px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateY(0) scale(1); filter: blur(2px); }
+  52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateY(180px) scale(1.15); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateY(800px) scale(.45); filter: blur(10px); }
 }
 
-/* PASS UP — rising motion */
 @keyframes passUp {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(600px) rotateX(0deg) scale(0.85);
-    filter: blur(6px);
-  }
-  15% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(350px) rotateX(-8deg) scale(1.05);
-    filter: blur(2px);
-  }
-  45% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(0px) translateY(-180px) rotateX(-18deg) scale(1.15);
-    filter: blur(0px);
-  }
-  80% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) translateZ(-450px) translateY(-480px) rotateX(-32deg) scale(0.75);
-    filter: blur(3px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) translateY(-680px) rotateX(-40deg) scale(0.55);
-    filter: blur(6px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translateY(100px) scale(.75); filter: blur(10px); }
+  18% { opacity: 1; transform: translate(-50%,-50%) translateZ(300px) translateY(0) scale(1); filter: blur(2px); }
+  52% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translateY(-180px) scale(1.15); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translateY(-800px) scale(.45); filter: blur(10px); }
 }
 
-/* PASS FORWARD — zoom through camera */
 @keyframes passForward {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) scale(0.55);
-    filter: blur(6px);
-  }
-  20% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(-300px) scale(0.9);
-    filter: blur(2px);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(600px) scale(2.2);
-    filter: blur(0px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(1400px) scale(3.4);
-    filter: blur(4px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(-900px) scale(.4); filter: blur(10px); }
+  30% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) scale(1); filter: blur(1px); }
+  65% { opacity: 1; transform: translate(-50%,-50%) translateZ(650px) scale(2); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(1500px) scale(4); filter: blur(8px); }
 }
 
-/* PASS DIAGONAL DOWN-RIGHT */
 @keyframes passDiagDR {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(600px) scale(0.85);
-    filter: blur(6px);
-  }
-  20% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(350px) scale(1.05);
-    filter: blur(2px);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(0px) translate(180px, 180px) scale(1.15);
-    filter: blur(0px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) translate(680px, 680px) scale(0.55);
-    filter: blur(6px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translate(-90px,-90px) scale(.75); filter: blur(10px); }
+  20% { opacity: 1; transform: translate(-50%,-50%) translateZ(250px) translate(0,0) scale(1); filter: blur(2px); }
+  55% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translate(180px,180px) scale(1.15); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translate(800px,800px) scale(.45); filter: blur(10px); }
 }
 
-/* PASS DIAGONAL UP-LEFT */
 @keyframes passDiagUL {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(600px) scale(0.85);
-    filter: blur(6px);
-  }
-  20% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(350px) scale(1.05);
-    filter: blur(2px);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateZ(0px) translate(-180px, -180px) scale(1.15);
-    filter: blur(0px);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateZ(-900px) translate(-680px, -680px) scale(0.55);
-    filter: blur(6px);
-  }
+  0% { opacity: 0; transform: translate(-50%,-50%) translateZ(650px) translate(90px,90px) scale(.75); filter: blur(10px); }
+  20% { opacity: 1; transform: translate(-50%,-50%) translateZ(250px) translate(0,0) scale(1); filter: blur(2px); }
+  55% { opacity: 1; transform: translate(-50%,-50%) translateZ(0) translate(-180px,-180px) scale(1.15); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translateZ(-1000px) translate(-800px,-800px) scale(.45); filter: blur(10px); }
 }
 
-/* FLOWER FALL — leaf-like wobble */
 @keyframes flowerFall {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-240px) rotate(-10deg);
-  }
-  20% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0px) rotate(6deg);
-  }
-  50% {
-    transform: translateX(calc(-50% + 40px)) translateY(300px) rotate(-15deg);
-  }
-  80% {
-    opacity: 0.8;
-    transform: translateX(calc(-50% - 20px)) translateY(600px) rotate(10deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(calc(-50% + 0px)) translateY(900px) rotate(20deg);
-  }
+  0% { opacity: 0; transform: translateX(-50%) translateY(-240px) rotate(-10deg); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(0) rotate(6deg); }
+  80% { opacity: .8; transform: translateX(calc(-50% - 20px)) translateY(600px) rotate(10deg); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(900px) rotate(20deg); }
 }
 
-/* TITLE REVEAL — dramatic zoom */
 @keyframes titleReveal {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8);
-    filter: blur(6px);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.25);
-    filter: blur(1px);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.35);
-    filter: blur(0px);
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.55); filter: blur(18px); letter-spacing: 25px; }
+  45% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); filter: blur(2px); }
+  75% { transform: translate(-50%,-50%) scale(1.16); }
+  100% { opacity: 1; transform: translate(-50%,-50%) scale(1.25); filter: blur(0); letter-spacing: clamp(3px, 1vw, 15px); }
+}
+
+@keyframes portal {
+  0%, 100% { transform: scale(.8) rotate(0); opacity: .35; }
+  50% { transform: scale(1.12) rotate(180deg); opacity: .8; }
+}
+
+@keyframes portalReverse {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes starDrift {
+  to { background-position: 20px 500px, 100px -400px; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: .35; transform: scale(.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@media (max-width: 600px) {
+  #startScreen::before { width: 280px; height: 280px; }
+  #startScreen::after { width: 210px; height: 210px; }
+  #mainTitle::before,
+  #mainTitle::after { display: none; }
+  .label { width: 88%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 </style>
 </head>
-<body>
 
-<!-- START SCREEN -->
+<body>
+<div id="starField"></div>
+
 <div id="startScreen">
   <button id="startBtn">START</button>
 </div>
 
-<!-- SKIP BUTTON -->
-<div id="skipBtn">Skip</div>
+<button id="skipBtn" type="button">SKIP INTRO</button>
 
-<!-- AUDIO -->
 <audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
 
-<!-- FLOWER -->
 <img id="flower" src="blackvelvet_flower.png" alt="">
 
-<!-- MAIN TITLE -->
 <div id="mainTitle">BLACK VELVET CLAN</div>
 
-<!-- LABELS -->
 <div class="label" id="l1">By the founders of Azul Clan</div>
 <div class="label" id="l2">Forged stronger in the abyss</div>
 <div class="label" id="l3">Motivated by memories</div>
@@ -412,104 +425,102 @@ html, body {
 <div class="label" id="l7">Back like we never left</div>
 
 <script>
-/* ---------------------------------------------------------
-   CINEMATIC INTRO ENGINE — FULL JAVASCRIPT
-   --------------------------------------------------------- */
-
-(function() {
-
-  const startBtn    = document.getElementById("startBtn");
+(() => {
+  const startBtn = document.getElementById("startBtn");
   const startScreen = document.getElementById("startScreen");
-  const skipBtn     = document.getElementById("skipBtn");
-  const audio       = document.getElementById("introAudio");
-  const flower      = document.getElementById("flower");
-  const mainTitle   = document.getElementById("mainTitle");
+  const skipBtn = document.getElementById("skipBtn");
+  const audio = document.getElementById("introAudio");
+  const flower = document.getElementById("flower");
+  const mainTitle = document.getElementById("mainTitle");
 
   const labels = [
-    { id: "l1", cls: "pass-right" },
-    { id: "l2", cls: "pass-left" },
-    { id: "l3", cls: "pass-down" },
-    { id: "l4", cls: "pass-up" },
-    { id: "l5", cls: "pass-forward" },
-    { id: "l6", cls: "pass-diagdr" },
-    { id: "l7", cls: "pass-diagul" }
+    ["l1", "pass-right"],
+    ["l2", "pass-left"],
+    ["l3", "pass-down"],
+    ["l4", "pass-up"],
+    ["l5", "pass-forward"],
+    ["l6", "pass-diagdr"],
+    ["l7", "pass-diagul"]
   ];
 
   let timers = [];
 
-  function schedule(fn, ms) {
-    const id = setTimeout(fn, ms);
-    timers.push(id);
-    return id;
+  function schedule(callback, delay) {
+    timers.push(setTimeout(callback, delay));
   }
 
-  function clearAllTimers() {
-    while (timers.length) clearTimeout(timers.pop());
+  function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
   }
 
-  function triggerLabel(id, cls) {
-    const el = document.getElementById(id);
-    if (!el) return;
+  function resetIntro() {
+    clearTimers();
 
-    el.style.opacity = 1;
-    el.style.transform = "translate(-50%, -50%)";
-    void el.offsetWidth; // force reflow
+    document.querySelectorAll(".label").forEach(label => {
+      label.className = "label";
+      label.style.opacity = "0";
+    });
 
-    el.classList.add(cls);
+    flower.className = "";
+    flower.style.opacity = "0";
 
-    schedule(() => el.classList.remove(cls), 5200);
+    mainTitle.className = "";
+    mainTitle.style.opacity = "0";
+  }
+
+  function showLabel(id, animationClass) {
+    const label = document.getElementById(id);
+    label.className = "label";
+    label.style.opacity = "0";
+    void label.offsetWidth;
+    label.classList.add(animationClass);
   }
 
   function startIntro() {
+    resetIntro();
 
-    startScreen.style.display = "none";
+    startScreen.classList.add("hidden");
     skipBtn.style.display = "block";
 
     audio.currentTime = 0;
-    audio.volume = 1.0;
+    audio.volume = 1;
 
+    // Start audio two seconds after the button is clicked.
     schedule(() => {
-      audio.play().catch(() => {
-        const resume = () => {
-          audio.play().catch(() => {});
-          document.body.removeEventListener("click", resume);
-        };
-        document.body.addEventListener("click", resume, { once: true });
-      });
+      audio.play().catch(() => {});
     }, 2000);
 
-    let base = 2000;
-
-    labels.forEach((item, index) => {
-      schedule(() => triggerLabel(item.id, item.cls), base + index * 5000);
+    // Show one cinematic line every five seconds.
+    labels.forEach(([id, animationClass], index) => {
+      schedule(() => showLabel(id, animationClass), 2000 + index * 5000);
     });
 
     schedule(() => {
-      flower.style.opacity = 1;
+      flower.className = "";
+      void flower.offsetWidth;
       flower.classList.add("flower-fall");
-      schedule(() => flower.classList.remove("flower-fall"), 7600);
-    }, 35000);
+    }, 37000);
 
+    // Show the title at 41.13 seconds after the audio starts.
     schedule(() => {
-      mainTitle.style.opacity = 1;
+      mainTitle.className = "";
+      void mainTitle.offsetWidth;
       mainTitle.classList.add("title-reveal");
-    }, 41130);
+    }, 2000 + 41130);
+  }
+
+  function skipIntro() {
+    audio.pause();
+    audio.currentTime = 0;
+    resetIntro();
+    startScreen.classList.remove("hidden");
+    skipBtn.style.display = "none";
   }
 
   startBtn.addEventListener("click", startIntro);
-
-  skipBtn.addEventListener("click", () => {
-    try { audio.pause(); } catch(e) {}
-    clearAllTimers();
-
-    document.querySelectorAll(".label, #flower, #mainTitle, #startScreen")
-      .forEach(el => el.classList.add("hidden"));
-
-    skipBtn.classList.add("hidden");
-  });
-
+  skipBtn.addEventListener("click", skipIntro);
 })();
 </script>
-
 </body>
 </html>
