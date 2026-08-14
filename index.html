@@ -1,4 +1,42 @@
-/* PERFECTLY CENTERED START SCREEN */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Black Velvet Azul Clan Intro</title>
+
+<style>
+
+/* ---------------------------------------------------------
+   GLOBAL RESET + BASE
+   --------------------------------------------------------- */
+
+:root {
+  --bg: #000;
+  --white: #fff;
+  --accent: #6f00ff;
+  --title-glow: rgba(255,255,255,0.35);
+  --label-glow: rgba(111,0,255,0.45);
+  --blur-strong: blur(6px);
+  --blur-soft: blur(2px);
+  --blur-none: blur(0px);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--white);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  overflow: hidden;
+  perspective: 1600px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------
+   START SCREEN — PERFECT CENTERING
+   --------------------------------------------------------- */
+
 #startScreen {
   position: fixed;
   inset: 0;
@@ -13,16 +51,468 @@
   perspective: none !important;
 }
 
-/* START BUTTON FIXED POSITIONING */
 #startBtn {
-  padding: 20px 48px;
-  font-size: 22px;
+  padding: 22px 48px;
+  font-size: 24px;
   background: #111;
-  color: #fff;
+  color: var(--white);
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 0 25px rgba(111,0,255,0.6);
-  transform: none !important;   /* Prevent inherited transforms */
-  position: relative;           /* Prevent weird offsets */
+  letter-spacing: 2px;
+  box-shadow: 0 0 25px var(--accent);
+  transform: none !important;
+  position: relative;
 }
+
+/* ---------------------------------------------------------
+   SKIP BUTTON
+   --------------------------------------------------------- */
+
+#skipBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: none;
+  padding: 10px 14px;
+  font-size: 16px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 6px;
+  color: var(--white);
+  cursor: pointer;
+  z-index: 1100;
+}
+
+/* ---------------------------------------------------------
+   LABELS (THE 7 SENTENCES)
+   --------------------------------------------------------- */
+
+.label {
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  font-size: 44px;
+  font-weight: 700;
+  opacity: 0;
+  text-shadow: 0 0 20px var(--label-glow);
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+
+/* ---------------------------------------------------------
+   MAIN TITLE
+   --------------------------------------------------------- */
+
+#mainTitle {
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  font-size: 92px;
+  font-weight: 900;
+  opacity: 0;
+  text-shadow: 0 0 40px var(--title-glow);
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+
+/* ---------------------------------------------------------
+   FLOWER
+   --------------------------------------------------------- */
+
+#flower {
+  position: fixed;
+  left: 50%;
+  top: -200px;
+  transform: translateX(-50%);
+  width: 200px;
+  opacity: 0;
+  filter: drop-shadow(0 0 20px #000);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* ---------------------------------------------------------
+   ANIMATION CLASSES
+   --------------------------------------------------------- */
+
+.pass-right   { animation: passRight 5s ease-in-out forwards; }
+.pass-left    { animation: passLeft 5s ease-in-out forwards; }
+.pass-down    { animation: passDown 5s ease-in-out forwards; }
+.pass-up      { animation: passUp 5s ease-in-out forwards; }
+.pass-forward { animation: passForward 5s ease-in-out forwards; }
+.pass-diagdr  { animation: passDiagDR 5s ease-in-out forwards; }
+.pass-diagul  { animation: passDiagUL 5s ease-in-out forwards; }
+
+.flower-fall  { animation: flowerFall 7s ease-in-out forwards; }
+.title-reveal { animation: titleReveal 4s ease-out forwards; }
+
+/* ---------------------------------------------------------
+   KEYFRAMES — CINEMATIC MOTION
+   --------------------------------------------------------- */
+/* ---------------------------------------------------------
+   KEYFRAMES — CINEMATIC MOTION (PART 2)
+   --------------------------------------------------------- */
+
+/* PASS RIGHT — smooth drift right + depth */
+@keyframes passRight {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(600px) rotateY(0deg) scale(0.85);
+    filter: blur(6px);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(350px) rotateY(8deg) scale(1.05);
+    filter: blur(2px);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(0px) translateX(180px) rotateY(18deg) scale(1.15);
+    filter: blur(0px);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) translateZ(-450px) translateX(480px) rotateY(32deg) scale(0.75);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) translateX(680px) rotateY(40deg) scale(0.55);
+    filter: blur(6px);
+  }
+}
+
+/* PASS LEFT — mirrored cinematic motion */
+@keyframes passLeft {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(600px) rotateY(0deg) scale(0.85);
+    filter: blur(6px);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(350px) rotateY(-8deg) scale(1.05);
+    filter: blur(2px);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(0px) translateX(-180px) rotateY(-18deg) scale(1.15);
+    filter: blur(0px);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) translateZ(-450px) translateX(-480px) rotateY(-32deg) scale(0.75);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) translateX(-680px) rotateY(-40deg) scale(0.55);
+    filter: blur(6px);
+  }
+}
+
+/* PASS DOWN — falling toward viewer then dropping */
+@keyframes passDown {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(600px) rotateX(0deg) scale(0.85);
+    filter: blur(6px);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(350px) rotateX(8deg) scale(1.05);
+    filter: blur(2px);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(0px) translateY(180px) rotateX(18deg) scale(1.15);
+    filter: blur(0px);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) translateZ(-450px) translateY(480px) rotateX(32deg) scale(0.75);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) translateY(680px) rotateX(40deg) scale(0.55);
+    filter: blur(6px);
+  }
+}
+
+/* PASS UP — rising past viewer */
+@keyframes passUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(600px) rotateX(0deg) scale(0.85);
+    filter: blur(6px);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(350px) rotateX(-8deg) scale(1.05);
+    filter: blur(2px);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(0px) translateY(-180px) rotateX(-18deg) scale(1.15);
+    filter: blur(0px);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) translateZ(-450px) translateY(-480px) rotateX(-32deg) scale(0.75);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) translateY(-680px) rotateX(-40deg) scale(0.55);
+    filter: blur(6px);
+  }
+}
+
+/* PASS FORWARD — zoom through camera */
+@keyframes passForward {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) scale(0.55);
+    filter: blur(6px);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(-300px) scale(0.9);
+    filter: blur(2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(600px) scale(2.2);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(1400px) scale(3.4);
+    filter: blur(4px);
+  }
+}
+
+/* PASS DIAGONAL DOWN-RIGHT */
+@keyframes passDiagDR {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(600px) scale(0.85);
+    filter: blur(6px);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(350px) scale(1.05);
+    filter: blur(2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(0px) translate(180px, 180px) scale(1.15);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) translate(680px, 680px) scale(0.55);
+    filter: blur(6px);
+  }
+}
+
+/* PASS DIAGONAL UP-LEFT */
+@keyframes passDiagUL {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(600px) scale(0.85);
+    filter: blur(6px);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(350px) scale(1.05);
+    filter: blur(2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(0px) translate(-180px, -180px) scale(1.15);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateZ(-900px) translate(-680px, -680px) scale(0.55);
+    filter: blur(6px);
+  }
+}
+
+/* FLOWER FALL — leaf-like wobble */
+@keyframes flowerFall {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-240px) rotate(-10deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px) rotate(6deg);
+  }
+  50% {
+    transform: translateX(calc(-50% + 40px)) translateY(300px) rotate(-15deg);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translateX(calc(-50% - 20px)) translateY(600px) rotate(10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(calc(-50% + 0px)) translateY(900px) rotate(20deg);
+  }
+}
+
+/* TITLE REVEAL — dramatic zoom */
+@keyframes titleReveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+    filter: blur(6px);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.25);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.35);
+    filter: blur(0px);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+  <button id="startBtn">START</button>
+</div>
+
+<!-- SKIP BUTTON -->
+<div id="skipBtn">Skip</div>
+
+<!-- AUDIO -->
+<audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
+
+<!-- FLOWER -->
+<img id="flower" src="blackvelvet_flower.png" alt="">
+
+<!-- MAIN TITLE -->
+<div id="mainTitle">BLACK VELVET CLAN</div>
+
+<!-- LABELS -->
+<div class="label" id="l1">By the founders of Azul Clan</div>
+<div class="label" id="l2">Forged stronger in the abyss</div>
+<div class="label" id="l3">Motivated by memories</div>
+<div class="label" id="l4">A legacy carved in darkness</div>
+<div class="label" id="l5">Directed by those who never stopped dreaming</div>
+<div class="label" id="l6">Managed by Gears</div>
+<div class="label" id="l7">Back like we never left</div>
+
+<script>
+/* ---------------------------------------------------------
+   CINEMATIC INTRO ENGINE — FULL JAVASCRIPT
+   --------------------------------------------------------- */
+
+(function() {
+
+  const startBtn   = document.getElementById("startBtn");
+  const startScreen = document.getElementById("startScreen");
+  const skipBtn    = document.getElementById("skipBtn");
+  const audio      = document.getElementById("introAudio");
+  const flower     = document.getElementById("flower");
+  const mainTitle  = document.getElementById("mainTitle");
+
+  const labels = [
+    { id: "l1", cls: "pass-right" },
+    { id: "l2", cls: "pass-left" },
+    { id: "l3", cls: "pass-down" },
+    { id: "l4", cls: "pass-up" },
+    { id: "l5", cls: "pass-forward" },
+    { id: "l6", cls: "pass-diagdr" },
+    { id: "l7", cls: "pass-diagul" }
+  ];
+
+  let timers = [];
+
+  function schedule(fn, ms) {
+    const id = setTimeout(fn, ms);
+    timers.push(id);
+    return id;
+  }
+
+  function clearAllTimers() {
+    while (timers.length) clearTimeout(timers.pop());
+  }
+
+  function triggerLabel(id, cls) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.style.opacity = 1;
+    el.style.transform = "translate(-50%, -50%)";
+    void el.offsetWidth; // force reflow
+
+    el.classList.add(cls);
+
+    schedule(() => el.classList.remove(cls), 5200);
+  }
+
+  function startIntro() {
+
+    startScreen.style.display = "none";
+    skipBtn.style.display = "block";
+
+    audio.currentTime = 0;
+    audio.volume = 1.0;
+
+    schedule(() => {
+      audio.play().catch(() => {
+        const resume = () => {
+          audio.play().catch(() => {});
+          document.body.removeEventListener("click", resume);
+        };
+        document.body.addEventListener("click", resume, { once: true });
+      });
+    }, 2000);
+
+    let base = 2000;
+
+    labels.forEach((item, index) => {
+      schedule(() => triggerLabel(item.id, item.cls), base + index * 5000);
+    });
+
+    schedule(() => {
+      flower.style.opacity = 1;
+      flower.classList.add("flower-fall");
+      schedule(() => flower.classList.remove("flower-fall"), 7600);
+    }, 35000);
+
+    schedule(() => {
+      mainTitle.style.opacity = 1;
+      mainTitle.classList.add("title-reveal");
+    }, 41130);
+  }
+
+  startBtn.addEventListener("click", startIntro);
+
+  skipBtn.addEventListener("click", () => {
+    try { audio.pause(); } catch(e) {}
+    clearAllTimers();
+
+    document.querySelectorAll(".label, #flower, #mainTitle, #startScreen")
+      .forEach(el => el.classList.add("hidden"));
+
+    skipBtn.classList.add("hidden");
+  });
+
+})();
+</script>
+
+</body>
+</html>
