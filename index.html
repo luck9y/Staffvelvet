@@ -1,106 +1,222 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Black Velvet HQ</title>
-<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+<title>Black Velvet Clan — Intro</title>
+
 <style>
-  body { margin: 0; background: #000; }
-</style>
-</head>
-<body>
-
-<script>
-const config = {
-    type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: "#0d0d0d",
-    physics: {
-        default: "arcade",
-        arcade: { debug: false }
-    },
-    scene: { preload, create, update }
-};
-
-let player;
-let cursors;
-let interactKey;
-let doors = [];
-
-new Phaser.Game(config);
-
-function preload() {
-    // Simple placeholder tiles (you can replace with your own)
-    this.textures.generate("tile", { data: ["2222","2332","2222"], pixelWidth: 20 });
-    this.textures.generate("player", { data: ["444","474","444"], pixelWidth: 20 });
-    this.textures.generate("door", { data: ["999","9F9","999"], pixelWidth: 20 });
-}
-
-function create() {
-    const mapWidth = 2000;
-    const mapHeight = 1200;
-
-    // Tile background
-    for (let x = 0; x < mapWidth; x += 40) {
-        for (let y = 0; y < mapHeight; y += 40) {
-            this.add.image(x, y, "tile").setOrigin(0);
-        }
+    body {
+        margin: 0;
+        background: #000;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
     }
 
+    /* PLAY SCREEN */
+    #play-screen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    #play-title {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        letter-spacing: 2px;
+    }
+
+    #play-btn {
+        padding: 20px 40px;
+        background: #111;
+        border: 2px solid #444;
+        border-radius: 10px;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #play-btn:hover {
+        background: #222;
+        border-color: #fff;
+        transform: scale(1.05);
+    }
+
+    /* TOP LEFT TITLE */
+    #top-left-title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: white;
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        display: none;
+        z-index: 999;
+    }
+
+    /* GAME CANVAS */
+    #gameCanvas {
+        background: #0a0a0a;
+        display: none;
+    }
+
+    /* MOBILE CONTROLS */
+    #mobile-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        z-index: 9999;
+    }
+
+    .mv-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .mv-btn {
+        width: 70px;
+        height: 70px;
+        background: radial-gradient(circle, #0a0a0a 60%, #000000 100%);
+        border-radius: 50%;
+        box-shadow: 0 0 15px #3b3b3b, inset 0 0 10px #1a1a1a;
+        border: 2px solid #2b2b2b;
+        transition: 0.15s;
+    }
+
+    .mv-btn:active {
+        box-shadow: 0 0 25px #5a5a5a, inset 0 0 15px #000;
+        transform: scale(0.92);
+    }
+</style>
+</head>
+
+<body>
+
+<!-- PLAY SCREEN -->
+<div id="play-screen">
+    <div id="play-title">BLACK VELVET CLAN</div>
+    <div id="play-btn">PLAY</div>
+</div>
+
+<!-- TOP LEFT TITLE -->
+<div id="top-left-title">BLACK VELVET CLAN</div>
+
+<!-- GAME CANVAS -->
+<canvas id="gameCanvas" width="900" height="600"></canvas>
+
+<!-- MOBILE CONTROLS -->
+<div id="mobile-controls">
+    <div class="mv-btn" id="btn-up"></div>
+    <div class="mv-row">
+        <div class="mv-btn" id="btn-left"></div>
+        <div class="mv-btn" id="btn-down"></div>
+        <div class="mv-btn" id="btn-right"></div>
+    </div>
+</div>
+
+<script>
+/* MOBILE DETECTION */
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+if (isMobile) {
+    document.getElementById("mobile-controls").style.display = "flex";
+}
+
+/* PLAY BUTTON */
+document.getElementById("play-btn").onclick = () => {
+    document.getElementById("play-screen").style.display = "none";
+    document.getElementById("gameCanvas").style.display = "block";
+    document.getElementById("top-left-title").style.display = "block";
+};
+
+/* GAME LOGIC */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let player = { x: 50, y: 300, size: 20 };
+let goal = { x: 800, y: 280, size: 40 };
+
+let moveUp = false, moveDown = false, moveLeft = false, moveRight = false;
+
+/* MOBILE BUTTON BINDING */
+function bindButton(id, variable) {
+    const btn = document.getElementById(id);
+    btn.addEventListener("touchstart", () => window[variable] = true);
+    btn.addEventListener("touchend", () => window[variable] = false);
+}
+
+bindButton("btn-up", "moveUp");
+bindButton("btn-down", "moveDown");
+bindButton("btn-left", "moveLeft");
+bindButton("btn-right", "moveRight");
+
+/* PC CONTROLS */
+document.addEventListener("keydown", e => {
+    if (e.key === "w" || e.key === "ArrowUp") moveUp = true;
+    if (e.key === "s" || e.key === "ArrowDown") moveDown = true;
+    if (e.key === "a" || e.key === "ArrowLeft") moveLeft = true;
+    if (e.key === "d" || e.key === "ArrowRight") moveRight = true;
+});
+
+document.addEventListener("keyup", e => {
+    if (e.key === "w" || e.key === "ArrowUp") moveUp = false;
+    if (e.key === "s" || e.key === "ArrowDown") moveDown = false;
+    if (e.key === "a" || e.key === "ArrowLeft") moveLeft = false;
+    if (e.key === "d" || e.key === "ArrowRight") moveRight = false;
+});
+
+/* GAME LOOP */
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Background velvet effect
+    ctx.fillStyle = "#0f0f0f";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     // Player
-    player = this.physics.add.sprite(200, 200, "player");
-    player.setCollideWorldBounds(true);
+    ctx.fillStyle = "#222";
+    ctx.shadowColor = "#555";
+    ctx.shadowBlur = 15;
+    ctx.fillRect(player.x, player.y, player.size, player.size);
+    ctx.shadowBlur = 0;
 
-    // Controls
-    cursors = this.input.keyboard.addKeys({
-        up: "w",
-        down: "s",
-        left: "a",
-        right: "d"
-    });
-    interactKey = this.input.keyboard.addKey("e");
+    // Goal
+    ctx.fillStyle = "#0044ff";
+    ctx.shadowColor = "#0066ff";
+    ctx.shadowBlur = 20;
+    ctx.fillRect(goal.x, goal.y, goal.size, goal.size);
+    ctx.shadowBlur = 0;
 
-    // Doors (matching the map layout)
-    doors.push(makeDoor(this, 950, 150, "Continued.html", "Continue..?"));
-    doors.push(makeDoor(this, 1500, 500, "Continue.html", "Continue..?"));
-    doors.push(makeDoor(this, 1800, 300, "stafflogin.html", "STAFF ONLY"));
+    // Movement
+    if (moveUp) player.y -= 4;
+    if (moveDown) player.y += 4;
+    if (moveLeft) player.x -= 4;
+    if (moveRight) player.x += 4;
 
-    // Camera
-    this.cameras.main.startFollow(player);
-    this.cameras.main.setZoom(1.2);
+    // Goal detection
+    if (player.x + player.size > goal.x &&
+        player.x < goal.x + goal.size &&
+        player.y + player.size > goal.y &&
+        player.y < goal.y + goal.size) {
+        window.location.href = "stafflogin.html";
+    }
+
+    requestAnimationFrame(gameLoop);
 }
 
-function makeDoor(scene, x, y, target, label) {
-    let d = scene.physics.add.sprite(x, y, "door");
-    d.target = target;
-    d.label = label;
-
-    scene.add.text(x - 40, y - 40, label, {
-        fontSize: "20px",
-        color: "#ffffff"
-    });
-
-    return d;
-}
-
-function update() {
-    player.setVelocity(0);
-
-    if (cursors.left.isDown) player.setVelocityX(-200);
-    if (cursors.right.isDown) player.setVelocityX(200);
-    if (cursors.up.isDown) player.setVelocityY(-200);
-    if (cursors.down.isDown) player.setVelocityY(200);
-
-    // Door interaction
-    doors.forEach(d => {
-        if (Phaser.Math.Distance.Between(player.x, player.y, d.x, d.y) < 60) {
-            if (interactKey.isDown) {
-                window.location.href = d.target;
-            }
-        }
-    });
-}
+gameLoop();
 </script>
 
 </body>
