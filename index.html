@@ -63,7 +63,6 @@
 
         <label>✓ Age
           <input name="age" type="number" min="13" placeholder="Your age" required />
-          <small>Applicants must meet the community's minimum age requirement.</small>
         </label>
 
         <label>✓ Timezone
@@ -71,8 +70,7 @@
         </label>
 
         <label>✓ Moderation / Staff Experience
-          <textarea name="experience" rows="4" required placeholder="Describe previous moderation or community management experience"></textarea>
-          <small>Include roles, communities, and a short summary of responsibilities.</small>
+          <textarea name="experience" rows="4" required></textarea>
         </label>
 
         <label>✓ Role applying for
@@ -86,15 +84,15 @@
         </label>
 
         <label>✓ Availability
-          <textarea name="availability" rows="3" required placeholder="Days/times you are typically available"></textarea>
+          <textarea name="availability" rows="3" required></textarea>
         </label>
 
         <label>✓ Why do you want to join staff?
-          <textarea name="motivation" rows="4" required placeholder="Tell us why you'd be a good fit"></textarea>
+          <textarea name="motivation" rows="4" required></textarea>
         </label>
 
         <label>✓ References <span class="optional">(optional)</span>
-          <textarea name="references" rows="3" placeholder="Discord tags or links to previous communities"></textarea>
+          <textarea name="references" rows="3"></textarea>
         </label>
 
         <label class="checkbox-row">
@@ -150,7 +148,7 @@
               <div><p class="eyebrow">PANEL 5 · SECURITY AUDIT</p><h1>Log Ins</h1></div>
               <button id="clearLogsButton" class="ghost-button">Clear logs</button>
             </div>
-            <p class="muted">Sanitized access events for this browser. Passwords are never shown.</p>
+            <p class="muted">Sanitized shared access events. Passwords are never shown.</p>
             <div id="logList" class="log-list"></div>
           </article>
 
@@ -163,13 +161,14 @@
           <article id="staffAccounts" class="panel leadership-only">
             <p class="eyebrow">PANEL 7 · LEADERSHIP</p>
             <h1>Staff Accounts</h1>
-            <p class="muted">Only the three leadership accounts can manage applications and staff accounts.</p>
+            <p class="muted">Only leadership can manage applications and staff accounts.</p>
             <div id="staffAccountList" class="log-list"></div>
           </article>
         </section>
       </div>
     </section>
   </main>
-  <script src="script.js"></script>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
