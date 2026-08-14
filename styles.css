@@ -164,6 +164,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--silver); box-sha
 .checkbox-row input { width: auto; margin: 2px 0 0; }
 
 .portal { min-height: 100vh; }
+
 .topbar {
   display: flex;
   align-items: center;
@@ -175,14 +176,51 @@ input:focus, textarea:focus, select:focus { border-color: var(--silver); box-sha
 
 .brand, .user-area { display: flex; align-items: center; gap: 13px; }
 .user-area { color: var(--muted); font-size: 13px; }
-.ghost-button { padding: 9px 13px; color: #ccc; border: 1px solid var(--border); background: transparent; }
+
+.ghost-button {
+  padding: 9px 13px;
+  color: #ccc;
+  border: 1px solid var(--border);
+  background: transparent;
+}
+
 .portal-layout { display: flex; width: min(1400px, 90%); margin: auto; }
 .sidebar { width: 235px; padding: 34px 20px 34px 0; border-right: 1px solid var(--border); }
 .sidebar-label { margin: 0 0 13px 12px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
-.nav-button { display: flex; justify-content: space-between; width: 100%; margin: 4px 0; padding: 13px 12px; border: 0; color: var(--muted); text-align: left; background: transparent; }
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  margin: 4px 0;
+  padding: 13px 12px;
+  border: 0;
+  color: var(--muted);
+  text-align: left;
+  background: transparent;
+}
+
 .nav-button:hover, .nav-button.active { color: white; background: var(--surface-light); }
 .nav-button.active { box-shadow: inset 3px 0 var(--silver); }
-.count { min-width: 22px; padding: 2px 6px; border-radius: 20px; color: #111; font-size: 11px; text-align: center; background: var(--silver); }
+
+.count {
+  display: inline-grid;
+  flex: 0 0 22px;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0;
+  border-radius: 50%;
+  color: #111;
+  font-size: 11px;
+  line-height: 22px;
+  text-align: center;
+  background: var(--silver);
+}
+
 .content { flex: 1; min-width: 0; padding: 52px clamp(24px, 5vw, 76px); }
 .panel { display: none; max-width: 950px; }
 .active-panel { display: block; }
