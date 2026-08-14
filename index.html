@@ -366,12 +366,13 @@ body::after {
   }
 }
 
+/* Accessibility-safe fallback for devices that disable motion */
 @media (prefers-reduced-motion:reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration:1ms !important;
-    animation-iteration-count:1 !important;
+  .label,
+  #mainTitle,
+  #flower {
+    animation:none !important;
+    filter:none !important;
   }
 }
 </style>
@@ -410,6 +411,9 @@ body::after {
   const flower = document.getElementById("flower");
   const mainTitle = document.getElementById("mainTitle");
 
+  const reducedMotion = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   const labels = [
     ["l1", "pass-right"],
     ["l2", "pass-left"],
@@ -439,13 +443,16 @@ body::after {
     document.querySelectorAll(".label").forEach(label => {
       label.className = "label";
       label.style.opacity = "0";
+      label.style.transform = "";
     });
 
     flower.className = "";
     flower.style.opacity = "0";
+    flower.style.transform = "";
 
     mainTitle.className = "";
     mainTitle.style.opacity = "0";
+    mainTitle.style.transform = "";
   }
 
   function showLabel(id, animationClass) {
@@ -454,10 +461,30 @@ body::after {
 
     label.className = "label";
     label.style.opacity = "0";
+    label.style.transform = "";
+
+    if (reducedMotion) {
+      label.style.opacity = "1";
+      label.style.transform = "translate(-50%, -50%)";
+      return;
+    }
 
     void label.offsetWidth;
-
     label.classList.add(animationClass);
+  }
+
+  function showTitle() {
+    mainTitle.className = "";
+    mainTitle.style.opacity = "0";
+
+    if (reducedMotion) {
+      mainTitle.style.opacity = "1";
+      mainTitle.style.transform = "translate(-50%, -50%)";
+      return;
+    }
+
+    void mainTitle.offsetWidth;
+    mainTitle.classList.add("title-reveal");
   }
 
   function startAudioReliably() {
@@ -508,18 +535,18 @@ body::after {
     });
 
     schedule(() => {
-      if (flower.style.display === "none") return;
+      if (reducedMotion) {
+        flower.style.opacity = "1";
+        flower.style.transform = "translateX(-50%)";
+        return;
+      }
 
       flower.className = "";
       void flower.offsetWidth;
       flower.classList.add("flower-fall");
     }, 40500);
 
-    schedule(() => {
-      mainTitle.className = "";
-      void mainTitle.offsetWidth;
-      mainTitle.classList.add("title-reveal");
-    }, 41130);
+    schedule(showTitle, 41130);
 
     schedule(() => {
       window.location.href = "home.html";
