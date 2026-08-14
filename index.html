@@ -11,7 +11,6 @@
     --white:#fff;
   }
 
-  /* Basic page */
   html,body{
     height:100%;
     margin:0;
@@ -19,9 +18,7 @@
     color:var(--white);
     font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
     overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    perspective:1400px; /* depth for 3D transforms */
+    perspective:1400px;
   }
 
   /* START SCREEN (centered, fixed) */
@@ -89,7 +86,6 @@
     pointer-events:none;
   }
 
-  /* Slightly larger on wide screens */
   @media(min-width:1200px){
     .label{ font-size:44px; }
     #mainTitle{ font-size:92px; }
@@ -127,41 +123,19 @@
     filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
   }
 
-  /* Individual animation classes (applied by JS) */
-  /* Each animation lasts 5s and uses 3D transforms + rotation to feel cinematic */
-  .anim-right{
-    animation: rightPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  .anim-left{
-    animation: leftPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  .anim-down{
-    animation: downPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  .anim-up{
-    animation: upPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  .anim-forward{
-    animation: forwardPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  .anim-diagdr{
-    animation: diagDRPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  .anim-diagul{
-    animation: diagULPass 5s cubic-bezier(.2,.9,.2,1) forwards;
-  }
+  /* Animation classes */
+  .anim-right{ animation: rightPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-left{ animation: leftPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-down{ animation: downPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-up{ animation: upPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-forward{ animation: forwardPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-diagdr{ animation: diagDRPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-diagul{ animation: diagULPass 5s cubic-bezier(.2,.9,.2,1) forwards; }
 
-  /* Flower fall animation (triggered at 35s) */
-  .flower-fall{
-    animation: flowerFall 7s cubic-bezier(.2,.9,.2,1) forwards;
-  }
+  .flower-fall{ animation: flowerFall 7s cubic-bezier(.2,.9,.2,1) forwards; }
+  .title-reveal{ animation: titleReveal 4s cubic-bezier(.2,.9,.2,1) forwards; }
 
-  /* Title reveal */
-  .title-reveal{
-    animation: titleReveal 4s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-
-  /* Keyframes: cinematic credit-like motion */
+  /* Keyframes */
   @keyframes rightPass {
     0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) translateX(0) rotateY(0) scale(1); }
     10% { opacity:1; transform:translate(-50%,-50%) translateZ(120px) translateX(0) rotateY(6deg) scale(1.05); }
@@ -211,7 +185,6 @@
     100% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) translate(-650px,-650px) rotateY(-40deg) rotateX(-25deg) scale(0.45); }
   }
 
-  /* Flower falling like a leaf */
   @keyframes flowerFall {
     0% { opacity:0; transform:translateX(-50%) translateY(-220px) rotate(-10deg) translateZ(0) scale(1); }
     10% { opacity:1; transform:translateX(-50%) translateY(-120px) rotate(-6deg) translateZ(40px) scale(1.02); }
@@ -221,37 +194,29 @@
     100% { opacity:0; transform:translateX(calc(-50% + 0px)) translateY(980px) rotate(20deg) translateZ(-120px) scale(0.85); }
   }
 
-  /* Title reveal */
   @keyframes titleReveal {
     0% { opacity:0; transform:translate(-50%,-50%) translateZ(0) scale(0.9) rotateY(0); filter:blur(6px); }
     20% { opacity:1; transform:translate(-50%,-50%) translateZ(240px) scale(1.05) rotateY(6deg); filter:blur(2px); }
     100% { opacity:1; transform:translate(-50%,-50%) translateZ(520px) scale(1.25) rotateY(10deg); filter:blur(0); }
   }
 
-  /* small helper to hide everything after skip */
   .hidden{ display:none !important; }
 </style>
 </head>
 <body>
 
-  <!-- Start screen -->
   <div id="startScreen" aria-hidden="false">
     <button id="startBtn" aria-label="Start intro">START</button>
   </div>
 
-  <!-- Skip -->
   <button id="skipBtn" aria-label="Skip intro">Skip</button>
 
-  <!-- Audio -->
   <audio id="introAudio" src="intro2.mp3" preload="auto"></audio>
 
-  <!-- Flower (use your high-res PNG with transparent background) -->
   <img id="flower" src="blackvelvet_flower.png" alt="" aria-hidden="true">
 
-  <!-- Main title -->
   <div id="mainTitle" aria-hidden="true">BLACK VELVET CLAN</div>
 
-  <!-- Labels (7) -->
   <div class="label" id="l1">By the founders of Azul Clan</div>
   <div class="label" id="l2">Forged stronger in the abyss</div>
   <div class="label" id="l3">Motivated by memories</div>
@@ -261,16 +226,6 @@
   <div class="label" id="l7">Back like we never left</div>
 
 <script>
-/*
-  Clean, robust controller:
-  - Audio starts 2s after Start click (to match your spec)
-  - Each label runs for 5s (7 labels = 35s)
-  - Flower falls at 35s
-  - Title appears at 41.13s
-  - Skip button visible immediately after Start click
-  - Start screen removed (display:none) to avoid layout shifts
-*/
-
 (function(){
   const startBtn = document.getElementById('startBtn');
   const startScreen = document.getElementById('startScreen');
@@ -279,7 +234,6 @@
   const flower = document.getElementById('flower');
   const mainTitle = document.getElementById('mainTitle');
 
-  // label config: id + animation class
   const sequence = [
     { id: 'l1', cls: 'anim-right' },
     { id: 'l2', cls: 'anim-left' },
@@ -287,4 +241,89 @@
     { id: 'l4', cls: 'anim-up' },
     { id: 'l5', cls: 'anim-forward' },
     { id: 'l6', cls: 'anim-diagdr' },
-    { id: 'l7', cls: 'anim
+    { id: 'l7', cls: 'anim-diagul' }
+  ];
+
+  // store timeouts so we can clear them on skip
+  const timeouts = [];
+
+  function schedule(fn, delay){
+    const id = setTimeout(fn, delay);
+    timeouts.push(id);
+    return id;
+  }
+
+  function clearAllScheduled(){
+    while(timeouts.length) clearTimeout(timeouts.pop());
+  }
+
+  function triggerLabel(labelId, className){
+    const el = document.getElementById(labelId);
+    if(!el) return;
+    el.style.opacity = 1;
+    el.style.transform = 'translate(-50%,-50%) translateZ(0) scale(1)';
+    // force reflow
+    void el.offsetWidth;
+    el.classList.add(className);
+    // remove class after animation so it can be reused
+    schedule(()=> el.classList.remove(className), 5200);
+  }
+
+  startBtn.addEventListener('click', function onStart(){
+    // hide start screen
+    startScreen.style.display = 'none';
+    // show skip
+    skipBtn.style.display = 'block';
+
+    // schedule audio to start at 2s
+    schedule(()=> {
+      audio.currentTime = 0;
+      audio.muted = false;
+      audio.play().catch(()=> {
+        // if browser blocks, attach a one-time resume on next user gesture
+        const resume = () => { audio.play().catch(()=>{}); document.body.removeEventListener('click', resume); };
+        document.body.addEventListener('click', resume, { once:true });
+      });
+    }, 2000);
+
+    // schedule labels: start at 2s, each 5s apart
+    const base = 2000;
+    sequence.forEach((item, idx) => {
+      schedule(()=> triggerLabel(item.id, item.cls), base + idx * 5000);
+    });
+
+    // flower at 35s
+    schedule(()=> {
+      flower.classList.add('flower-fall');
+      schedule(()=> flower.classList.remove('flower-fall'), 7500);
+    }, 35000);
+
+    // title at 41.13s
+    schedule(()=> mainTitle.classList.add('title-reveal'), 41130);
+
+    // disable start button to prevent double starts
+    startBtn.disabled = true;
+    startBtn.removeEventListener('click', onStart);
+  });
+
+  // Skip: stop audio, clear scheduled actions, hide intro elements
+  skipBtn.addEventListener('click', function(){
+    try{ audio.pause(); }catch(e){}
+    clearAllScheduled();
+    document.querySelectorAll('.label, #flower, #mainTitle, #startScreen').forEach(el=>{
+      if(el) el.classList.add('hidden');
+    });
+    skipBtn.classList.add('hidden');
+    // optionally redirect: window.location.href = 'main.html';
+  });
+
+  // ensure labels are reset initially
+  document.querySelectorAll('.label').forEach(el=>{
+    el.style.opacity = 0;
+    el.style.transform = 'translate(-50%,-50%) translateZ(0) scale(1)';
+  });
+
+})();
+</script>
+</body>
+</html>
