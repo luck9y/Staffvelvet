@@ -10,11 +10,12 @@
 
 :root {
   --black:#010101;
+  --deep-black:#050505;
+  --velvet:#090909;
   --silver:#c9cdd1;
   --white:#f5f5f5;
   --blue:#4aa3ff;
   --blue-bright:#a9d7ff;
-  --muted:rgba(220,224,228,.7);
 }
 
 * {
@@ -27,7 +28,7 @@ body {
   height:100%;
   margin:0;
   overflow:hidden;
-  background:var(--black);
+  background:#010101;
   color:var(--white);
   font-family:Inter,sans-serif;
   perspective:1600px;
@@ -45,7 +46,7 @@ body::after {
 body::before {
   background:
     radial-gradient(circle at 50% 45%, transparent 5%, rgba(0,0,0,.22) 48%, rgba(0,0,0,.98) 120%),
-    linear-gradient(110deg, rgba(255,255,255,.035), transparent 35%, rgba(255,255,255,.04));
+    linear-gradient(110deg,rgba(255,255,255,.035),transparent 35%,rgba(255,255,255,.04));
 }
 
 body::after {
@@ -59,28 +60,65 @@ body::after {
   mix-blend-mode:screen;
 }
 
-#starField,
-#starField::before {
+#velvetRain {
   position:fixed;
   inset:0;
+  z-index:1;
+  overflow:hidden;
   pointer-events:none;
-  content:"";
 }
 
-#starField {
-  z-index:0;
-  opacity:.62;
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(150,155,160,.7) 0 1px, transparent 1.5px);
-  background-size:170px 170px, 230px 230px;
-  background-position:20px 40px, 100px 90px;
-  animation:starDrift 35s linear infinite;
+.rain-flower {
+  position:absolute;
+  top:-100px;
+  width:var(--size);
+  height:var(--size);
+  opacity:var(--opacity);
+  transform:rotate(var(--rotation));
+  animation:fall var(--duration) linear var(--delay) infinite;
 }
 
-#starField::before {
-  background:radial-gradient(ellipse at center, transparent 20%, rgba(30,32,35,.65) 75%);
-  animation:breathe 8s ease-in-out infinite;
+.rain-flower .petal {
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:42%;
+  height:68%;
+  border-radius:65% 35% 70% 30%;
+  background:
+    radial-gradient(ellipse at 32% 18%,rgba(255,255,255,.18),transparent 13%),
+    radial-gradient(ellipse at 66% 76%,rgba(0,0,0,.95),transparent 48%),
+    linear-gradient(125deg,#333,#090909 45%,#000 82%);
+  box-shadow:
+    inset 3px 3px 7px rgba(255,255,255,.1),
+    inset -6px -8px 12px #000,
+    0 0 8px rgba(255,255,255,.08);
+  transform-origin:0 100%;
+}
+
+.rain-flower .petal:nth-child(1){transform:translate(-50%,-100%) rotate(0deg) scale(.9)}
+.rain-flower .petal:nth-child(2){transform:translate(-50%,-100%) rotate(60deg) scale(.85)}
+.rain-flower .petal:nth-child(3){transform:translate(-50%,-100%) rotate(120deg) scale(.95)}
+.rain-flower .petal:nth-child(4){transform:translate(-50%,-100%) rotate(180deg) scale(.88)}
+.rain-flower .petal:nth-child(5){transform:translate(-50%,-100%) rotate(240deg) scale(.92)}
+.rain-flower .petal:nth-child(6){transform:translate(-50%,-100%) rotate(300deg) scale(.86)}
+
+@keyframes fall {
+  0% {
+    transform:translate3d(0,-120px,0) rotate(var(--rotation)) scale(.65);
+  }
+  25% {
+    transform:translate3d(var(--sway),25vh,0) rotate(calc(var(--rotation) + 90deg)) scale(.8);
+  }
+  50% {
+    transform:translate3d(calc(var(--sway) * -1),52vh,0) rotate(calc(var(--rotation) + 180deg)) scale(1);
+  }
+  75% {
+    transform:translate3d(var(--sway),78vh,0) rotate(calc(var(--rotation) + 270deg)) scale(.84);
+  }
+  100% {
+    transform:translate3d(calc(var(--sway) * -1),115vh,0) rotate(calc(var(--rotation) + 360deg)) scale(.7);
+  }
 }
 
 #startScreen {
@@ -90,9 +128,9 @@ body::after {
   display:grid;
   place-items:center;
   background:
-    radial-gradient(circle at center, rgba(210,215,220,.11), transparent 35%),
+    radial-gradient(circle at center,rgba(210,215,220,.11),transparent 35%),
     #010101;
-  transition:opacity 1s ease, visibility 1s ease;
+  transition:opacity 1s ease,visibility 1s ease;
 }
 
 #startScreen::before,
@@ -106,7 +144,7 @@ body::after {
 #startScreen::before {
   width:420px;
   height:420px;
-  box-shadow:0 0 30px rgba(190,195,200,.2), inset 0 0 40px rgba(190,195,200,.12);
+  box-shadow:0 0 30px rgba(190,195,200,.2),inset 0 0 40px rgba(190,195,200,.12);
   animation:portal 5s ease-in-out infinite;
 }
 
@@ -123,30 +161,33 @@ body::after {
   pointer-events:none;
 }
 
+#startBtn,
+#skipBtn {
+  font-family:Orbitron,sans-serif;
+  cursor:pointer;
+}
+
 #startBtn {
   position:relative;
   z-index:1;
   min-width:220px;
   padding:19px 42px;
-  overflow:hidden;
   border:1px solid rgba(220,225,230,.8);
   border-radius:3px;
-  background:linear-gradient(135deg, rgba(75,78,82,.8), rgba(10,10,11,.96));
+  background:linear-gradient(135deg,rgba(75,78,82,.8),rgba(10,10,11,.96));
   color:var(--white);
-  cursor:pointer;
-  font-family:Orbitron,sans-serif;
   font-size:19px;
   font-weight:700;
   letter-spacing:6px;
   text-indent:6px;
-  box-shadow:0 0 12px rgba(210,215,220,.45), inset 0 0 20px rgba(255,255,255,.12);
+  box-shadow:0 0 12px rgba(210,215,220,.45),inset 0 0 20px rgba(255,255,255,.12);
   transition:.35s ease;
 }
 
 #startBtn:hover {
   transform:scale(1.08);
   letter-spacing:8px;
-  box-shadow:0 0 20px rgba(220,225,230,.8), 0 0 70px rgba(170,175,180,.35), inset 0 0 25px rgba(255,255,255,.25);
+  box-shadow:0 0 20px rgba(220,225,230,.8),0 0 70px rgba(170,175,180,.35),inset 0 0 25px rgba(255,255,255,.25);
 }
 
 #skipBtn {
@@ -159,19 +200,10 @@ body::after {
   border:1px solid rgba(220,225,230,.4);
   border-radius:2px;
   background:rgba(0,0,0,.42);
-  color:var(--muted);
-  cursor:pointer;
-  font-family:Orbitron,sans-serif;
+  color:rgba(220,224,228,.7);
   font-size:11px;
   letter-spacing:2px;
   backdrop-filter:blur(8px);
-  transition:.3s ease;
-}
-
-#skipBtn:hover {
-  border-color:var(--silver);
-  color:#fff;
-  box-shadow:0 0 18px rgba(210,215,220,.55);
 }
 
 .label,
@@ -194,7 +226,7 @@ body::after {
   font-weight:700;
   letter-spacing:clamp(1px,.4vw,6px);
   line-height:1.3;
-  text-shadow:0 0 6px #fff, 0 0 18px var(--silver), 0 0 45px rgba(180,185,190,.9);
+  text-shadow:0 0 6px #fff,0 0 18px var(--silver),0 0 45px rgba(180,185,190,.9);
   will-change:transform,opacity,filter;
 }
 
@@ -204,13 +236,12 @@ body::after {
   height:1px;
   margin:22px auto 0;
   background:linear-gradient(90deg,transparent,var(--silver),transparent);
-  box-shadow:0 0 12px rgba(220,225,230,.8);
   content:"";
 }
 
 .accent {
   color:var(--blue-bright);
-  text-shadow:0 0 5px #fff, 0 0 14px var(--blue), 0 0 35px rgba(40,145,255,.95);
+  text-shadow:0 0 5px #fff,0 0 14px var(--blue),0 0 35px rgba(40,145,255,.95);
 }
 
 #mainTitle {
@@ -227,8 +258,7 @@ body::after {
   font-weight:900;
   letter-spacing:clamp(3px,1vw,15px);
   line-height:1.1;
-  text-shadow:0 0 5px #fff, 0 0 15px #fff, 0 0 35px var(--silver), 0 0 75px rgba(180,185,190,.9);
-  will-change:transform,opacity,filter;
+  text-shadow:0 0 5px #fff,0 0 15px #fff,0 0 35px var(--silver),0 0 75px rgba(180,185,190,.9);
 }
 
 #mainTitle::before,
@@ -238,13 +268,10 @@ body::after {
   width:12vw;
   height:1px;
   background:linear-gradient(90deg,transparent,var(--silver));
-  box-shadow:0 0 12px rgba(220,225,230,.8);
   content:"";
 }
 
-#mainTitle::before {
-  right:100%;
-}
+#mainTitle::before { right:100%; }
 
 #mainTitle::after {
   left:100%;
@@ -253,133 +280,182 @@ body::after {
 
 #flower {
   position:fixed;
-  top:-220px;
+  top:44%;
   left:50%;
-  z-index:90;
-  width:190px;
+  z-index:110;
+  width:clamp(190px,24vw,330px);
+  height:clamp(190px,24vw,330px);
   opacity:0;
-  filter:grayscale(1) contrast(1.3) drop-shadow(0 0 12px #000) drop-shadow(0 0 25px rgba(220,225,230,.5));
+  transform:translate(-50%,-50%) scale(.15) rotate(-25deg);
+  filter:drop-shadow(0 0 12px #000) drop-shadow(0 0 30px rgba(220,225,230,.35));
 }
 
-.pass-right { animation:passRight 10s ease-in-out forwards; }
-.pass-left { animation:passLeft 10s ease-in-out forwards; }
-.pass-down { animation:passDown 10s ease-in-out forwards; }
-.pass-up { animation:passUp 10s ease-in-out forwards; }
-.pass-forward { animation:passForward 10s ease-in-out forwards; }
-.pass-diagdr { animation:passDiagDR 10s ease-in-out forwards; }
-.pass-diagul { animation:passDiagUL 10s ease-in-out forwards; }
-.flower-fall { animation:flowerFall 7s ease-in-out forwards; }
-.title-reveal { animation:titleReveal 5s cubic-bezier(.2,.8,.2,1) forwards; }
-
-@keyframes passRight {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(650px) translateX(-100px) scale(.75); filter:blur(10px); }
-  18% { opacity:1; transform:translate(-50%,-50%) translateZ(300px) scale(1); filter:blur(2px); }
-  52% { opacity:1; transform:translate(-50%,-50%) translateZ(0) translateX(180px) scale(1.15); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(-1000px) translateX(800px) scale(.45); filter:blur(10px); }
+.flower-core {
+  position:absolute;
+  inset:28%;
+  z-index:3;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 28%,#888 0 3%,#222 12%,#050505 48%,#000 75%);
+  box-shadow:inset 5px 5px 13px rgba(255,255,255,.18),inset -10px -12px 18px #000,0 0 15px #000;
 }
 
-@keyframes passLeft {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(650px) translateX(100px) scale(.75); filter:blur(10px); }
-  18% { opacity:1; transform:translate(-50%,-50%) translateZ(300px) scale(1); filter:blur(2px); }
-  52% { opacity:1; transform:translate(-50%,-50%) translateZ(0) translateX(-180px) scale(1.15); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(-1000px) translateX(-800px) scale(.45); filter:blur(10px); }
+.flower-core::after {
+  position:absolute;
+  inset:29%;
+  border:2px solid #444;
+  border-radius:50%;
+  box-shadow:inset 0 0 8px #000,0 0 5px #999;
+  content:"";
 }
 
-@keyframes passDown {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(650px) translateY(-100px) scale(.75); filter:blur(10px); }
-  18% { opacity:1; transform:translate(-50%,-50%) translateZ(300px) scale(1); filter:blur(2px); }
-  52% { opacity:1; transform:translate(-50%,-50%) translateZ(0) translateY(180px) scale(1.15); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(-1000px) translateY(800px) scale(.45); filter:blur(10px); }
+.main-petal {
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:42%;
+  height:63%;
+  border-radius:68% 32% 72% 28%;
+  background:
+    radial-gradient(ellipse at 30% 16%,rgba(255,255,255,.3),transparent 10%),
+    radial-gradient(ellipse at 65% 75%,rgba(0,0,0,.98),transparent 48%),
+    linear-gradient(125deg,#555 0%,#181818 18%,#050505 54%,#000 86%);
+  box-shadow:
+    inset 6px 5px 13px rgba(255,255,255,.18),
+    inset -12px -15px 22px #000,
+    inset 0 0 4px #777,
+    0 0 12px rgba(0,0,0,.9);
+  transform-origin:0 100%;
 }
 
-@keyframes passUp {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(650px) translateY(100px) scale(.75); filter:blur(10px); }
-  18% { opacity:1; transform:translate(-50%,-50%) translateZ(300px) scale(1); filter:blur(2px); }
-  52% { opacity:1; transform:translate(-50%,-50%) translateZ(0) translateY(-180px) scale(1.15); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(-1000px) translateY(-800px) scale(.45); filter:blur(10px); }
+.main-petal::after {
+  position:absolute;
+  top:12%;
+  left:48%;
+  width:2px;
+  height:70%;
+  border-radius:50%;
+  background:linear-gradient(transparent,rgba(180,180,180,.35),transparent);
+  box-shadow:0 0 4px rgba(255,255,255,.2);
+  content:"";
+  transform:rotate(-12deg);
 }
 
-@keyframes passForward {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(-900px) scale(.4); filter:blur(10px); }
-  30% { opacity:1; transform:translate(-50%,-50%) translateZ(0) scale(1); filter:blur(1px); }
-  65% { opacity:1; transform:translate(-50%,-50%) translateZ(650px) scale(2); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(1500px) scale(4); filter:blur(8px); }
+.main-petal:nth-child(2){transform:translate(-50%,-100%) rotate(0deg) scale(1)}
+.main-petal:nth-child(3){transform:translate(-50%,-100%) rotate(45deg) scale(.94)}
+.main-petal:nth-child(4){transform:translate(-50%,-100%) rotate(90deg) scale(1.04)}
+.main-petal:nth-child(5){transform:translate(-50%,-100%) rotate(135deg) scale(.92)}
+.main-petal:nth-child(6){transform:translate(-50%,-100%) rotate(180deg) scale(1)}
+.main-petal:nth-child(7){transform:translate(-50%,-100%) rotate(225deg) scale(.94)}
+.main-petal:nth-child(8){transform:translate(-50%,-100%) rotate(270deg) scale(1.04)}
+.main-petal:nth-child(9){transform:translate(-50%,-100%) rotate(315deg) scale(.92)}
+
+.flower-bloom {
+  animation:bloomFlower 2.8s cubic-bezier(.2,.8,.2,1) forwards;
 }
 
-@keyframes passDiagDR {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(650px) translate(-90px,-90px) scale(.75); filter:blur(10px); }
-  20% { opacity:1; transform:translate(-50%,-50%) translateZ(250px) scale(1); filter:blur(2px); }
-  55% { opacity:1; transform:translate(-50%,-50%) translateZ(0) translate(180px,180px) scale(1.15); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(-1000px) translate(800px,800px) scale(.45); filter:blur(10px); }
+.title-reveal {
+  animation:titleReveal 4.5s cubic-bezier(.2,.8,.2,1) forwards;
 }
 
-@keyframes passDiagUL {
-  0% { opacity:0; transform:translate(-50%,-50%) translateZ(650px) translate(90px,90px) scale(.75); filter:blur(10px); }
-  20% { opacity:1; transform:translate(-50%,-50%) translateZ(250px) scale(1); filter:blur(2px); }
-  55% { opacity:1; transform:translate(-50%,-50%) translateZ(0) translate(-180px,-180px) scale(1.15); filter:blur(0); }
-  100% { opacity:0; transform:translate(-50%,-50%) translateZ(-1000px) translate(-800px,-800px) scale(.45); filter:blur(10px); }
-}
+/* Every sentence now takes exactly five seconds. */
+.pass-right {animation:passRight 5s ease-in-out forwards}
+.pass-left {animation:passLeft 5s ease-in-out forwards}
+.pass-down {animation:passDown 5s ease-in-out forwards}
+.pass-up {animation:passUp 5s ease-in-out forwards}
+.pass-forward {animation:passForward 5s ease-in-out forwards}
+.pass-diagdr {animation:passDiagDR 5s ease-in-out forwards}
+.pass-diagul {animation:passDiagUL 5s ease-in-out forwards}
 
-@keyframes flowerFall {
-  0% { opacity:0; transform:translateX(-50%) translateY(-240px) rotate(-10deg) scale(.7); }
-  20% { opacity:1; transform:translateX(-50%) translateY(0) rotate(6deg) scale(1); }
-  80% { opacity:.8; transform:translateX(calc(-50% - 20px)) translateY(600px) rotate(10deg) scale(1.1); }
-  100% { opacity:0; transform:translateX(-50%) translateY(900px) rotate(20deg) scale(1.3); }
+@keyframes bloomFlower {
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(-25deg);filter:blur(15px) brightness(.4)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(8deg);filter:blur(2px) brightness(1)}
+  70%{transform:translate(-50%,-50%) scale(.94) rotate(-4deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);filter:blur(0) brightness(1)}
 }
 
 @keyframes titleReveal {
-  0% { opacity:0; transform:translate(-50%,-50%) scale(.55); filter:blur(18px); letter-spacing:25px; }
-  45% { opacity:1; transform:translate(-50%,-50%) scale(1.05); filter:blur(2px); }
-  75% { transform:translate(-50%,-50%) scale(1.16); }
-  100% { opacity:1; transform:translate(-50%,-50%) scale(1.25); filter:blur(0); letter-spacing:clamp(3px,1vw,15px); }
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.55);filter:blur(18px);letter-spacing:25px}
+  45%{opacity:1;transform:translate(-50%,-50%) scale(1.05);filter:blur(2px)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1.25);filter:blur(0);letter-spacing:clamp(3px,1vw,15px)}
+}
+
+@keyframes passRight {
+  0%{opacity:0;transform:translate(-50%,-50%) translateZ(650px) translateX(-100px) scale(.75);filter:blur(10px)}
+  18%{opacity:1;transform:translate(-50%,-50%) translateZ(300px) scale(1);filter:blur(2px)}
+  52%{opacity:1;transform:translate(-50%,-50%) translateZ(0) translateX(180px) scale(1.15);filter:blur(0)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateZ(-1000px) translateX(800px) scale(.45);filter:blur(10px)}
+}
+
+@keyframes passLeft {
+  0%{opacity:0;transform:translate(-50%,-50%) translateZ(650px) translateX(100px) scale(.75);filter:blur(10px)}
+  18%{opacity:1;transform:translate(-50%,-50%) translateZ(300px) scale(1);filter:blur(2px)}
+  52%{opacity:1;transform:translate(-50%,-50%) translateZ(0) translateX(-180px) scale(1.15);filter:blur(0)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateZ(-1000px) translateX(-800px) scale(.45);filter:blur(10px)}
+}
+
+@keyframes passDown {
+  0%{opacity:0;transform:translate(-50%,-50%) translateY(-100px) scale(.75);filter:blur(10px)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(2px)}
+  55%{opacity:1;transform:translate(-50%,-50%) translateY(180px) scale(1.15);filter:blur(0)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateY(800px) scale(.45);filter:blur(10px)}
+}
+
+@keyframes passUp {
+  0%{opacity:0;transform:translate(-50%,-50%) translateY(100px) scale(.75);filter:blur(10px)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(2px)}
+  55%{opacity:1;transform:translate(-50%,-50%) translateY(-180px) scale(1.15);filter:blur(0)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateY(-800px) scale(.45);filter:blur(10px)}
+}
+
+@keyframes passForward {
+  0%{opacity:0;transform:translate(-50%,-50%) translateZ(-900px) scale(.4);filter:blur(10px)}
+  30%{opacity:1;transform:translate(-50%,-50%) translateZ(0) scale(1);filter:blur(1px)}
+  65%{opacity:1;transform:translate(-50%,-50%) translateZ(650px) scale(2)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateZ(1500px) scale(4);filter:blur(8px)}
+}
+
+@keyframes passDiagDR {
+  0%{opacity:0;transform:translate(-50%,-50%) translate(-90px,-90px) scale(.75);filter:blur(10px)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(2px)}
+  55%{opacity:1;transform:translate(-50%,-50%) translate(180px,180px) scale(1.15);filter:blur(0)}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(800px,800px) scale(.45);filter:blur(10px)}
+}
+
+@keyframes passDiagUL {
+  0%{opacity:0;transform:translate(-50%,-50%) translate(90px,90px) scale(.75);filter:blur(10px)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(2px)}
+  55%{opacity:1;transform:translate(-50%,-50%) translate(-180px,-180px) scale(1.15);filter:blur(0)}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(-800px,-800px) scale(.45);filter:blur(10px)}
 }
 
 @keyframes portal {
-  0%,100% { transform:scale(.8) rotate(0); opacity:.35; }
-  50% { transform:scale(1.12) rotate(180deg); opacity:.8; }
+  0%,100%{transform:scale(.8) rotate(0);opacity:.35}
+  50%{transform:scale(1.12) rotate(180deg);opacity:.8}
 }
 
 @keyframes portalReverse {
-  to { transform:rotate(-360deg); }
-}
-
-@keyframes starDrift {
-  to { background-position:20px 500px,100px -400px; }
-}
-
-@keyframes breathe {
-  0%,100% { opacity:.35; transform:scale(.9); }
-  50% { opacity:1; transform:scale(1.1); }
+  to{transform:rotate(-360deg)}
 }
 
 @media (max-width:600px) {
-  #startScreen::before { width:280px; height:280px; }
-  #startScreen::after { width:210px; height:210px; }
-
-  #mainTitle::before,
-  #mainTitle::after {
-    display:none;
-  }
-
-  .label {
-    width:88%;
-  }
+  #startScreen::before{width:280px;height:280px}
+  #startScreen::after{width:210px;height:210px}
+  #mainTitle::before,#mainTitle::after{display:none}
+  .label{width:88%}
 }
 
-/* Accessibility-safe fallback for devices that disable motion */
 @media (prefers-reduced-motion:reduce) {
-  .label,
-  #mainTitle,
-  #flower {
-    animation:none !important;
-    filter:none !important;
+  .label,#mainTitle,#flower,.rain-flower {
+    animation:none!important;
+    filter:none!important;
   }
 }
 </style>
 </head>
 
 <body>
-<div id="starField"></div>
+<div id="velvetRain"></div>
 
 <div id="startScreen">
   <button id="startBtn" type="button">START</button>
@@ -389,7 +465,17 @@ body::after {
 
 <audio id="introAudio" src="sounds/intro2.mp3" preload="auto"></audio>
 
-<img id="flower" src="blackvelvet_flower.png" alt="">
+<div id="flower" aria-hidden="true">
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="main-petal"></span>
+  <span class="flower-core"></span>
+</div>
 
 <div id="mainTitle">BLACK VELVET CLAN</div>
 
@@ -410,23 +496,48 @@ body::after {
   const audio = document.getElementById("introAudio");
   const flower = document.getElementById("flower");
   const mainTitle = document.getElementById("mainTitle");
+  const rain = document.getElementById("velvetRain");
 
   const reducedMotion = window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const labels = [
-    ["l1", "pass-right"],
-    ["l2", "pass-left"],
-    ["l3", "pass-down"],
-    ["l4", "pass-up"],
-    ["l5", "pass-forward"],
-    ["l6", "pass-diagdr"],
-    ["l7", "pass-diagul"],
-    ["l8", "pass-right"]
+    ["l1","pass-right"],
+    ["l2","pass-left"],
+    ["l3","pass-down"],
+    ["l4","pass-up"],
+    ["l5","pass-forward"],
+    ["l6","pass-diagdr"],
+    ["l7","pass-diagul"],
+    ["l8","pass-right"]
   ];
 
   let timers = [];
   let introStarted = false;
+
+  function createRainFlowers() {
+    const amount = window.innerWidth < 600 ? 18 : 34;
+
+    for (let i = 0; i < amount; i++) {
+      const rainFlower = document.createElement("div");
+      rainFlower.className = "rain-flower";
+      rainFlower.style.left = `${Math.random() * 100}%`;
+      rainFlower.style.setProperty("--size", `${10 + Math.random() * 28}px`);
+      rainFlower.style.setProperty("--opacity", `${.18 + Math.random() * .42}`);
+      rainFlower.style.setProperty("--duration", `${18 + Math.random() * 22}s`);
+      rainFlower.style.setProperty("--delay", `${Math.random() * -35}s`);
+      rainFlower.style.setProperty("--sway", `${-80 + Math.random() * 160}px`);
+      rainFlower.style.setProperty("--rotation", `${Math.random() * 360}deg`);
+
+      for (let j = 0; j < 6; j++) {
+        const petal = document.createElement("span");
+        petal.className = "petal";
+        rainFlower.appendChild(petal);
+      }
+
+      rain.appendChild(rainFlower);
+    }
+  }
 
   function schedule(callback, delay) {
     timers.push(setTimeout(callback, delay));
@@ -465,7 +576,7 @@ body::after {
 
     if (reducedMotion) {
       label.style.opacity = "1";
-      label.style.transform = "translate(-50%, -50%)";
+      label.style.transform = "translate(-50%,-50%)";
       return;
     }
 
@@ -479,7 +590,7 @@ body::after {
 
     if (reducedMotion) {
       mainTitle.style.opacity = "1";
-      mainTitle.style.transform = "translate(-50%, -50%)";
+      mainTitle.style.transform = "translate(-50%,-50%)";
       return;
     }
 
@@ -487,30 +598,25 @@ body::after {
     mainTitle.classList.add("title-reveal");
   }
 
-  function startAudioReliably() {
+  function startAudio() {
     audio.currentTime = 0;
     audio.volume = 0;
     audio.muted = true;
 
-    const playRequest = audio.play();
+    const request = audio.play();
 
-    if (playRequest && typeof playRequest.catch === "function") {
-      playRequest.catch(error => {
-        console.warn("Audio playback was blocked:", error);
-      });
+    if (request && request.catch) {
+      request.catch(error => console.warn("Audio playback was blocked:", error));
     }
 
     schedule(() => {
       audio.muted = false;
-
-      const fadeStart = performance.now();
-      const fadeDuration = 900;
+      const start = performance.now();
 
       function fadeIn(now) {
-        const progress = Math.min((now - fadeStart) / fadeDuration, 1);
-        audio.volume = progress;
+        audio.volume = Math.min((now - start) / 900, 1);
 
-        if (progress < 1 && !audio.paused) {
+        if (audio.volume < 1 && !audio.paused) {
           requestAnimationFrame(fadeIn);
         }
       }
@@ -524,53 +630,51 @@ body::after {
 
     introStarted = true;
     resetIntro();
-
     startScreen.classList.add("hidden");
     skipBtn.style.display = "block";
+    startAudio();
 
-    startAudioReliably();
-
-    labels.forEach(([id, animationClass], index) => {
-      schedule(() => showLabel(id, animationClass), 2000 + index * 5000);
+    /*
+      Each sentence begins five seconds after the previous one.
+      Because each animation is also five seconds long, no sentences overlap.
+    */
+    labels.forEach(([id, animation], index) => {
+      schedule(() => showLabel(id, animation), 2000 + index * 5000);
     });
 
+    /*
+      The final sentence starts at 37 seconds and finishes at 42 seconds.
+      The flower starts afterward, followed by the title.
+    */
     schedule(() => {
       if (reducedMotion) {
         flower.style.opacity = "1";
-        flower.style.transform = "translateX(-50%)";
-        return;
+        flower.style.transform = "translate(-50%,-50%)";
+      } else {
+        flower.classList.add("flower-bloom");
       }
+    }, 42200);
 
-      flower.className = "";
-      void flower.offsetWidth;
-      flower.classList.add("flower-fall");
-    }, 40500);
-
-    schedule(showTitle, 41130);
+    schedule(showTitle, 42830);
 
     schedule(() => {
       window.location.href = "home.html";
-    }, 46130);
+    }, 47830);
   }
 
   function skipIntro() {
     clearTimers();
-
     audio.pause();
     audio.currentTime = 0;
     audio.muted = false;
     audio.volume = 1;
-
     resetIntro();
-
     startScreen.classList.remove("hidden");
     skipBtn.style.display = "none";
     introStarted = false;
   }
 
-  audio.addEventListener("error", () => {
-    console.warn("Audio could not be loaded. Check sounds/intro2.mp3.");
-  });
+  createRainFlowers();
 
   startBtn.addEventListener("click", startIntro);
   skipBtn.addEventListener("click", skipIntro);
